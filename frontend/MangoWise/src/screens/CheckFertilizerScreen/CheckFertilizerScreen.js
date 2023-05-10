@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
-import { StyleSheet, TextInput, View, Text, ScrollView } from 'react-native';
+import { StyleSheet, TextInput, View, Text, ScrollView,TouchableOpacity,Alert} from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
 import { FloatingLabelInput } from 'react-native-floating-label-input';
+import { useForm } from "react-hook-form";
+import { useNavigation } from "@react-navigation/native";
+import { Feather } from '@expo/vector-icons';
 
 export default function CheckFertilizerScreen() {
+  const navigation = useNavigation();
   const [years, setYears] = useState('');
   const [months, setMonths] = useState('');
   const [stage, setStage] = useState(null);
-
-
+  const [nitrogen, setNitrogen] = useState('0');
+  const [phosporus, setPhosporus] = useState(0);
+  const [potassium, setPotassium] = useState(0);
+  let error = 0;
+  
    const stagedata = [
     { label: 'Before Flowering', value: 'Before Flowering' },
     { label: 'After Flowering', value: 'After Flowering' },
@@ -16,6 +23,11 @@ export default function CheckFertilizerScreen() {
     { label: 'After Harvest', value: 'After Harvest' }
     
   ];
+    const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
    const renderItem = item => {
       return (
@@ -26,34 +38,95 @@ export default function CheckFertilizerScreen() {
       );
     };
 
+  //Send data to backend
+  const onSubmit = () => {
+    error = 0;
+    if (years == 0 && months == 0) {
+      error = 1;
+      Alert.alert(
+        'Error',
+        'Please enter a valid value for age of the tree',
+        [{ text: 'OK' }],
+        { cancelable: false }
+      );
+    };
+    if (stage == null) {
+      error = 1;
+      Alert.alert(
+        'Error',
+        'Please select a growth stage',
+        [{ text: 'OK' }],
+        { cancelable: false }
+      );
+    };
+    
+    if (error == 0) {
+      const data = {
+        age: (years * 12 + months),
+        stage: stage,
+        nitrogen: nitrogen,
+        phosporus: phosporus,
+        potassium: potassium
+      };
+      console.log(data);
+      navigation.navigate('FertilizerSuggestionScreen', { data: data });
+    };
+  };
+
+  const handleMonthChange = (text) => {
+    const parsedValue = parseInt(text);
+    if (parsedValue < 0 || parsedValue > 11) {
+      Alert.alert(
+        'Error',
+        'Please enter a valid value between 1 and 11',
+        [{ text: 'OK' }],
+        { cancelable: false }
+      );
+    } else {
+      setMonths(isNaN(parsedValue) ? '' : parsedValue);
+    }
+  };
+
+
+
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
      <View style={styles.topic}>
-      <Text style={{ fontSize: 26, fontWeight: 'bold', paddingTop: 35, textAlign: 'left' }}>MangoWise</Text>
+     <TouchableOpacity onPress={() => navigation.navigate('FertilizerSuggestionScreen')}>
+      <View style={styles.backButton}>
+       <Feather name="arrow-left" size={40} color="white" />
+        </View>
+     </TouchableOpacity>
+      <Text style={{ fontSize: 26, fontWeight: 'bold', paddingTop: 30, textAlign: 'left' }}>MangoWise</Text>
        </View>
-        <View style={styles.container}>
-        <Text style={{fontSize: 16, fontWeight: 'bold', marginLeft:-40,marginBottom: -18,marginTop: 100,textAlign:'left'}}>Enter estimated age of the mango tree</Text>
+      <View style={styles.container}>
+        <Text style={{fontSize: 16, fontWeight: 'bold', marginLeft:10,marginBottom: -18,marginTop: 60,textAlign:'left'}}>Enter estimated age of the mango tree</Text>
       <View style={styles.inputContainer}>
        <FloatingLabelInput
           label="Years"
           style={styles.input}
-          value={years}
-          staticLabel
+          value={years.toString()}
+            staticLabel
+            hint='Age in years'
           customLabelStyles={{
           colorFocused: 'darkblue',
-          fontSizeFocused: 16,
+          fontSizeFocused: 20,
+          
         }}
         labelStyles={{
           paddingHorizontal: 2,
           paddingVertical: 2,
           marginVertical: -9,
-          backgroundColor: '#fff',
+          backgroundColor: '#fdfde6',
         }}
         inputStyles={{
           color: 'black',
           paddingHorizontal: 10,
         }}
-          onChangeText={(text) => setYears(text)}
+          onChangeText={(text) => {
+          const parsedValue = parseInt(text);
+          setYears(isNaN(parsedValue) ? '' : parsedValue);
+            }}
           keyboardType="numeric"
         />
           <Text>     </Text>
@@ -61,30 +134,36 @@ export default function CheckFertilizerScreen() {
        <FloatingLabelInput
           label="Months"
           style={styles.input}
-          value={months}
+            value={months.toString()}
+            hint='Months 1 to 11'
           staticLabel
           customLabelStyles={{
-          colorFocused: 'darkblue',
-          fontSizeFocused: 14,
-        }}
+          colorFocused: '#01016d',
+          fontSizeFocused: 14
+            }}
        labelStyles={{
           paddingHorizontal: 2,
           paddingVertical: 2,
           marginVertical: -9,
-          backgroundColor: '#fff',
+          backgroundColor: '#fdfde6',
         }}
         inputStyles={{
           color: 'black',
-          paddingHorizontal: 10,
+          paddingHorizontal: 0,
+          paddingVertical:10
         }}
-          onChangeText={(text) => setMonths(text)}
+          onChangeText={handleMonthChange}
           keyboardType="numeric"
         />
        </View>
     
-         <Text style={{fontSize: 16, fontWeight: 'bold', marginLeft:-40,marginBottom: -20,marginTop: 50,textAlign:'left'}}>Select current growth stage of the tree</Text>
+        <Text style={{
+          fontSize: 16, fontWeight: 'bold', marginLeft: 10, marginBottom: -20,
+          marginTop: 50,textAlign: 'left'
+        }}>Select current growth stage of the tree</Text>
+
       <Dropdown
-        style={styles.dropdown2}
+        style={styles.dropdown}
         placeholderStyle={styles.placeholderStyle}
         selectedTextStyle={styles.selectedTextStyle}
         data={stagedata}
@@ -93,13 +172,56 @@ export default function CheckFertilizerScreen() {
         valueField="value"
         placeholder="Select Growth Stage"
         value={stage}
+        
         onChange={item => {
         setStage(item.value);
             }}
-            renderItem={renderItem}
-        />
-         
-        </View> 
+          renderItem={renderItem} />
+        
+        <View style={{ flexDirection: 'row', marginTop: 30 }}>
+          
+        <Text style={{ fontSize: 16, fontWeight: 'bold', marginTop: 25,marginLeft:20,marginRight:16 }}> Nitrogen </Text>
+       
+        <TextInput style={styles.npk}
+          value={nitrogen}
+          onChangeText={(text) => setNitrogen(text)}
+          />
+
+        <Text style={{margin:10,marginTop:25}}> mg/kg</Text>
+        </View>
+        
+        <View style={{ flexDirection:'row'}}> 
+        <Text style={{ fontSize: 16, fontWeight: 'bold', marginLeft:20,marginTop: 20 }}> Phosporus </Text>
+        <TextInput style={styles.npk}
+          value={phosporus.toString()}
+             control={control}
+             onChangeText={(text) => {
+             const parsedValue = parseFloat(text);
+             setPhosporus(isNaN(parsedValue) ? '' : parsedValue);
+            }}
+            />
+          <Text style={{margin:10,marginTop:25}}> mg/kg</Text>
+        </View>
+
+        <View style={{ flexDirection:'row',marginBottom:20}}> 
+        <Text style={{ fontSize: 16, fontWeight: 'bold', marginLeft:20,marginTop: 20 }}> Potassium </Text>
+          <TextInput style={styles.npk}
+             value={potassium.toString()}
+             control={control}
+             onChangeText={(text) => {
+             const parsedValue = parseFloat(text);
+             setPotassium(isNaN(parsedValue) ? '' : parsedValue);
+            }}
+            keyboardType="numeric" />
+          
+          <Text style={{margin:10,marginTop:25}}> mg/kg</Text>
+        </View>
+
+        <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
+          <Text style={styles.btntext}>Generate Recommendations</Text>
+        </TouchableOpacity>
+          
+      </View> 
     </ScrollView>
   );
 }
@@ -107,31 +229,61 @@ export default function CheckFertilizerScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor:'#fff',
+    backgroundColor:'#fdfde6',
   },
    topic: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor:'#fff',
-    paddingTop:30
+    flexDirection: 'row',
+    backgroundColor:'#fdc50b',
+    paddingTop: 30,
+    paddingBottom: 10,
+  },
+   error: {
+    color: 'red',
+     marginTop: 5,
+    fontSize:8
+  },
+  backButton: {
+    width: 60,
+    height: 40,
+    justifyContent:'flex-start',
+    alignItems: 'flex-start',
+      marginTop: 30,
+      marginLeft: 15,
+    marginRight:60
   },
   inputContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent:'center',
     marginBottom: 10,
     marginTop: 40,
-    width: '45%',
+    width: '90%',
+    marginLeft: 20,
+  },
+  npk: {   
+    backgroundColor: 'white', 
+    borderRadius: 8,
+    padding: 10,
+    marginTop: 15,
+    marginLeft: 30,
+    height: 40,
+    width: '25%',
+     shadowColor: '#000',
+      shadowOffset: {
+        width: 0.5,
+        height: 1,
+      },
+      shadowOpacity: 0.4,
+      shadowRadius: 1.21,
+
+      elevation: 2,
   },
   input: {   
     backgroundColor: 'white', 
     borderRadius: 10,
     padding: 10,
     marginTop: 20,
-    marginRight: 10,
+    marginRight: 0,
     height: 60,
     width: '20%',
      shadowColor: '#000',
@@ -144,24 +296,7 @@ const styles = StyleSheet.create({
 
       elevation: 2,
   },
-   dropdown: {
-     margin: 16,
-     marginTop: 40, 
-      height: 50,
-      width: 110,
-      backgroundColor: 'white',
-      borderRadius: 10,
-      padding: 10,
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 1,
-      },
-      shadowOpacity: 0.4,
-      shadowRadius: 1.21,
-      elevation: 2,
-  },
-     dropdown2: {
+    dropdown: {
      margin: 16,
      marginTop: 40,
       height: 50,
@@ -194,5 +329,22 @@ const styles = StyleSheet.create({
     selectedTextStyle: {
       fontSize: 14,
       borderRadius: 10,      
-  }
+  },
+  button: {
+    backgroundColor: '#fdc50b',
+    padding: 10,
+    width: 280,
+    height: 65,
+    borderRadius: 20,
+    marginTop: 40,
+    alignSelf: 'center',
+    marginBottom: 70,
+  },
+  btntext: {
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#144100',
+    paddingTop: 10,
+  },
 });
