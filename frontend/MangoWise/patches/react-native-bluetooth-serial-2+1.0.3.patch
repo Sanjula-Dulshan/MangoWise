@@ -1,0 +1,11 @@
+diff --git a/node_modules/react-native-bluetooth-serial-2/android/build.gradle b/node_modules/react-native-bluetooth-serial-2/android/build.gradle
+index 8aa62e9..5f4005d 100644
+--- a/node_modules/react-native-bluetooth-serial-2/android/build.gradle
++++ b/node_modules/react-native-bluetooth-serial-2/android/build.gradle
+@@ -34,5 +34,5 @@ repositories {
+ }
+ 
+ dependencies {
+-    compile 'com.facebook.react:react-native:+'
++    implementation 'com.facebook.react:react-native:+'
+ }
