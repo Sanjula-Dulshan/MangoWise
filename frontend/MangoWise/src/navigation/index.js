@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 //import screens
 import CheckFertilizerScreen from "../screens/CheckFertilizerScreen/CheckFertilizerScreen";
 import FertilizerSuggestionScreen from "../screens/FertilizerSuggestionScreen/FertilizerSuggestionScreen";
+import MonitorFertilizationScreen from "../screens/MoniterFertilizationScreen/MonitorFertilizationScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -21,6 +22,11 @@ const Navigation = () => {
       <Stack.Screen
           name="FertilizerSuggestionScreen"
           component={FertilizerSuggestionScreen}
+          options={{ headerShown: false }}
+        />
+       <Stack.Screen
+          name="MoniterFertilizationScreen"
+          component={MonitorFertilizationScreen}
           options={{ headerShown: false }}
       />
     </Stack.Navigator>

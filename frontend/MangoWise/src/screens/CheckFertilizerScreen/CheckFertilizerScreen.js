@@ -92,7 +92,7 @@ export default function CheckFertilizerScreen() {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
      <View style={styles.topic}>
-     <TouchableOpacity onPress={() => navigation.navigate('FertilizerSuggestionScreen')}>
+     <TouchableOpacity onPress={() => navigation.navigate('MoniterFertilizationScreen')}>
       <View style={styles.backButton}>
        <Feather name="arrow-left" size={40} color="white" />
         </View>
