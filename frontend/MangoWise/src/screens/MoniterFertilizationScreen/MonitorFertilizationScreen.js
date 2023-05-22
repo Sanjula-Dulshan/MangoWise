@@ -26,14 +26,12 @@ const hasPermission = async () => {
     const granted = await PermissionsAndroid.check(
       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
     ); 
-    console.log('Granted C:' + granted );
     if (granted) {
       return true;
     } else {
       return false;
     }
   } else {
-    // On iOS, Bluetooth access is always permitted
     return true;
   }
 };
@@ -43,57 +41,50 @@ const hasPermission2 = async () => {
     const granted2 = await PermissionsAndroid.check(
       PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN
     );
-    console.log(' C2:' + granted2);
+
     if (granted2) {
       return true;
     } else {
       return false;
     }
   } else {
-    // On iOS, Bluetooth access is always permitted
     return true;
   }
 };
 
 const requestPermission = async () => {
-  console.log('Requesting bluetooth permissions...')
+
   if (Platform.OS === 'android' && Platform.Version >= 23) {
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
     );
-    console.log('P1:' + granted);
     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
       return true;
     } else {
       return false;
     }
   } else {
-    // On iOS, Bluetooth access is always permitted
     return true;
   }
 };
 
 const requestPermission2 = async () => {
-  console.log('Requesting bluetooth permissions2...')
-  await requestMultiple([PERMISSIONS.ANDROID.BLUETOOTH_SCAN, PERMISSIONS.ANDROID.BLUETOOTH_CONNECT]).then((statuses) => {
-  console.log('Camera', statuses[PERMISSIONS.ANDROID.BLUETOOTH_SCAN]);
-  console.log('FaceID', statuses[PERMISSIONS.ANDROID.BLUETOOTH_CONNECT]);
-     });
+
+  await requestMultiple([PERMISSIONS.ANDROID.BLUETOOTH_SCAN, PERMISSIONS.ANDROID.BLUETOOTH_CONNECT]);
+
   if (Platform.OS === 'android' && Platform.Version >= 23) {
     const granted2 = await request(
       PERMISSIONS.ANDROID.BLUETOOTH_CONNECT,
       PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
       PERMISSIONS.ANDROID.BLUETOOTH_ADVERTISE,
       PERMISSIONS.ANDROID.BLUETOOTH
-												)
-    console.log(' P2:' + granted2);
+    );
     if (granted2 === RESULTS.GRANTED) {
       return true;
     } else {
       return false;
     }
   } else {
-    // On iOS, Bluetooth access is always permitted
     return true;
   }
 };
@@ -108,13 +99,16 @@ const MonitorFertilizationScreen = () => {
     (async () => {
       const granted = await hasPermission();
       const granted2 = await hasPermission2();
-      console.log('USE Granted:' + granted);
+
+      const connected = await BluetoothSerial.isConnected(); 
+      console.log('connected', connected);
       if (!granted || !granted2) {
          const permission = await requestPermission();
          const permission2 = await requestPermission2();
-        console.log('USE Permission:' + permission);
+
         if (permission && permission2) {
           setPermissionGranted(true);
+
         } else {
           setPermissionGranted(false);
         }
@@ -124,64 +118,71 @@ const MonitorFertilizationScreen = () => {
     })();
   }, []);
 
-  const turnOnBluetooth = async () => {
-    console.log('PPPG: '+permissionGranted)
-    if (permissionGranted) {
-        const permission2 = await requestPermission2();
-        console.log('Permission2:' + permission2);
-        if (permission2) {
-          try {
-          //  await BluetoothSerial.requestEnable();
-          //   const id= '20:16:10:08:68:67'
-          //   let ss=await BluetoothSerial.connect(id);
-          //   console.log('SSSSS' + ss);
-           // let ss2 = await BluetoothSerial.listUnpaired();
- const ss2 = await BluetoothSerial.readFromDevice()
-  // //  .then(devices => {
-  //    console.log('Unpaired devices:', devices._i);
-     
-  // })
-  // .catch(error => {
-  //   console.error('Error discovering unpaired devices:', error);
-  // });
+let previousValues = {
+  nitrogenValue: '',
+  phosphorousValue: '',
+  potassiumValue: ''
+};
 
+const turnOnBluetooth = async () => {
+ // if (permissionGranted) {
+    const permission2 = await requestPermission2();
 
-          // Splitting the console data into lines
-          const lines = ss2.split('\n');
+    if (permission2) {
+      try {
+        const sensorData = await BluetoothSerial.readFromDevice();
+        const lines = sensorData.split('\n');
 
-          // Storing the nutrient values
-          let nitrogenValue, phosphorousValue, potassiumValue;
+        let nitrogenValue, phosphorousValue, potassiumValue;
 
-          // Iterating through each line and extracting the nutrient name and value
-          lines.forEach((line) => {
-  if (line.includes(':')) { // Check if the line contains the delimiter
-    const [nutrient, value] = line.split(':');
-    const trimmedNutrient = nutrient.trim();
-    const trimmedValue = value.trim();
+        // Iterating through each line and extracting the nutrient name and value
+        await lines.forEach((line) => {
+          if (line.includes(':')) { // Check if the line contains the delimiter
+            const [nutrient, value] = line.split(':');
+            const trimmedNutrient = nutrient.trim();
+            const trimmedValue = value.trim();
 
-    if (trimmedNutrient === 'Nitrogen') {
-      nitrogenValue = trimmedValue;
-    } else if (trimmedNutrient === 'Phosphorous') {
-      phosphorousValue = trimmedValue;
-    } else if (trimmedNutrient === 'Potassium') {
-      potassiumValue = trimmedValue;
-    }
-  }
-});
-            console.log('Nitrogen value:', nitrogenValue);
-            console.log('Phosphorous value:', phosphorousValue);
-            console.log('Potassium value:', potassiumValue);
-            
-          } catch (error) {
-            console.log('Error turning on Bluetooth', error);
+            if (trimmedNutrient === 'Nitrogen') {
+              nitrogenValue = trimmedValue;
+            } else if (trimmedNutrient === 'Phosphorous') {
+              phosphorousValue = trimmedValue;
+            } else if (trimmedNutrient === 'Potassium') {
+              potassiumValue = trimmedValue;
+            }
           }
-        }else{
-          console.log('NO');
+        });
+
+        // Check if any of the nutrient values have changed
+        if (
+          nitrogenValue !== previousValues.nitrogenValue && nitrogenValue !== undefined||
+          phosphorousValue !== previousValues.phosphorousValue && phosphorousValue !== undefined ||
+          potassiumValue !== previousValues.potassiumValue && potassiumValue !== undefined 
+        ) {
+          console.log('Nitrogen value:', nitrogenValue);
+          console.log('Phosphorous value:', phosphorousValue);
+          console.log('Potassium value:', potassiumValue);
+
+          // Update previous values with the current ones
+          previousValues = {
+            nitrogenValue,
+            phosphorousValue,
+            potassiumValue
+          };
         }
+
+      } catch (error) {
+        console.log('Error Reading Data', error);
+      }
     } else {
-      console.log('Permission to access fine location is required to use Bluetooth');
+      console.log('No Data');
     }
-  };
+  // } else {
+  //   console.log('No permission granted');
+  // }
+};
+
+// Set the interval to periodically call the turnOnBluetooth function
+setInterval(turnOnBluetooth, 10000);
 
   const turnOffBluetooth = async () => {
     if (permissionGranted) {
@@ -209,10 +210,10 @@ const MonitorFertilizationScreen = () => {
    const handleDeviceSelection = async (address) => {
      setSelectedDeviceAddress(address);
       
-     await BluetoothSerial.connect(address);
+      await BluetoothSerial.connect(address);
       
-     setModalVisible(false);
-     console.log('Selected device address:', address);
+      setModalVisible(false);
+      console.log('Connected device address:', address);
     // You can perform any additional actions here with the selected device address
   };
 
