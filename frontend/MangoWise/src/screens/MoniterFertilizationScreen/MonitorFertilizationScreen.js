@@ -1,15 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import {
+  StyleSheet,
+  TextInput,
   View,
   Text,
-  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
   Platform,
   PermissionsAndroid,
-  Button,
-  TouchableOpacity,
+  Image
 } from 'react-native';
+import Header from '../../components/Header';
+import { Dropdown } from 'react-native-element-dropdown';
+import { set, useForm } from "react-hook-form";
+import { useNavigation } from "@react-navigation/native";
+import { Feather } from '@expo/vector-icons';
 import BluetoothSerial from 'react-native-bluetooth-serial-2';
-
+import monitor from '../../../assets/monitor.jpg';
 import Modal from 'react-native-modal';
 
 import {
@@ -19,13 +27,11 @@ import {
   requestMultiple,
 } from 'react-native-permissions';
 
-
-
 const hasPermission = async () => {
   if (Platform.OS === 'android' && Platform.Version >= 23) {
     const granted = await PermissionsAndroid.check(
       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-    ); 
+    );
     if (granted) {
       return true;
     } else {
@@ -89,7 +95,16 @@ const requestPermission2 = async () => {
   }
 };
 
-const MonitorFertilizationScreen = () => {
+
+export default function CheckFertilizerScreen() {
+  const navigation = useNavigation();
+  const [years, setYears] = useState('');
+  const [months, setMonths] = useState('');
+  const [stage, setStage] = useState(null);
+  const [nitrogen, setNitrogen] = useState(0);
+  const [phosporus, setPhosporus] = useState(0);
+  const [potassium, setPotassium] = useState(0);
+  let error = 0;
   const [permissionGranted, setPermissionGranted] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const [devices, setDevices] = useState([]);
@@ -100,11 +115,15 @@ const MonitorFertilizationScreen = () => {
       const granted = await hasPermission();
       const granted2 = await hasPermission2();
 
-      const connected = await BluetoothSerial.isConnected(); 
-      console.log('connected', connected);
+      const connected = await BluetoothSerial.isConnected();
+
+      if (connected == false) {
+        setModalVisible(true);
+      }
+
       if (!granted || !granted2) {
-         const permission = await requestPermission();
-         const permission2 = await requestPermission2();
+        const permission = await requestPermission();
+        const permission2 = await requestPermission2();
 
         if (permission && permission2) {
           setPermissionGranted(true);
@@ -118,14 +137,14 @@ const MonitorFertilizationScreen = () => {
     })();
   }, []);
 
-let previousValues = {
-  nitrogenValue: '',
-  phosphorousValue: '',
-  potassiumValue: ''
-};
+  let previousValues = {
+    nitrogenValue: '',
+    phosphorousValue: '',
+    potassiumValue: ''
+  };
 
-const turnOnBluetooth = async () => {
- // if (permissionGranted) {
+  const turnOnBluetooth = async () => {
+
     const permission2 = await requestPermission2();
 
     if (permission2) {
@@ -142,25 +161,42 @@ const turnOnBluetooth = async () => {
             const trimmedNutrient = nutrient.trim();
             const trimmedValue = value.trim();
 
+
             if (trimmedNutrient === 'Nitrogen') {
               nitrogenValue = trimmedValue;
-            } else if (trimmedNutrient === 'Phosphorous') {
+            }
+            if (trimmedNutrient === 'Phosphorous') {
               phosphorousValue = trimmedValue;
-            } else if (trimmedNutrient === 'Potassium') {
+            }
+            if (trimmedNutrient === 'Potassium') {
               potassiumValue = trimmedValue;
             }
           }
         });
 
+        if (nitrogenValue == undefined) {
+          nitrogenValue = 0;
+        }
+        if (phosphorousValue == undefined) {
+          phosphorousValue = 0;
+        }
+        if (potassiumValue == undefined) {
+          potassiumValue = 0;
+        }
+
         // Check if any of the nutrient values have changed
         if (
-          nitrogenValue !== previousValues.nitrogenValue && nitrogenValue !== undefined||
-          phosphorousValue !== previousValues.phosphorousValue && phosphorousValue !== undefined ||
-          potassiumValue !== previousValues.potassiumValue && potassiumValue !== undefined 
+          nitrogenValue !== previousValues.nitrogenValue ||
+          phosphorousValue !== previousValues.phosphorousValue ||
+          potassiumValue !== previousValues.potassiumValue
         ) {
-          console.log('Nitrogen value:', nitrogenValue);
-          console.log('Phosphorous value:', phosphorousValue);
-          console.log('Potassium value:', potassiumValue);
+          if (nitrogenValue !== undefined && phosphorousValue !== undefined && potassiumValue !== undefined &&
+            nitrogenValue !== 0 && phosphorousValue !== 0 && potassiumValue !== 0
+          ) {
+            setNitrogen(nitrogenValue);
+            setPhosporus(phosphorousValue);
+            setPotassium(potassiumValue);
+          }
 
           // Update previous values with the current ones
           previousValues = {
@@ -176,84 +212,404 @@ const turnOnBluetooth = async () => {
     } else {
       console.log('No Data');
     }
-  // } else {
-  //   console.log('No permission granted');
-  // }
-};
-
-// Set the interval to periodically call the turnOnBluetooth function
-setInterval(turnOnBluetooth, 10000);
-
-  const turnOffBluetooth = async () => {
-    if (permissionGranted) {
-      try {
-        await BluetoothSerial.disconnect();
-        console.log('Bluetooth turned off successfully');
-      } catch (error) {
-        console.log('Error turning off Bluetooth', error);
-      }
-    } else {
-      console.log('Permission to access fine location is required to use Bluetooth');
-    }
   };
 
-    const discoverBluetoothDevices = async () => {
+  // Set the interval to periodically call the turnOnBluetooth function
+  setInterval(turnOnBluetooth, 10000);
+
+  const discoverBluetoothDevices = async () => {
     try {
       const discoveredDevices = await BluetoothSerial.list();
       setDevices(discoveredDevices);
-      setModalVisible(true);
     } catch (error) {
       console.error('Error discovering devices:', error);
     }
   };
 
-   const handleDeviceSelection = async (address) => {
-     setSelectedDeviceAddress(address);
-      
-      await BluetoothSerial.connect(address);
-      
+  const handleDeviceSelection = async (address) => {
+    setSelectedDeviceAddress(address);
+
+    await BluetoothSerial.connect(address);
+
+    const connected = await BluetoothSerial.isConnected();
+
+    if (connected == true) {
       setModalVisible(false);
-      console.log('Connected device address:', address);
-    // You can perform any additional actions here with the selected device address
+    }
+    console.log('Connected device address:', address);
   };
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Bluetooth Control</Text>
-      <Button title="Turn On Bluetooth" onPress={turnOnBluetooth} />
-      <Button title="Turn Off Bluetooth" onPress={turnOffBluetooth} />
 
-      <Button title="Discover Devices" onPress={discoverBluetoothDevices} />
-        <Modal isVisible={isModalVisible}>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text>Bluetooth Devices:</Text>
-          {devices.map((device, index) => (
-             <TouchableOpacity key={index} onPress={() => handleDeviceSelection(device.address)}>
-              <Text>
-                Device name: {device.name}, Device address: {device.address}
-              </Text>
-            </TouchableOpacity>
-          ))}
-          <Button title="Close" onPress={() => setModalVisible(false)} />
-        </View></Modal>
+  const stagedata = [
+    { label: 'Before Flowering', value: 'Before Flowering' },
+    { label: 'At Flowering', value: 'At Flowering' },
+    { label: 'After Harvest', value: 'After Harvest' }
+
+  ];
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const renderItem = item => {
+    return (
+      <View style={styles.item}>
+        <Text style={styles.textItem}>{item.label}</Text>
+        {item.value === stage}
+      </View>
+    );
+  };
+
+  //Send data to backend
+  const onSubmit = () => {
+    error = 0;
+    if (stage == null) {
+      error = 1;
+      Alert.alert(
+        'Error',
+        'Please select a growth stage',
+        [{ text: 'OK' }],
+        { cancelable: false }
+      );
+    };
+
+    if (error == 0) {
+      const nvalue = parseInt(nitrogen.replace('mg/kg', ''));
+      const pvalue = parseInt(phosporus.replace('mg/kg', ''));
+      const kvalue = parseInt(potassium.replace('mg/kg', ''));
+
+      const data = {
+        //age: (years * 12 + months),
+        stage: stage,
+        nitrogen: nvalue,
+        phosporus: pvalue,
+        potassium: kvalue
+      };
+      console.log(data);
+      navigation.navigate('FertilizerSuggestionScreen', { data: data });
+    };
+  };
+
   
-    
-      
-    </View>
+  return (
+    <View style={{ backgroundColor: '#fdfafa' ,height:'100%'}}>
+
+      <View style={styles.topic}>
+        <TouchableOpacity onPress={() => navigation.navigate('MoniterFertilizationScreen')}>
+          <View style={styles.backButton}>
+            <Feather name="arrow-left" size={40} color="#000000" />
+          </View>
+        </TouchableOpacity>
+        <Header />
+      </View>
+
+      <ScrollView showsVerticalScrollIndicator={false}  style={styles.container}>
+        <View style={styles.imageContainer}>
+          <Image
+            source={monitor}
+            style={styles.monitorimage}
+            resizeMode="contain"
+          />
+          <Text style={{ fontSize: 24, fontFamily: 'Roboto', fontWeight: 'bold', paddingTop: 2, textAlign: 'right', paddingRight: 13, marginLeft: 4 }}>Monitor the              Nutrient Level</Text>
+        </View>
+
+          <Modal isVisible={isModalVisible} style={styles.blModal}>
+           <ScrollView showsVerticalScrollIndicator={false}>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <TouchableOpacity style={styles.blButton} onPress={discoverBluetoothDevices} >
+                <Text style={styles.blButtonText}>Discover Devices</Text>
+              </TouchableOpacity>
+              {devices.map((device, index) => (
+                <TouchableOpacity key={index} onPress={() => handleDeviceSelection(device.address)}>
+                  <Text style={styles.devices}>
+                    {device.name}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+            </ScrollView>
+          </Modal>
+        
+          <Text style={{
+          fontSize: 14,  marginLeft: 10, marginBottom: 0,fontWeight:'bold',
+          marginTop: 10, textAlign: 'left'
+        }}>Previous Nutrient Status</Text>
+        <View style={styles.inputmultiline}>
+
+        <View style={{ flexDirection: 'row', marginTop: 5 }}>
+          <Text style={{ fontSize: 10,  marginTop: 0, marginLeft: 20 }}> Date : 22/04/2023         </Text>
+          <Text style={{ fontSize: 10,  marginTop: 0, marginLeft: 20 }}> Time: 2.30 p.m</Text>
+        </View>
+
+        <View style={{ flexDirection: 'row', marginTop: 10 }}>
+          <Text style={{ fontSize: 10,  marginTop: 0, marginLeft: 20 }}> Nitrogen          </Text>
+          <Text style={{ fontSize: 10,  marginTop: 0, marginLeft: 20 }}> 34 mg/kg</Text>
+        </View>
+
+        <View style={{ flexDirection: 'row', marginTop: 5 }}>
+          <Text style={{ fontSize: 10,  marginTop: 0, marginLeft: 20 }}> Phosphorous  </Text>
+          <Text style={{ fontSize: 10,  marginTop: 0, marginLeft: 20 }}> 34 mg/kg</Text>
+        </View>
+
+        <View style={{ flexDirection: 'row', marginTop: 5 }}>
+          <Text style={{ fontSize: 10,  marginTop: 0, marginLeft: 20 }}> Potassium       </Text>
+          <Text style={{ fontSize: 10,  marginTop: 0, marginLeft: 20 }}> 34 mg/kg</Text>
+        </View>
+
+        <View style={{ flexDirection: 'row', marginTop: 15 }}>
+          <Text style={{ fontSize: 12,fontWeight:'bold',  marginTop: 0, marginLeft: 20 }}> Fertilizer 160g Added</Text>
+        </View>
+        </View>
+
+        <Text style={{
+          fontSize: 14, marginLeft: 10, marginBottom: -10,fontWeight:'bold',
+          marginTop: 10, textAlign: 'left'
+        }}>Select current growth stage of the tree</Text>
+
+        <Dropdown
+          style={styles.dropdown}
+          placeholderStyle={styles.placeholderStyle}
+          selectedTextStyle={styles.selectedTextStyle}
+          data={stagedata}
+          maxHeight={200}
+          labelField="label"
+          valueField="value"
+          placeholder="Select Growth Stage"
+          value={stage}
+
+          onChange={item => {
+            setStage(item.value);
+          }}
+          renderItem={renderItem} />
+
+        <Text style={{
+          fontSize: 14,  marginLeft: 15, marginBottom: -10,fontWeight:'bold',
+          marginTop: 10, textAlign: 'left'
+        }}>Current Nutrient Status</Text>
+
+        <View style={{ flexDirection: 'row', marginTop: 8 }}>
+          <Text style={{ fontSize: 14, marginTop: 25, marginLeft: 20 }}> Nitrogen     (N)  : </Text>
+          <Text style={styles.npk} >{nitrogen}</Text>
+        </View>
+
+        <View style={{ flexDirection: 'row' }}>
+          <Text style={{ fontSize: 14, marginLeft: 20, marginTop: 20 }}> Phosporus (P)  : </Text>
+          <Text style={styles.npk} >{phosporus}</Text>
+        </View>
+
+        <View style={{ flexDirection: 'row', marginBottom: 20 }} >
+          <Text style={{ fontSize: 14, marginLeft: 20, marginTop: 20 }}> Potassium (K)  : </Text>
+          <Text style={styles.npk} >{potassium}</Text>
+        </View>
+
+        <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
+          <Text style={styles.btntext}>Check Now</Text>
+        </TouchableOpacity>
+
+    </ScrollView>
+    </View >
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
+    backgroundColor: '#f3fdee',
+    padding: 10,
+    marginLeft: 10,
+    marginRight: 10,
+    marginBottom: 10,
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0.5,
+      height: 1,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 1.21,
+    elevation: 2,
+  },
+  inputmultiline: {
+    marginBottom: 10,
+    marginTop: 10,
+    width: '90%',
+    marginLeft: 10,
+    padding: 10,
+    backgroundColor: 'white',
+    borderRadius: 8,
+    shadowOffset: {
+      width: 0.5,
+      height: 1,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 1.21,
+    elevation: 2
+  },
+  imageContainer: {
+    flexDirection: 'row',
     justifyContent: 'center',
   },
-  text: {
-    fontSize: 20,
+  topic: {
+    flexDirection: 'row',
+    paddingTop: 20,
+    backgroundColor: '#fdfafa',
+  },
+  error: {
+    color: 'red',
+    marginTop: 5,
+    fontSize: 8
+  },
+  backButton: {
+    width: 30,
+    height: 35,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    marginTop: -10,
+    marginLeft: 15,
+    marginRight: 60
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 10,
+    marginTop: 40,
+    width: '90%',
+    marginLeft: 20,
+  },
+  npk: {
+    backgroundColor: 'white',
+    borderRadius: 8,
+    padding: 10,
+    marginTop: 15,
+    marginLeft: 30,
+    height: 40,
+    fontSize: 12,
+    width: '30%',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0.5,
+      height: 1,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 1.21,
+
+    elevation: 2,
+  },
+  dropdown: {
+    margin: 16,
+    marginTop: 20,
+    height: 45,
+    width: 260,
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
+  },
+  item: {
+    padding: 17,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  textItem: {
+    flex: 1,
+    fontSize: 12,
+    fontFamily: 'sans-serif'
+  },
+  placeholderStyle: {
+    fontSize: 12,
+  },
+  selectedTextStyle: {
+    fontSize: 12,
+    borderRadius: 20,
+  },
+  button: {
+    backgroundColor: '#fdc50b',
+    width: 130,
+    height: 45,
+    paddingBottom: 15,
+    borderRadius: 25,
+    marginTop: 0,
+    alignSelf: 'center',
+    marginBottom: 10,
+  },
+  btntext: {
+    textAlign: 'center',
+    fontSize: 16,
     fontWeight: 'bold',
+    color: '#144100',
+    paddingTop: 10,
+  },
+  blModal: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#e3f7d9',
+    width: '60%',
+    maxHeight: '40%',
+    minHeight: '10%',
+    marginTop: 170,
+    marginLeft: 80,
+    borderRadius: 20,
+  },
+  blButton: {
+    backgroundColor: '#fdc50b',
+    padding: 10,
+    width: 200,
+    height: 50,
+    textAlign: 'center',
+    color: '#144100',
+    borderRadius: 25,
+    marginTop: 10,
+    alignSelf: 'center',
     marginBottom: 20,
   },
-});
+  devices: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    padding: 10,
+    marginTop: 10,
+    backgroundColor: '#e6f7dc',
+    borderRadius: 8,
+    width: '100%',
+    alignSelf: 'center',
+    textAlign: 'center',
+    color: '#030303',
+    fontFamily: 'Roboto',
+    fontStyle: 'italic',
+    fontWeight: 'bold',
+    fontSize: 12,
+    shadowColor: '#b4b4b4',
+    shadowOffset: {
+      width: 0.5,
+      height: 1,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 1.21,
 
-export default MonitorFertilizationScreen;
+    elevation: 2,
+  },
+  blButtonText: {
+    textAlign: 'center',
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#144100',
+    padding: 6,
+  },
+  monitorimage: {
+    width: 85,
+    height: 80,
+    marginTop: 0,
+    marginLeft: 30,
+    marginRight: -50,
+    borderRadius: 50,
+  },
+});
