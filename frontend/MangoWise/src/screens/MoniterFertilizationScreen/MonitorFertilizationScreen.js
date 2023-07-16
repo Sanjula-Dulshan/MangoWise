@@ -296,7 +296,7 @@ export default function CheckFertilizerScreen() {
     <View style={{ backgroundColor: '#fdfafa' ,height:'100%'}}>
 
       <View style={styles.topic}>
-        <TouchableOpacity onPress={() => navigation.navigate('MoniterFertilizationScreen')}>
+        <TouchableOpacity onPress={() => navigation.navigate('PreviousRecordsScreen')}>
           <View style={styles.backButton}>
             <Feather name="arrow-left" size={40} color="#000000" />
           </View>

@@ -13,8 +13,7 @@ import {
 } from 'react-native';
 import Header from '../../components/Header';
 import { Dropdown } from 'react-native-element-dropdown';
-import { FloatingLabelInput } from 'react-native-floating-label-input';
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useNavigation } from "@react-navigation/native";
 import { Feather } from '@expo/vector-icons';
 import BluetoothSerial from 'react-native-bluetooth-serial-2';
@@ -318,10 +317,9 @@ export default function CheckFertilizerScreen() {
 
 
   return (
-    <View style={{ backgroundColor: '#fdfafa' ,height:'100%'}}>
-
+    <View style={{ backgroundColor: '#fdfafa', height: '100%' }}>
       <View style={styles.topic}>
-        <TouchableOpacity onPress={() => navigation.navigate('MoniterFertilizationScreen')}>
+        <TouchableOpacity onPress={() => navigation.navigate('FertilizerSuggestionScreen')}>
           <View style={styles.backButton}>
             <Feather name="arrow-left" size={40} color="#000000" />
           </View>
@@ -329,7 +327,7 @@ export default function CheckFertilizerScreen() {
         <Header />
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}  style={styles.container}>
+      <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
         <View style={styles.imageContainer}>
           <Image
             source={sensorimage}
@@ -337,35 +335,39 @@ export default function CheckFertilizerScreen() {
             resizeMode="contain"
           />
           <Text style={{ fontSize: 24, fontFamily: 'Roboto', fontWeight: 'bold', paddingTop: 2, textAlign: 'right', paddingRight: 13, marginLeft: 4 }}>Check Suitable     Fertilizer</Text>
-
-        </View>
-        <Text style={{ fontSize: 14, fontWeight: 'bold', marginLeft: 10, marginBottom: -18, marginTop: 10, textAlign: 'left' }}>Enter estimated age of the mango tree</Text>
-        <View style={styles.inputContainer}>
-        <View style={{ flexDirection: 'row', marginTop: 30 }}>
-          <TextInput style={styles.input} 
-           value={years.toString()}
-           placeholder='Age in years'
-           onChangeText={(text) => {
-            const parsedValue = parseInt(text);
-            setYears(isNaN(parsedValue) ? '' : parsedValue);
-          }}
-          keyboardType="numeric"  
-          ></TextInput>
-          <Text style={{ fontSize: 12, fontWeight: 'bold', marginTop: -25, marginLeft: -10 }}> Years </Text>
-
-          <TextInput style={styles.inputMonths} 
-          value={months.toString()}
-           placeholder='Months 1 to 11'
-           onChangeText={handleMonthChange}
-           keyboardType="numeric"
-          ></TextInput>
-          <Text style={{ fontSize: 12, fontWeight: 'bold', marginTop: -25, marginLeft: 2 }}> Months </Text>   
-        </View>
         </View>
 
+        <Text style={{ fontSize: 12, fontWeight: 'bold', marginLeft: 10, marginBottom:10, textAlign: 'left' }}>Record ID: 001 </Text>
+        <Text style={{ fontSize: 10, fontStyle:'italic', marginLeft: 10, marginBottom: 8,marginTop:-10, textAlign: 'left',color:'red' }}>*Please note this id for use in nutrition monitor stage </Text>
        
-          <Modal isVisible={isModalVisible} style={styles.blModal}>
-           <ScrollView showsVerticalScrollIndicator={false}>
+        <Text style={{ fontSize: 14, fontWeight: 'bold', marginLeft: 10, marginBottom: -18, marginTop: 10, textAlign: 'left' }}>Enter estimated age of the mango tree</Text>
+       
+        <View style={styles.inputContainer}>
+          <View style={{ flexDirection: 'row', marginTop: 30 }}>
+            <TextInput style={styles.input}
+              value={years.toString()}
+              placeholder='Age in years'
+              onChangeText={(text) => {
+                const parsedValue = parseInt(text);
+                setYears(isNaN(parsedValue) ? '' : parsedValue);
+              }}
+              keyboardType="numeric"
+            ></TextInput>
+            <Text style={{ fontSize: 12, fontWeight: 'bold', marginTop: -25, marginLeft: -10 }}> Years </Text>
+
+            <TextInput style={styles.inputMonths}
+              value={months.toString()}
+              placeholder='Months 1 to 11'
+              onChangeText={handleMonthChange}
+              keyboardType="numeric"
+            ></TextInput>
+            <Text style={{ fontSize: 12, fontWeight: 'bold', marginTop: -25, marginLeft: 2 }}> Months </Text>
+          </View>
+        </View>
+
+
+        <Modal isVisible={isModalVisible} style={styles.blModal}>
+          <ScrollView showsVerticalScrollIndicator={false}>
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
               <TouchableOpacity style={styles.blButton} onPress={discoverBluetoothDevices} >
                 <Text style={styles.blButtonText}>Discover Devices</Text>
@@ -378,9 +380,9 @@ export default function CheckFertilizerScreen() {
                 </TouchableOpacity>
               ))}
             </View>
-            </ScrollView>
-          </Modal>
-        
+          </ScrollView>
+        </Modal>
+
 
 
         <Text style={{
@@ -404,7 +406,7 @@ export default function CheckFertilizerScreen() {
           }}
           renderItem={renderItem} />
 
-        <View style={{ flexDirection: 'row', marginTop: 20 }}>
+        <View style={{ flexDirection: 'row', marginTop: 10 }}>
           <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 25, marginLeft: 20 }}> Nitrogen     (N)  : </Text>
           <Text style={styles.npk} >{nitrogen}</Text>
         </View>
@@ -423,7 +425,7 @@ export default function CheckFertilizerScreen() {
           <Text style={styles.btntext}>Generate Recommendations</Text>
         </TouchableOpacity>
 
-    </ScrollView>
+      </ScrollView>
     </View >
   );
 }
@@ -498,8 +500,8 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: 'white',
-    justifyContent:'flex-start',
-    alignContent:'flex-start',
+    justifyContent: 'flex-start',
+    alignContent: 'flex-start',
     borderRadius: 10,
     padding: 5,
     marginTop: -35,
@@ -520,7 +522,7 @@ const styles = StyleSheet.create({
   },
   inputMonths: {
     backgroundColor: 'white',
-    justifyContent:'flex-end',
+    justifyContent: 'flex-end',
     borderRadius: 10,
     padding: 5,
     fontSize: 10,
