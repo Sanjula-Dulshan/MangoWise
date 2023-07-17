@@ -16,10 +16,11 @@ import Header from '../../components/Header';
 import { Dropdown } from 'react-native-element-dropdown';
 import { useForm } from "react-hook-form";
 import { useNavigation } from "@react-navigation/native";
-import { Feather } from '@expo/vector-icons';
+import { Feather,AntDesign } from '@expo/vector-icons';
 import BluetoothSerial from 'react-native-bluetooth-serial-2';
 import sensorimage from '../../../assets/NPKSensor.png'
 import Modal from 'react-native-modal';
+import Toast from 'react-native-toast-message';
 
 import {
   PERMISSIONS,
@@ -110,6 +111,8 @@ export default function CheckFertilizerScreen() {
   const [isModalVisible, setModalVisible] = useState(false);
   const [devices, setDevices] = useState([]);
   const [selectedDeviceAddress, setSelectedDeviceAddress] = useState('');
+  const [isError, setError] = useState(false);
+  const [isAgeError, setAgeError] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -227,9 +230,15 @@ export default function CheckFertilizerScreen() {
   };
 
   // Set the interval to periodically call the turnOnBluetooth function
-  setInterval(turnOnBluetooth, 10000);
+  setInterval(turnOnBluetooth, 1000);
 
   const discoverBluetoothDevices = async () => {
+    Toast.show({
+      type: 'info',
+      text1: 'Searching for devices',
+      position: 'bottom',
+      visibilityTime: 1000,
+    });
     try {
       const discoveredDevices = await BluetoothSerial.list();
       setDevices(discoveredDevices);
@@ -245,6 +254,12 @@ export default function CheckFertilizerScreen() {
 
   const handleDeviceSelection = async (address) => {
     setSelectedDeviceAddress(address);
+    Toast.show({
+      type: 'info',
+      text1: 'Connecting Please Wait!',
+      position: 'bottom',
+      visibilityTime: 3000,
+    });
     try {
       await BluetoothSerial.connect(address);
 
@@ -252,6 +267,12 @@ export default function CheckFertilizerScreen() {
 
       if (connected == true) {
         setModalVisible(false);
+        Toast.show({
+          type: 'success',
+          text1: 'Connected successfully!',
+          position: 'bottom',
+          visibilityTime: 1000,
+        });
       }
     } catch (error) {
       Alert.alert(
@@ -290,21 +311,11 @@ export default function CheckFertilizerScreen() {
     error = 0;
     if (years == 0 && months == 0) {
       error = 1;
-      Alert.alert(
-        'Error',
-        'Please enter a valid value for age of the tree',
-        [{ text: 'OK' }],
-        { cancelable: false }
-      );
+      setAgeError(true);
     };
     if (stage == null) {
       error = 1;
-      Alert.alert(
-        'Error',
-        'Please select a growth stage',
-        [{ text: 'OK' }],
-        { cancelable: false }
-      );
+      setError(true)
     };
 
     if (error == 0) {
@@ -399,6 +410,26 @@ export default function CheckFertilizerScreen() {
           </View>
         </View>
 
+        <Modal isVisible={isAgeError}>
+          <View style={styles.modalContent}>
+            <AntDesign name="warning" size={50} color="red" />
+            <Text style={styles.modalText}> Please enter a valid value for age of the tree </Text>
+            <TouchableOpacity style={styles.okButton} onPress={() => setAgeError(false)}>
+              <Text style={{ fontSize: 14, fontWeight: 'bold', padding: 5, color: 'white', textAlign: 'center' }}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+
+        <Modal isVisible={isError}>
+          <View style={styles.modalContent}>
+            <AntDesign name="warning" size={50} color="red" />
+            <Text style={styles.modalText}> Please select a growth stage </Text>
+            <TouchableOpacity style={styles.okButton} onPress={() => setError(false)}>
+              <Text style={{ fontSize: 14, fontWeight: 'bold', padding: 5, color: 'white', textAlign: 'center' }}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+
 
         <Modal isVisible={isModalVisible} style={styles.blModal}>
           <ScrollView showsVerticalScrollIndicator={false}>
@@ -465,6 +496,7 @@ export default function CheckFertilizerScreen() {
         </TouchableOpacity>
 
       </ScrollView>
+      <Toast ref={(ref) => Toast.setRef(ref)} />
     </View >
   );
 }
@@ -693,5 +725,41 @@ const styles = StyleSheet.create({
     marginTop: -15,
     marginLeft: 10,
     marginRight: -40,
+  },
+  modalContent: {
+    backgroundColor: '#ffffff',
+    padding: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    borderColor: '#899186',
+    shadowOffset: {
+      width: 0.8,
+      height: 1,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 1.21,
+    elevation: 2
+  },
+  modalText: {
+    fontSize: 14,
+    fontStyle: 'italic',
+    padding: 5,
+    color: '#000000',
+    textAlign: 'center',
+    marginTop: 25,
+    marginBottom: -20
+  },
+  okButton: {
+    backgroundColor: '#fdc50b',
+    padding: 10,
+    width: 80,
+    height: 50,
+    textAlign: 'center',
+    color: '#144100',
+    borderRadius: 25,
+    marginTop: 50,
+    alignSelf: 'center',
+    marginBottom: 20,
   },
 });

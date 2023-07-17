@@ -13,9 +13,9 @@ import {
 } from 'react-native';
 import Header from '../../components/Header';
 import { Dropdown } from 'react-native-element-dropdown';
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { useNavigation } from "@react-navigation/native";
-import { Feather } from '@expo/vector-icons';
+import { Feather,AntDesign } from '@expo/vector-icons';
 import BluetoothSerial from 'react-native-bluetooth-serial-2';
 import monitor from '../../../assets/monitor.jpg';
 import Modal from 'react-native-modal';
@@ -109,6 +109,7 @@ export default function CheckFertilizerScreen() {
   const [isModalVisible, setModalVisible] = useState(false);
   const [devices, setDevices] = useState([]);
   const [selectedDeviceAddress, setSelectedDeviceAddress] = useState('');
+  const [isError, setError] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -120,6 +121,7 @@ export default function CheckFertilizerScreen() {
       if (connected == false) {
         setModalVisible(true);
       }
+      
 
       if (!granted || !granted2) {
         const permission = await requestPermission();
@@ -226,7 +228,7 @@ export default function CheckFertilizerScreen() {
 
 
   // Set the interval to periodically call the turnOnBluetooth function
-  setInterval(turnOnBluetooth, 10000);
+  setInterval(turnOnBluetooth, 1000);
 
   const discoverBluetoothDevices = async () => {
     try {
@@ -289,44 +291,39 @@ export default function CheckFertilizerScreen() {
     error = 0;
     if (stage == null) {
       error = 1;
-      Alert.alert(
-        'Error',
-        'Please select a growth stage',
-        [{ text: 'OK' }],
-        { cancelable: false }
-      );
+      setError(true);
     };
 
     if (error == 0) {
-      try{
-      const nvalue = parseInt(nitrogen.replace('mg/kg', ''));
-      const pvalue = parseInt(phosporus.replace('mg/kg', ''));
-      const kvalue = parseInt(potassium.replace('mg/kg', ''));
+      try {
+        const nvalue = parseInt(nitrogen.replace('mg/kg', ''));
+        const pvalue = parseInt(phosporus.replace('mg/kg', ''));
+        const kvalue = parseInt(potassium.replace('mg/kg', ''));
 
-      const data = {
-        //age: (years * 12 + months),
-        stage: stage,
-        nitrogen: nvalue,
-        phosporus: pvalue,
-        potassium: kvalue
-      };
-      console.log(data);
-      navigation.navigate('FertilizerSuggestionScreen', { data: data });
-    }catch(error){
-      Alert.alert(
-        'Error',
-        'Please make sure the sensor is connected and turned on.',
-        [{ text: 'OK' }],
-        { cancelable: false }
-      );
+        const data = {
+          //age: (years * 12 + months),
+          stage: stage,
+          nitrogen: nvalue,
+          phosporus: pvalue,
+          potassium: kvalue
+        };
+        console.log(data);
+        navigation.navigate('FertilizerSuggestionScreen', { data: data });
+      } catch (error) {
+        Alert.alert(
+          'Error',
+          'Please make sure the sensor is connected and turned on.',
+          [{ text: 'OK' }],
+          { cancelable: false }
+        );
+      }
+
     }
-
-  }
   };
 
-  
+
   return (
-    <View style={{ backgroundColor: '#fdfafa' ,height:'100%'}}>
+    <View style={{ backgroundColor: '#fdfafa', height: '100%' }}>
 
       <View style={styles.topic}>
         <TouchableOpacity onPress={() => navigation.navigate('PreviousRecordsScreen')}>
@@ -337,7 +334,7 @@ export default function CheckFertilizerScreen() {
         <Header />
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}  style={styles.container}>
+      <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
         <View style={styles.imageContainer}>
           <Image
             source={monitor}
@@ -347,8 +344,19 @@ export default function CheckFertilizerScreen() {
           <Text style={{ fontSize: 24, fontFamily: 'Roboto', fontWeight: 'bold', paddingTop: 2, textAlign: 'right', paddingRight: 13, marginLeft: 4 }}>Monitor the              Nutrient Level</Text>
         </View>
 
-          <Modal isVisible={isModalVisible} style={styles.blModal}>
-           <ScrollView showsVerticalScrollIndicator={false}>
+        <Modal isVisible={isError}>
+          <View style={styles.modalContent}>
+            <AntDesign name="warning" size={50} color="red" />
+            <Text style={styles.modalText}> Please select a growth stage </Text>
+            <TouchableOpacity style={styles.okButton} onPress={() => setError(false)}>
+              <Text style={{ fontSize: 14, fontWeight: 'bold', padding: 5, color: 'white', textAlign: 'center' }}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+
+
+        <Modal isVisible={isModalVisible} style={styles.blModal}>
+          <ScrollView showsVerticalScrollIndicator={false}>
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
               <TouchableOpacity style={styles.blButton} onPress={discoverBluetoothDevices} >
                 <Text style={styles.blButtonText}>Discover Devices</Text>
@@ -361,45 +369,45 @@ export default function CheckFertilizerScreen() {
                 </TouchableOpacity>
               ))}
             </View>
-            <TouchableOpacity style={{ backgroundColor:'grey',width:70,height:30,borderRadius:10,marginTop:190,alignItems:'center',marginLeft:80 }}  onPress={() => navigation.navigate('PreviousRecordsScreen')} >
-                <Text style={{ fontSize:12,fontWeight:'bold',color:'white',textAlign:'center',paddingTop:5 }}>Go Back</Text>
-              </TouchableOpacity>
-            </ScrollView>
-          </Modal>
-        
-          <Text style={{
-          fontSize: 14,  marginLeft: 10, marginBottom: 0,fontWeight:'bold',
+            <TouchableOpacity style={{ backgroundColor: 'grey', width: 70, height: 30, borderRadius: 10, marginTop: 190, alignItems: 'center', marginLeft: 80 }} onPress={() => navigation.navigate('PreviousRecordsScreen')} >
+              <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'white', textAlign: 'center', paddingTop: 5 }}>Go Back</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </Modal>
+
+        <Text style={{
+          fontSize: 14, marginLeft: 10, marginBottom: 0, fontWeight: 'bold',
           marginTop: 10, textAlign: 'left'
         }}>Previous Nutrient Status</Text>
         <View style={styles.inputmultiline}>
 
-        <View style={{ flexDirection: 'row', marginTop: 5 }}>
-          <Text style={{ fontSize: 10,  marginTop: 0, marginLeft: 20 }}> Date : 22/04/2023         </Text>
-          <Text style={{ fontSize: 10,  marginTop: 0, marginLeft: 20 }}> Time: 2.30 p.m</Text>
-        </View>
+          <View style={{ flexDirection: 'row', marginTop: 5 }}>
+            <Text style={{ fontSize: 10, marginTop: 0, marginLeft: 20 }}> Date : 22/04/2023         </Text>
+            <Text style={{ fontSize: 10, marginTop: 0, marginLeft: 20 }}> Time: 2.30 p.m</Text>
+          </View>
 
-        <View style={{ flexDirection: 'row', marginTop: 10 }}>
-          <Text style={{ fontSize: 10,  marginTop: 0, marginLeft: 20 }}> Nitrogen          </Text>
-          <Text style={{ fontSize: 10,  marginTop: 0, marginLeft: 20 }}> 34 mg/kg</Text>
-        </View>
+          <View style={{ flexDirection: 'row', marginTop: 10 }}>
+            <Text style={{ fontSize: 10, marginTop: 0, marginLeft: 20 }}> Nitrogen          </Text>
+            <Text style={{ fontSize: 10, marginTop: 0, marginLeft: 20 }}> 34 mg/kg</Text>
+          </View>
 
-        <View style={{ flexDirection: 'row', marginTop: 5 }}>
-          <Text style={{ fontSize: 10,  marginTop: 0, marginLeft: 20 }}> Phosphorous  </Text>
-          <Text style={{ fontSize: 10,  marginTop: 0, marginLeft: 20 }}> 34 mg/kg</Text>
-        </View>
+          <View style={{ flexDirection: 'row', marginTop: 5 }}>
+            <Text style={{ fontSize: 10, marginTop: 0, marginLeft: 20 }}> Phosphorous  </Text>
+            <Text style={{ fontSize: 10, marginTop: 0, marginLeft: 20 }}> 34 mg/kg</Text>
+          </View>
 
-        <View style={{ flexDirection: 'row', marginTop: 5 }}>
-          <Text style={{ fontSize: 10,  marginTop: 0, marginLeft: 20 }}> Potassium       </Text>
-          <Text style={{ fontSize: 10,  marginTop: 0, marginLeft: 20 }}> 34 mg/kg</Text>
-        </View>
+          <View style={{ flexDirection: 'row', marginTop: 5 }}>
+            <Text style={{ fontSize: 10, marginTop: 0, marginLeft: 20 }}> Potassium       </Text>
+            <Text style={{ fontSize: 10, marginTop: 0, marginLeft: 20 }}> 34 mg/kg</Text>
+          </View>
 
-        <View style={{ flexDirection: 'row', marginTop: 15 }}>
-          <Text style={{ fontSize: 12,fontWeight:'bold',  marginTop: 0, marginLeft: 20 }}> Fertilizer 160g Added</Text>
-        </View>
+          <View style={{ flexDirection: 'row', marginTop: 15 }}>
+            <Text style={{ fontSize: 12, fontWeight: 'bold', marginTop: 0, marginLeft: 20 }}> Fertilizer 160g Added</Text>
+          </View>
         </View>
 
         <Text style={{
-          fontSize: 14, marginLeft: 10, marginBottom: -10,fontWeight:'bold',
+          fontSize: 14, marginLeft: 10, marginBottom: -10, fontWeight: 'bold',
           marginTop: 10, textAlign: 'left'
         }}>Select current growth stage of the tree</Text>
 
@@ -420,7 +428,7 @@ export default function CheckFertilizerScreen() {
           renderItem={renderItem} />
 
         <Text style={{
-          fontSize: 14,  marginLeft: 15, marginBottom: -10,fontWeight:'bold',
+          fontSize: 14, marginLeft: 15, marginBottom: -10, fontWeight: 'bold',
           marginTop: 10, textAlign: 'left'
         }}>Current Nutrient Status</Text>
 
@@ -443,7 +451,7 @@ export default function CheckFertilizerScreen() {
           <Text style={styles.btntext}>Check Now</Text>
         </TouchableOpacity>
 
-    </ScrollView>
+      </ScrollView>
     </View >
   );
 }
@@ -647,5 +655,41 @@ const styles = StyleSheet.create({
     marginLeft: 30,
     marginRight: -50,
     borderRadius: 50,
+  },
+  modalContent: {
+    backgroundColor: '#ffffff',
+    padding: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    borderColor: '#899186',
+    shadowOffset: {
+      width: 0.8,
+      height: 1,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 1.21,
+    elevation: 2
+  },
+  modalText: {
+    fontSize: 14,
+    fontStyle: 'italic',
+    padding: 5,
+    color: '#000000',
+    textAlign: 'center',
+    marginTop: 25,
+    marginBottom: -20
+  },
+  okButton: {
+    backgroundColor: '#fdc50b',
+    padding: 10,
+    width: 80,
+    height: 50,
+    textAlign: 'center',
+    color: '#144100',
+    borderRadius: 25,
+    marginTop: 50,
+    alignSelf: 'center',
+    marginBottom: 20,
   },
 });

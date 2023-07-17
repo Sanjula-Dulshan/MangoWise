@@ -5,13 +5,11 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  Alert,
   Platform,
   PermissionsAndroid,
   Image
 } from 'react-native';
 import Header from '../../components/Header';
-import { useForm } from "react-hook-form";
 import { useNavigation } from "@react-navigation/native";
 import { Feather, AntDesign } from '@expo/vector-icons';
 import BluetoothSerial from 'react-native-bluetooth-serial-2';
@@ -99,11 +97,9 @@ const requestPermission2 = async () => {
 export default function FertilizationHomeScreen() {
 
   const navigation = useNavigation();
-  let error = 0;
   const [permissionGranted, setPermissionGranted] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const [isError, setError] = useState(false);
-  const [isBluetoothEnabled, setBluetoothEnabled] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -218,6 +214,7 @@ export default function FertilizationHomeScreen() {
 
       <Modal isVisible={isError}>
         <View style={styles.modalContent}>
+          <AntDesign name="warning" size={50} color="red" />
           <Text style={styles.modalText}>Bluetooth is disabled. Please enable Bluetooth to monitor nutrient levels.</Text>
           <TouchableOpacity style={styles.okButton} onPress={() => setError(false)}>
             <Text style={{ fontSize: 14, fontWeight: 'bold', padding: 5, color: 'white', textAlign: 'center' }}>OK</Text>
@@ -383,6 +380,30 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     marginRight: 5,
     marginBottom: 15,
+  },
+  modalContent: {
+    backgroundColor: '#ffffff',
+    padding: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    borderColor: '#899186',
+    shadowOffset: {
+      width: 0.8,
+      height: 1,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 1.21,
+    elevation: 2
+  },
+  modalText: {
+    fontSize: 14,
+    fontStyle: 'italic',
+    padding: 5,
+    color: '#000000',
+    textAlign: 'center',
+    marginTop:25,
+    marginBottom:-20
   },
 
 });
