@@ -9,7 +9,8 @@ import {
   Alert,
   Platform,
   PermissionsAndroid,
-  Image
+  Image,
+  BackHandler
 } from 'react-native';
 import Header from '../../components/Header';
 import { Dropdown } from 'react-native-element-dropdown';
@@ -134,6 +135,7 @@ export default function CheckFertilizerScreen() {
       } else {
         setPermissionGranted(true);
       }
+
     })();
   }, []);
 
@@ -207,10 +209,20 @@ export default function CheckFertilizerScreen() {
         }
 
       } catch (error) {
-        console.log('Error Reading Data', error);
+        Alert.alert(
+          'Error',
+          'Can not read data from the sensor. Please make sure the sensor is connected and turned on.',
+          [{ text: 'OK' }],
+          { cancelable: false }
+        );
       }
     } else {
-      console.log('No Data');
+      Alert.alert(
+        'Error',
+        'Can not read data from the sensor. Please make sure the sensor is connected and turned on.',
+        [{ text: 'OK' }],
+        { cancelable: false }
+      );
     }
   };
 
@@ -222,21 +234,33 @@ export default function CheckFertilizerScreen() {
       const discoveredDevices = await BluetoothSerial.list();
       setDevices(discoveredDevices);
     } catch (error) {
-      console.error('Error discovering devices:', error);
+      Alert.alert(
+        'Error',
+        'Can not find a device.Please check the sensor device is turend on and connected to the phone.',
+        [{ text: 'OK' }],
+        { cancelable: false }
+      );
     }
   };
 
   const handleDeviceSelection = async (address) => {
     setSelectedDeviceAddress(address);
+    try {
+      await BluetoothSerial.connect(address);
 
-    await BluetoothSerial.connect(address);
+      const connected = await BluetoothSerial.isConnected();
 
-    const connected = await BluetoothSerial.isConnected();
-
-    if (connected == true) {
-      setModalVisible(false);
+      if (connected == true) {
+        setModalVisible(false);
+      }
+    } catch (error) {
+      Alert.alert(
+        'Error',
+        'Can not connect to the device.Please check and try again.',
+        [{ text: 'OK' }],
+        { cancelable: false }
+      );
     }
-    console.log('Connected device address:', address);
   };
 
 
@@ -284,6 +308,7 @@ export default function CheckFertilizerScreen() {
     };
 
     if (error == 0) {
+      try{
       const nvalue = parseInt(nitrogen.replace('mg/kg', ''));
       const pvalue = parseInt(phosporus.replace('mg/kg', ''));
       const kvalue = parseInt(potassium.replace('mg/kg', ''));
@@ -297,7 +322,16 @@ export default function CheckFertilizerScreen() {
       };
       console.log(data);
       navigation.navigate('FertilizerSuggestionScreen', { data: data });
-    };
+    }
+    catch(error){
+      Alert.alert(
+        'Error',
+        'Please make sure the sensor is connected and turned on.',
+        [{ text: 'OK' }],
+        { cancelable: false }
+      );
+    }
+  }
   };
 
   const handleMonthChange = (text) => {
@@ -319,7 +353,7 @@ export default function CheckFertilizerScreen() {
   return (
     <View style={{ backgroundColor: '#fdfafa', height: '100%' }}>
       <View style={styles.topic}>
-        <TouchableOpacity onPress={() => navigation.navigate('FertilizerSuggestionScreen')}>
+        <TouchableOpacity onPress={() => navigation.navigate('FertilizationHomeScreen')}>
           <View style={styles.backButton}>
             <Feather name="arrow-left" size={40} color="#000000" />
           </View>
@@ -337,11 +371,11 @@ export default function CheckFertilizerScreen() {
           <Text style={{ fontSize: 24, fontFamily: 'Roboto', fontWeight: 'bold', paddingTop: 2, textAlign: 'right', paddingRight: 13, marginLeft: 4 }}>Check Suitable     Fertilizer</Text>
         </View>
 
-        <Text style={{ fontSize: 12, fontWeight: 'bold', marginLeft: 10, marginBottom:10, textAlign: 'left' }}>Record ID: 001 </Text>
-        <Text style={{ fontSize: 10, fontStyle:'italic', marginLeft: 10, marginBottom: 8,marginTop:-10, textAlign: 'left',color:'red' }}>*Please note this id for use in nutrition monitor stage </Text>
-       
+        <Text style={{ fontSize: 12, fontWeight: 'bold', marginLeft: 10, marginBottom: 10, textAlign: 'left' }}>Record ID: 001 </Text>
+        <Text style={{ fontSize: 10, fontStyle: 'italic', marginLeft: 10, marginBottom: 8, marginTop: -10, textAlign: 'left', color: 'red' }}>*Please note this id for use in nutrition monitor stage </Text>
+
         <Text style={{ fontSize: 14, fontWeight: 'bold', marginLeft: 10, marginBottom: -18, marginTop: 10, textAlign: 'left' }}>Enter estimated age of the mango tree</Text>
-       
+
         <View style={styles.inputContainer}>
           <View style={{ flexDirection: 'row', marginTop: 30 }}>
             <TextInput style={styles.input}
@@ -379,6 +413,11 @@ export default function CheckFertilizerScreen() {
                   </Text>
                 </TouchableOpacity>
               ))}
+            </View>
+            <View>
+              <TouchableOpacity style={{ backgroundColor: 'grey', width: 70, height: 30, borderRadius: 10, marginTop: 190, alignItems: 'center', marginLeft: 80 }} onPress={() => navigation.navigate('FertilizationHomeScreen')} >
+                <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'white', textAlign: 'center', paddingTop: 5 }}>Go Back</Text>
+              </TouchableOpacity>
             </View>
           </ScrollView>
         </Modal>

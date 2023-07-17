@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import Header from '../../components/Header';
 import { Dropdown } from 'react-native-element-dropdown';
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useNavigation } from "@react-navigation/native";
 import { Feather } from '@expo/vector-icons';
 import BluetoothSerial from 'react-native-bluetooth-serial-2';
@@ -207,12 +207,23 @@ export default function CheckFertilizerScreen() {
         }
 
       } catch (error) {
-        console.log('Error Reading Data', error);
+        Alert.alert(
+          'Error',
+          'Can not read data from the sensor. Please make sure the sensor is connected and turned on.',
+          [{ text: 'OK' }],
+          { cancelable: false }
+        );
       }
     } else {
-      console.log('No Data');
+      Alert.alert(
+        'Error',
+        'Can not read data from the sensor. Please make sure the sensor is connected and turned on.',
+        [{ text: 'OK' }],
+        { cancelable: false }
+      );
     }
   };
+
 
   // Set the interval to periodically call the turnOnBluetooth function
   setInterval(turnOnBluetooth, 10000);
@@ -222,21 +233,33 @@ export default function CheckFertilizerScreen() {
       const discoveredDevices = await BluetoothSerial.list();
       setDevices(discoveredDevices);
     } catch (error) {
-      console.error('Error discovering devices:', error);
+      Alert.alert(
+        'Error',
+        'Can not find a device.Please check the sensor device is turend on and connected to the phone.',
+        [{ text: 'OK' }],
+        { cancelable: false }
+      );
     }
   };
 
   const handleDeviceSelection = async (address) => {
     setSelectedDeviceAddress(address);
+    try {
+      await BluetoothSerial.connect(address);
 
-    await BluetoothSerial.connect(address);
+      const connected = await BluetoothSerial.isConnected();
 
-    const connected = await BluetoothSerial.isConnected();
-
-    if (connected == true) {
-      setModalVisible(false);
+      if (connected == true) {
+        setModalVisible(false);
+      }
+    } catch (error) {
+      Alert.alert(
+        'Error',
+        'Can not connect to the device.Please check and try again.',
+        [{ text: 'OK' }],
+        { cancelable: false }
+      );
     }
-    console.log('Connected device address:', address);
   };
 
 
@@ -275,6 +298,7 @@ export default function CheckFertilizerScreen() {
     };
 
     if (error == 0) {
+      try{
       const nvalue = parseInt(nitrogen.replace('mg/kg', ''));
       const pvalue = parseInt(phosporus.replace('mg/kg', ''));
       const kvalue = parseInt(potassium.replace('mg/kg', ''));
@@ -288,7 +312,16 @@ export default function CheckFertilizerScreen() {
       };
       console.log(data);
       navigation.navigate('FertilizerSuggestionScreen', { data: data });
-    };
+    }catch(error){
+      Alert.alert(
+        'Error',
+        'Please make sure the sensor is connected and turned on.',
+        [{ text: 'OK' }],
+        { cancelable: false }
+      );
+    }
+
+  }
   };
 
   
@@ -328,6 +361,9 @@ export default function CheckFertilizerScreen() {
                 </TouchableOpacity>
               ))}
             </View>
+            <TouchableOpacity style={{ backgroundColor:'grey',width:70,height:30,borderRadius:10,marginTop:190,alignItems:'center',marginLeft:80 }}  onPress={() => navigation.navigate('PreviousRecordsScreen')} >
+                <Text style={{ fontSize:12,fontWeight:'bold',color:'white',textAlign:'center',paddingTop:5 }}>Go Back</Text>
+              </TouchableOpacity>
             </ScrollView>
           </Modal>
         

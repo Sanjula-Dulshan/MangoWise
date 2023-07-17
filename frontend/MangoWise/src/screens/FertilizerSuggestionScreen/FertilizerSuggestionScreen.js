@@ -67,19 +67,19 @@ export default function FertilizerSuggestionScreen() {
 
         <Text style={{ fontSize: 14, fontWeight: 'bold', marginLeft: 15, marginBottom: -18, marginTop: 30, textAlign: 'left' }}>Suggested Fertilizer</Text>
 
-          <View style={styles.inputmultiline}>
-              <View style={{ flexDirection: 'column', marginTop: 5 }}>
-                <Text style={{ fontSize: 12,  marginTop: 0,fontWeight: 'bold', marginLeft: 20 }}>Add Muriash of Potash (MOP) </Text>
-                <Text style={{ fontSize: 12,  marginTop: 0,fontWeight: 'bold', marginLeft: 20 }}>150g per tree</Text>
-              </View>
+        <View style={styles.inputmultiline}>
+          <View style={{ flexDirection: 'column', marginTop: 5 }}>
+            <Text style={{ fontSize: 12, marginTop: 0, fontWeight: 'bold', marginLeft: 20 }}>Add Muriash of Potash (MOP) </Text>
+            <Text style={{ fontSize: 12, marginTop: 0, fontWeight: 'bold', marginLeft: 20 }}>150g per tree</Text>
           </View>
+        </View>
 
-          <Text style={{ fontSize: 14, fontWeight: 'bold', marginLeft: 15, marginBottom: -18, marginTop: 25, textAlign: 'left' }}>General Advices</Text>
-          <View style={styles.inputmultiline}>
-              <View style={{ flexDirection: 'column', marginTop: 5 }}>
-                <Text style={{ fontSize: 12,  marginTop: 0, marginLeft: 20 }}>Advices Here.... </Text>
-              </View>
+        <Text style={{ fontSize: 14, fontWeight: 'bold', marginLeft: 15, marginBottom: -18, marginTop: 25, textAlign: 'left' }}>General Advices</Text>
+        <View style={styles.inputmultiline}>
+          <View style={{ flexDirection: 'column', marginTop: 5 }}>
+            <Text style={{ fontSize: 12, marginTop: 0, marginLeft: 20 }}>Advices Here.... </Text>
           </View>
+        </View>
 
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('PreviousRecordsScreen')}>
           <Text style={styles.btntext}>See Previous Records</Text>
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#fdc50b',
     paddingBottom: 0,
-    paddingTop:3,
+    paddingTop: 3,
     width: 240,
     height: 55,
     borderRadius: 20,
