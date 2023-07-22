@@ -6,7 +6,7 @@ import { saveSuitableQuantity,findRecordByConditions,callModel } from '../../con
 
 router.post("/add", saveSuitableQuantity);
 
-router.get("/get/:age/:growthStage", findRecordByConditions);
+router.post("/get", findRecordByConditions);
 
 router.post("/fer", callModel);
 

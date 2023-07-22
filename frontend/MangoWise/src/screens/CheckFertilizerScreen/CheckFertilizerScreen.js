@@ -333,31 +333,27 @@ export default function CheckFertilizerScreen() {
           potassium: kvalue
         };
         //send data to backend
+        try{
+        const received =await axios.post('http://192.168.1.246:8070/fertilizer/get',
+          {  
+              "nvalue":nvalue,
+              "pvalue":pvalue,
+              "kvalue":kvalue,
+              "record_id":1,
+              "age":10,
+              "growthStage":"Before Flowering"
+
+          })
+          .then(navigation.navigate('FertilizerSuggestionScreen'))
+          console.log(received.data.record_id);
+        }
+        catch(error) {
+          console.error(error);
+        }
         
-        const response = await axios.get(`http://192.168.1.246:8070/fertilizer/get/${age}/Before Flowering`)
-        // .then(async response => {
+       
 
-        // const sendData =  await axios.post('http://192.168.1.246:5000/fertilizer', {
-        //   "N": 26,
-        //   "P": 86,
-        //   "K": 160,
-        //   "NAF": 26,
-        //   "PAF": 86,
-        //   "KAF": 220
-        // })
-        // console.log(sendData);
-
-
-          .catch(error => {
-            // Handle the error
-            console.error(error);
-          });
-        console.log(sendData.data);
-        const response2=response.data;
-        const response3=parseInt(response2.N_lowerLimit);
-        console.log(response3);
-
-        navigation.navigate('FertilizerSuggestionScreen', { data: data });
+        
       }
       catch (error) {
         Alert.alert(
