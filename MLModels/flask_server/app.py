@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import pickle
 import numpy as np
 
 # Set up Flask app
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Load the models
 
@@ -39,10 +41,10 @@ def fertilizers():
 
     # Return the predicted fertilizer name
     predicted_fertilizer = predictions[0]
-    return jsonify({'Predicted Fertilizer': predicted_fertilizer})
+    return jsonify ({'Predicted Fertilizer': predicted_fertilizer})
+
 
 # Define Route Fertilizer_Quantity_Predictor Model
-
 
 @app.route('/quantity', methods=['POST'])
 def fQuantity():

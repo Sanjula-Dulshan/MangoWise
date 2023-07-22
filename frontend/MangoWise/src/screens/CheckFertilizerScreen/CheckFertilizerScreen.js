@@ -9,18 +9,19 @@ import {
   Alert,
   Platform,
   PermissionsAndroid,
-  Image,
-  BackHandler
+  Image
 } from 'react-native';
 import Header from '../../components/Header';
 import { Dropdown } from 'react-native-element-dropdown';
 import { useForm } from "react-hook-form";
 import { useNavigation } from "@react-navigation/native";
-import { Feather,AntDesign } from '@expo/vector-icons';
+import { Feather, AntDesign } from '@expo/vector-icons';
 import BluetoothSerial from 'react-native-bluetooth-serial-2';
 import sensorimage from '../../../assets/NPKSensor.png'
 import Modal from 'react-native-modal';
 import Toast from 'react-native-toast-message';
+import axios from 'axios';
+
 
 import {
   PERMISSIONS,
@@ -307,7 +308,7 @@ export default function CheckFertilizerScreen() {
   };
 
   //Send data to backend
-  const onSubmit = () => {
+  const onSubmit = async () => {
     error = 0;
     if (years == 0 && months == 0) {
       error = 1;
@@ -319,30 +320,54 @@ export default function CheckFertilizerScreen() {
     };
 
     if (error == 0) {
-      try{
-      const nvalue = parseInt(nitrogen.replace('mg/kg', ''));
-      const pvalue = parseInt(phosporus.replace('mg/kg', ''));
-      const kvalue = parseInt(potassium.replace('mg/kg', ''));
+      try {
+        const nvalue = parseInt(nitrogen.replace('mg/kg', ''));
+        const pvalue = parseInt(phosporus.replace('mg/kg', ''));
+        const kvalue = parseInt(potassium.replace('mg/kg', ''));
 
-      const data = {
-        age: (years * 12 + months),
-        stage: stage,
-        nitrogen: nvalue,
-        phosporus: pvalue,
-        potassium: kvalue
-      };
-      console.log(data);
-      navigation.navigate('FertilizerSuggestionScreen', { data: data });
+        const data = {
+          age: (years * 12 + months),
+          stage: stage,
+          nitrogen: nvalue,
+          phosporus: pvalue,
+          potassium: kvalue
+        };
+        //send data to backend
+        
+        const response = await axios.get(`http://192.168.1.246:8070/fertilizer/get/${age}/Before Flowering`)
+        // .then(async response => {
+
+        // const sendData =  await axios.post('http://192.168.1.246:5000/fertilizer', {
+        //   "N": 26,
+        //   "P": 86,
+        //   "K": 160,
+        //   "NAF": 26,
+        //   "PAF": 86,
+        //   "KAF": 220
+        // })
+        // console.log(sendData);
+
+
+          .catch(error => {
+            // Handle the error
+            console.error(error);
+          });
+        console.log(sendData.data);
+        const response2=response.data;
+        const response3=parseInt(response2.N_lowerLimit);
+        console.log(response3);
+
+        navigation.navigate('FertilizerSuggestionScreen', { data: data });
+      }
+      catch (error) {
+        Alert.alert(
+          'Error',
+          'Please make sure the sensor is connected and turned on.',
+          [{ text: 'OK' }],
+          { cancelable: false }
+        );
+      }
     }
-    catch(error){
-      Alert.alert(
-        'Error',
-        'Please make sure the sensor is connected and turned on.',
-        [{ text: 'OK' }],
-        { cancelable: false }
-      );
-    }
-  }
   };
 
   const handleMonthChange = (text) => {
