@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
-  TextInput,
   View,
   Text,
   ScrollView,
@@ -14,11 +13,12 @@ import {
 import Header from '../../components/Header';
 import { Dropdown } from 'react-native-element-dropdown';
 import { set, useForm } from "react-hook-form";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation,useFocusEffect } from "@react-navigation/native";
 import { Feather,AntDesign } from '@expo/vector-icons';
 import BluetoothSerial from 'react-native-bluetooth-serial-2';
 import monitor from '../../../assets/monitor.jpg';
 import Modal from 'react-native-modal';
+import axios from 'axios';
 
 import {
   PERMISSIONS,
@@ -96,9 +96,11 @@ const requestPermission2 = async () => {
 };
 
 
-export default function CheckFertilizerScreen() {
+export default function CheckFertilizerScreen({ route }) {
+
+  const { id } = route.params;
+
   const navigation = useNavigation();
-  const [years, setYears] = useState('');
   const [months, setMonths] = useState('');
   const [stage, setStage] = useState(null);
   const [nitrogen, setNitrogen] = useState(0);
@@ -110,6 +112,14 @@ export default function CheckFertilizerScreen() {
   const [devices, setDevices] = useState([]);
   const [selectedDeviceAddress, setSelectedDeviceAddress] = useState('');
   const [isError, setError] = useState(false);
+  const [date,setDate]=useState('');
+  const [time,setTime]=useState('');
+  const [record_id,setRecordId]=useState(0);
+  const [nvalue,setnvalue]=useState(0);
+  const [pvalue,setpvalue]=useState(0);
+  const [kvalue,setkvalue]=useState(0);
+  const[fertilizer,setfertilizer]=useState('');
+  const[quantity,setquantity]=useState(0);
 
   useEffect(() => {
     (async () => {
@@ -138,6 +148,33 @@ export default function CheckFertilizerScreen() {
       }
     })();
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      (async function getRecord() {
+        try {
+          const record = await axios.get(`http://192.168.1.246:8070/records/get/${id}`);
+          if (record) {
+            setDate(record.data.savedDate);
+            setTime(record.data.savedTime);
+            setRecordId(record.data.record_id);
+            setnvalue(record.data.N_level);
+            setpvalue(record.data.P_level);
+            setkvalue(record.data.K_level);
+            setfertilizer(record.data.fertilizer);
+            setquantity(Math.ceil(record.data.quantity / 10) * 10);
+            
+          } else {
+            setDate('');
+            setTime('');
+            setRecordId(0);
+          }         
+        } catch (error) {
+          console.error(error);
+        }
+      })();
+    }, [])
+  );
 
   let previousValues = {
     nitrogenValue: '',
@@ -382,27 +419,27 @@ export default function CheckFertilizerScreen() {
         <View style={styles.inputmultiline}>
 
           <View style={{ flexDirection: 'row', marginTop: 5 }}>
-            <Text style={{ fontSize: 10, marginTop: 0, marginLeft: 20 }}> Date : 22/04/2023         </Text>
-            <Text style={{ fontSize: 10, marginTop: 0, marginLeft: 20 }}> Time: 2.30 p.m</Text>
+            <Text style={{ fontSize: 10, marginTop: 0, marginLeft: 20 }}> Date : {date}        </Text>
+            <Text style={{ fontSize: 10, marginTop: 0, marginLeft: 20 }}> Time: {time}</Text>
           </View>
 
           <View style={{ flexDirection: 'row', marginTop: 10 }}>
             <Text style={{ fontSize: 10, marginTop: 0, marginLeft: 20 }}> Nitrogen          </Text>
-            <Text style={{ fontSize: 10, marginTop: 0, marginLeft: 20 }}> 34 mg/kg</Text>
+            <Text style={{ fontSize: 10, marginTop: 0, marginLeft: 20 }}> {nvalue} mg/kg</Text>
           </View>
 
           <View style={{ flexDirection: 'row', marginTop: 5 }}>
             <Text style={{ fontSize: 10, marginTop: 0, marginLeft: 20 }}> Phosphorous  </Text>
-            <Text style={{ fontSize: 10, marginTop: 0, marginLeft: 20 }}> 34 mg/kg</Text>
+            <Text style={{ fontSize: 10, marginTop: 0, marginLeft: 20 }}> {pvalue} mg/kg</Text>
           </View>
 
           <View style={{ flexDirection: 'row', marginTop: 5 }}>
             <Text style={{ fontSize: 10, marginTop: 0, marginLeft: 20 }}> Potassium       </Text>
-            <Text style={{ fontSize: 10, marginTop: 0, marginLeft: 20 }}> 34 mg/kg</Text>
+            <Text style={{ fontSize: 10, marginTop: 0, marginLeft: 20 }}> {kvalue} mg/kg</Text>
           </View>
 
           <View style={{ flexDirection: 'row', marginTop: 15 }}>
-            <Text style={{ fontSize: 12, fontWeight: 'bold', marginTop: 0, marginLeft: 20 }}> Fertilizer 160g Added</Text>
+            <Text style={{ fontSize: 12, fontWeight: 'bold', marginTop: 0, marginLeft: 20 }}> {fertilizer}  {quantity}g  Added</Text>
           </View>
         </View>
 

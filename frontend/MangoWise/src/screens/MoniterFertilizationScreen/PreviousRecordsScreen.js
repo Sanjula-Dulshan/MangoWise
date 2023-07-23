@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useState } from 'react';
 import {
     StyleSheet,
     TextInput,
@@ -9,25 +9,38 @@ import {
     Alert
 } from 'react-native';
 import Header from '../../components/Header';
-import { useForm } from "react-hook-form";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation,useFocusEffect } from "@react-navigation/native";
 import { Feather, Ionicons } from '@expo/vector-icons';
+import axios from 'axios';
 
 
 export default function PreviousRecordsScreen() {
 
     const navigation = useNavigation();
     const [searchQuery, setSearchQuery] = useState('');
+    const [allRecords, setAllRecords] = useState([]);
+
+
+
     //Get data from backend
-    // useEffect(() => {
-    //   fetch(''
-    //     .then((response) => response.json())
-    //     .then((json) => {
-    //       setFertilizer(json);
-    //     })
-    //     .catch((error) => console.error(error))
-    //     .finally(() => setLoading(false)));
-    // }, []);
+    useFocusEffect(
+        React.useCallback(() => {
+          (async function id() {
+            try {
+              const record = await axios.get("http://192.168.1.246:8070/records/getall");
+              if (record) {
+                const records = record.data; 
+                setAllRecords(records);
+                
+              } else {
+              console.log("No Records")
+              }         
+            } catch (error) {
+              console.error(error);
+            }
+          })();
+        }, [])
+      );
 
     const handleSearch = () => {
         if (searchQuery === '') {
@@ -36,6 +49,7 @@ export default function PreviousRecordsScreen() {
             navigation.navigate('CheckFertilizerScreen');
         }
       };
+        
 
     return (
         <View style={{ backgroundColor: '#fdfafa', height: '90%' }}>
@@ -62,18 +76,27 @@ export default function PreviousRecordsScreen() {
                     </TouchableOpacity>
                 </View>
 
+            {allRecords.length === 0 ? (
                 <View style={styles.inputmultiline}>
-                    <View style={{ flexDirection: 'column', marginTop: 5 }}>
-                        <Text style={{ fontSize: 13, marginTop: 0, fontWeight: 'bold', marginLeft: 0 }}>Record ID : 001 </Text>
-                        <View style={{ flexDirection: 'row', marginTop: 3 }}>
-                            <Text style={{ fontSize: 12, marginTop: 0, marginLeft: 0 }}>Date : 23/04/2023</Text>
-                            <Text style={{ fontSize: 12, marginTop: 0, marginLeft: 50 }}>Time : 2.30p.m</Text>
-                        </View>
-                        <TouchableOpacity onPress={() => navigation.navigate('MoniterFertilizationScreen')}>
-                            <Text style={{ fontSize: 14, marginTop: 0, fontWeight: 'bold', marginTop: 15, color: '#fdc50b', fontStyle: 'italic', textDecorationLine: 'underline'  }}>View</Text>
-                        </TouchableOpacity>
-                    </View>
+                <Text style={{ fontSize: 13, marginTop: 0, fontWeight: 'bold', marginLeft: 0 }}>No Records Found </Text>
                 </View>
+            ) : (
+
+            allRecords.map((record) => (
+                <View key={record.record_id} style={styles.inputmultiline}>
+                    <View style={{ flexDirection: 'column', marginTop: 5 }}>
+                        <Text style={{ fontSize: 13, marginTop: 0, fontWeight: 'bold', marginLeft: 0 }}>Record ID : {record.record_id} </Text>
+                        <View style={{ flexDirection: 'row', marginTop: 3 }}>
+                            <Text style={{ fontSize: 12, marginTop: 0, marginLeft: 0 }}>Date : {record.savedDate}</Text>
+                            <Text style={{ fontSize: 12, marginTop: 0, marginLeft: 50 }}>Time : {record.savedTime}</Text>
+                        </View>
+                        <TouchableOpacity onPress={() => navigation.navigate('MoniterFertilizationScreen', { id: record.record_id })}>
+                            <Text style={{ fontSize: 14, marginTop: 0, fontWeight: 'bold', marginTop: 15, color: '#fdc50b', fontStyle: 'italic', textDecorationLine: 'underline'  }}>View</Text>
+                            </TouchableOpacity>
+                            </View>
+                        </View>
+                    ))
+                )}
             </ScrollView>
         </View>
     )
@@ -97,8 +120,8 @@ const styles = StyleSheet.create({
         elevation: 2,
     },
     inputmultiline: {
-        marginBottom: 15,
-        marginTop: 30,
+        marginBottom: 5,
+        marginTop: 10,
         width: '90%',
         marginLeft: 10,
         padding: 10,
@@ -147,6 +170,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginRight: 10,
     marginTop:10,
+    marginBottom:30,
     shadowOffset: {
       width: 0.5,
       height: 1,
@@ -159,6 +183,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: 'white',
     marginTop:10,
+    marginBottom:30,
     borderRadius: 8,
     shadowOffset: {
       width: 0.5,

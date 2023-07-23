@@ -27,6 +27,10 @@ const SaveRecordsSchema = new Schema({
         type: Number,
         required: [true,"Please enter the quantity"]
     },
+    age: {
+        type: Number,
+        required: [true,"Please enter the age"]
+    },
     savedDate: {
         type: String,
         required:true

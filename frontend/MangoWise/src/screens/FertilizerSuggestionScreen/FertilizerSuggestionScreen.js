@@ -11,41 +11,45 @@ import {
 } from 'react-native';
 import Header from '../../components/Header';
 import { useForm } from "react-hook-form";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation,useFocusEffect } from "@react-navigation/native";
 import { Feather } from '@expo/vector-icons';
 import FertilizerImg from '../../../assets/Fertilizer.jpg'
+import axios from 'axios';
 
 export default function FertilizerSuggestionScreen() {
   const navigation = useNavigation();
   const [fertilizer, setFertilizer] = useState('');
   const [quantity, setQuantity] = useState(0);
-  const [irrigation, setIrrigation] = useState('');
   let error = 0;
 
 
   const {
-    control,
-    handleSubmit,
     formState: { errors },
   } = useForm();
 
   //Get data from backend
-  // useEffect(() => {
-  //   fetch(''
-  //     .then((response) => response.json())
-  //     .then((json) => {
-  //       setFertilizer(json);
-  //     })
-  //     .catch((error) => console.error(error))
-  //     .finally(() => setLoading(false)));
-  // }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      (async function id() {
+        try {
+          const record = await axios.get("http://192.168.1.246:8070/records/get");
+          if (record) {
+            setFertilizer(record.data.fertilizer);
+            setQuantity(Math.ceil(record.data.quantity / 10) * 10);
+          } else {
+            setFertilizer('');
+            setQuantity(0);
+          }         
+        } catch (error) {
+          console.error(error);
+        }
+      })();
+    }, [])
+  );
 
-  const onSubmit = () => {
-    navigation.navigate('CheckFertilizerScreen');
-  };
 
   return (
-    <View style={{ backgroundColor: '#fdfafa', height: '80%' }}>
+    <View style={{ backgroundColor: '#fdfafa', height: '90%' }}>
       <View style={styles.topic}>
         <TouchableOpacity onPress={() => navigation.navigate('CheckFertilizerScreen')}>
           <View style={styles.backButton}>
@@ -65,19 +69,27 @@ export default function FertilizerSuggestionScreen() {
           <Text style={{ fontSize: 24, fontFamily: 'Roboto', fontWeight: 'bold', paddingTop: 2, textAlign: 'right', paddingRight: 13, marginLeft: 4 }}>See Suggested       Fertilizer</Text>
         </View>
 
-        <Text style={{ fontSize: 14, fontWeight: 'bold', marginLeft: 15, marginBottom: -18, marginTop: 30, textAlign: 'left' }}>Suggested Fertilizer</Text>
+        <Text style={{ fontSize: 16, fontWeight: 'bold', marginLeft: 15, marginBottom: -18, marginTop: 30, textAlign: 'left' }}>Suggested Fertilizer</Text>
 
         <View style={styles.inputmultiline}>
+        {quantity > 50 ? (
           <View style={{ flexDirection: 'column', marginTop: 5 }}>
-            <Text style={{ fontSize: 12, marginTop: 0, fontWeight: 'bold', marginLeft: 20 }}>Add Muriash of Potash (MOP) </Text>
-            <Text style={{ fontSize: 12, marginTop: 0, fontWeight: 'bold', marginLeft: 20 }}>150g per tree</Text>
+            <Text style={{ fontSize: 14, marginTop: 0, fontWeight: 'bold', marginLeft: 20,marginBottom:10  }}>Add {fertilizer} </Text>
+            <Text style={{ fontSize: 14, marginTop: 0, fontWeight: 'bold', marginLeft: 20, marginBottom:20 }}>{quantity}g per tree</Text>
           </View>
+          ) : (
+            <View style={{ flexDirection: 'column', marginTop: 5 }}>
+             <Text style={{ fontSize: 14, marginTop: 0, fontWeight: 'bold', marginLeft: 20,marginBottom:10  }}>No need to add fertilizer.</Text>
+            </View>
+          )}
         </View>
 
-        <Text style={{ fontSize: 14, fontWeight: 'bold', marginLeft: 15, marginBottom: -18, marginTop: 25, textAlign: 'left' }}>General Advices</Text>
+        <Text style={{ fontSize: 16, fontWeight: 'bold', marginLeft: 15, marginBottom: -18, marginTop: 35, textAlign: 'left' }}>General Advices</Text>
         <View style={styles.inputmultiline}>
           <View style={{ flexDirection: 'column', marginTop: 5 }}>
-            <Text style={{ fontSize: 12, marginTop: 0, marginLeft: 20 }}>Advices Here.... </Text>
+            <Text style={{ fontSize: 14, marginTop: 0, marginLeft: 20,marginBottom:0,marginRight: 35  }}>Fertilizers should applied 45 to </Text>
+            <Text style={{ fontSize: 14, marginTop: 0, marginLeft: 20,marginBottom:20,marginRight: 35  }}>90 cm away from the trunk. </Text>
+            <Text style={{ fontSize: 14, marginTop: 0, marginLeft: 20,marginBottom:20,marginRight: 35  }}>For young trees, fertilize once a month, for large trees three to four times a year.</Text>
           </View>
         </View>
 

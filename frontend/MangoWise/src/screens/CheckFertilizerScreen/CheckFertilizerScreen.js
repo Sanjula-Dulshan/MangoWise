@@ -14,7 +14,7 @@ import {
 import Header from '../../components/Header';
 import { Dropdown } from 'react-native-element-dropdown';
 import { useForm } from "react-hook-form";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { Feather, AntDesign } from '@expo/vector-icons';
 import BluetoothSerial from 'react-native-bluetooth-serial-2';
 import sensorimage from '../../../assets/NPKSensor.png'
@@ -114,6 +114,7 @@ export default function CheckFertilizerScreen() {
   const [selectedDeviceAddress, setSelectedDeviceAddress] = useState('');
   const [isError, setError] = useState(false);
   const [isAgeError, setAgeError] = useState(false);
+  const [record_id, setRecord_id] = useState(1);
 
   useEffect(() => {
     (async () => {
@@ -141,7 +142,28 @@ export default function CheckFertilizerScreen() {
       }
 
     })();
-  }, []);
+  }, [record_id]);
+
+
+  useFocusEffect(
+    React.useCallback(() => {
+      (async function id() {
+        try {
+          const record = await axios.get("http://192.168.1.246:8070/records/get");
+          if (record) {
+            const newRecord = record.data.record_id + 1;
+            setRecord_id(newRecord);
+          } else {
+            setRecord_id(1);
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      })();
+    }, [])
+  );
+
+
 
   let previousValues = {
     nitrogenValue: '',
@@ -259,7 +281,7 @@ export default function CheckFertilizerScreen() {
       type: 'info',
       text1: 'Connecting Please Wait!',
       position: 'bottom',
-      visibilityTime: 3000,
+      visibilityTime: 5000,
     });
     try {
       await BluetoothSerial.connect(address);
@@ -293,7 +315,6 @@ export default function CheckFertilizerScreen() {
 
   ];
   const {
-    control,
     handleSubmit,
     formState: { errors },
   } = useForm();
@@ -333,27 +354,32 @@ export default function CheckFertilizerScreen() {
           potassium: kvalue
         };
         //send data to backend
-        try{
-        const received =await axios.post('http://192.168.1.246:8070/fertilizer/get',
-          {  
-              "nvalue":nvalue,
-              "pvalue":pvalue,
-              "kvalue":kvalue,
-              "record_id":1,
-              "age":10,
-              "growthStage":"Before Flowering"
+        try {
+          Toast.show({
+            type: 'info',
+            text1: 'Calculating Fertilizer...Please wait!',
+            position: 'bottom',
+            visibilityTime: 2000,
+          });
+          await axios.post('http://192.168.1.246:8070/fertilizer/get',
+            {
+              "nvalue": nvalue,
+              "pvalue": pvalue,
+              "kvalue": kvalue,
+              "record_id": record_id,
+              "age": data.age,
+              "growthStage": stage
 
-          })
-          .then(navigation.navigate('FertilizerSuggestionScreen'))
-          console.log(received.data.record_id);
+            })
+            .then(
+              setTimeout(() => {
+                navigation.navigate('FertilizerSuggestionScreen');
+              }, 3000))
         }
-        catch(error) {
+        catch (error) {
           console.error(error);
         }
-        
-       
 
-        
       }
       catch (error) {
         Alert.alert(
@@ -403,7 +429,7 @@ export default function CheckFertilizerScreen() {
           <Text style={{ fontSize: 24, fontFamily: 'Roboto', fontWeight: 'bold', paddingTop: 2, textAlign: 'right', paddingRight: 13, marginLeft: 4 }}>Check Suitable     Fertilizer</Text>
         </View>
 
-        <Text style={{ fontSize: 12, fontWeight: 'bold', marginLeft: 10, marginBottom: 10, textAlign: 'left' }}>Record ID: 001 </Text>
+        <Text style={{ fontSize: 12, fontWeight: 'bold', marginLeft: 10, marginBottom: 10, textAlign: 'left' }}>Record ID: {record_id} </Text>
         <Text style={{ fontSize: 10, fontStyle: 'italic', marginLeft: 10, marginBottom: 8, marginTop: -10, textAlign: 'left', color: 'red' }}>*Please note this id for use in nutrition monitor stage </Text>
 
         <Text style={{ fontSize: 14, fontWeight: 'bold', marginLeft: 10, marginBottom: -18, marginTop: 10, textAlign: 'left' }}>Enter estimated age of the mango tree</Text>

@@ -110,6 +110,7 @@ export const findRecordByConditions = async (req, res) => {
                   record_id: record_id,
                   fertilizer: result,
                   quantity: result2,
+                  age:age,
                   savedDate: currentDate,
                   savedTime: currentTime
                 }
@@ -142,35 +143,3 @@ export const findRecordByConditions = async (req, res) => {
       }
     });
 };
-
-
-export const callModel = async (req, res) => {
-
-  let data = {
-    "N": 26,
-    "P": 86,
-    "K": 160,
-    "NAF": 26,
-    "PAF": 86,
-    "KAF": 220
-  }
-
-  let options = {
-    method: 'POST',
-    uri: 'http://127.0.0.1:5000/fertilizer',
-    body: data,
-    json: true
-  };
-
-  const sendrequest = await request(options)
-    .then(function (parsedBody) {
-      let result;
-      result = parsedBody['Predicted Fertilizer'];
-      console.log(result);
-      return res.status(200).json(result);
-
-    })
-    .catch(function (err) {
-      console.log(err);
-    });
-}
