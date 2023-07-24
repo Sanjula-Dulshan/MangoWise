@@ -206,7 +206,6 @@ export const monitorNutrition = async (req, res) => {
                 let result2;
                 result2 = parsedBody['Predicted Fertilizer Quantity'];
                 res.status(200).json({ result: result, result2: result2 });
-                console.log(result2);
               }).catch(function (err) {
                 console.log(err);
               });
