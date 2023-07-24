@@ -273,6 +273,12 @@ export default function CheckFertilizerScreen({ route }) {
   setInterval(turnOnBluetooth, 1000);
 
   const discoverBluetoothDevices = async () => {
+    Toast.show({
+      type: 'info',
+      text1: 'Searching for devices',
+      position: 'bottom',
+      visibilityTime: 1000,
+    });
     try {
       const discoveredDevices = await BluetoothSerial.list();
       setDevices(discoveredDevices);
@@ -288,6 +294,12 @@ export default function CheckFertilizerScreen({ route }) {
 
   const handleDeviceSelection = async (address) => {
     setSelectedDeviceAddress(address);
+    Toast.show({
+      type: 'info',
+      text1: 'Connecting Please Wait!',
+      position: 'bottom',
+      visibilityTime: 5000,
+    });
     try {
       await BluetoothSerial.connect(address);
 
@@ -295,6 +307,12 @@ export default function CheckFertilizerScreen({ route }) {
 
       if (connected == true) {
         setModalVisible(false);
+        Toast.show({
+          type: 'success',
+          text1: 'Connected successfully!',
+          position: 'bottom',
+          visibilityTime: 1000,
+        });
       }
     } catch (error) {
       Alert.alert(
@@ -532,6 +550,7 @@ export default function CheckFertilizerScreen({ route }) {
         </TouchableOpacity>
 
       </ScrollView>
+      <Toast ref={(ref) => Toast.setRef(ref)} />
     </View >
   );
 }
