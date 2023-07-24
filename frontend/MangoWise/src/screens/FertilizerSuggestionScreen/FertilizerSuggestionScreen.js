@@ -20,7 +20,7 @@ export default function FertilizerSuggestionScreen() {
   const navigation = useNavigation();
   const [fertilizer, setFertilizer] = useState('');
   const [quantity, setQuantity] = useState(0);
-  let error = 0;
+ 
 
 
   const {

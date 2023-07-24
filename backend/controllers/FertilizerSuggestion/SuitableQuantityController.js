@@ -143,3 +143,86 @@ export const findRecordByConditions = async (req, res) => {
       }
     });
 };
+
+export const monitorNutrition = async (req, res) => {
+
+
+  const { nvalue, pvalue, kvalue, age, growthStage } = req.body;
+   const record = await SuitableQuantity.findOne({
+    ageLowerLimit: { $lt: age },
+    ageUpperLimit: { $gt: age },
+    growthStage: growthStage,
+  })
+    .then(async function (record) {
+      try {
+        
+        let data =
+        {
+          "N": nvalue,
+          "P": pvalue,
+          "K": kvalue,
+          "NAF": record.N_lowerLimit,
+          "PAF": record.P_lowerLimit,
+          "KAF": record.K_lowerLimit
+        }
+
+        let options = {
+          method: 'POST',
+          uri: 'http://127.0.0.1:5000/fertilizer',
+          body: data,
+          json: true
+        };
+
+        await request(options)
+          .then(async function (parsedBody) {
+            let result;
+            result = parsedBody['Predicted Fertilizer'];
+
+            let data2 = {
+              "N": nvalue,
+              "P": pvalue,
+              "K": kvalue,
+              "NAF": record.N_lowerLimit,
+              "PAF": record.P_lowerLimit,
+              "KAF": record.K_lowerLimit,
+              "DN": (record.N_lowerLimit - nvalue) < 0 ? 0 : record.N_lowerLimit - nvalue,
+              "DP": (record.P_lowerLimit - pvalue) < 0 ? 0 : record.P_lowerLimit - pvalue,
+              "DK": (record.K_lowerLimit - kvalue) < 0 ? 0 : record.K_lowerLimit - kvalue,
+              "MOP": (result == "MOP(0:0:60)") ? 1 : 0,
+              "TSP": (result == "TTSP(0:46:0)") ? 1 : 0,
+              "UREA": (result == "Urea(46:0:0)") ? 1 : 0,
+              "YM1": (result == "YaraMila NK(1:0:1)") ? 1 : 0,
+              "YM2": (result == "YaraMila NPKS(1:1:1)") ? 1 : 0
+            }
+
+            let options2 = {
+              method: 'POST',
+              uri: 'http://127.0.0.1:5000/quantity',
+              body: data2,
+              json: true
+            };
+            await request(options2)
+              .then(async function (parsedBody) {
+                let result2;
+                result2 = parsedBody['Predicted Fertilizer Quantity'];
+                res.status(200).json({ result: result, result2: result2 });
+                console.log(result2);
+              }).catch(function (err) {
+                console.log(err);
+              });
+          })
+          .catch(function (err) {
+            console.log(err);
+          });
+
+        if (!record) {
+          res.status(404).json({ message: "Record not found" });
+          return;
+        }
+        return;
+
+      } catch (error) {
+        res.status(500).json({ error: "Internal server error" });
+      }
+    });
+};

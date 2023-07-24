@@ -14,11 +14,12 @@ import Header from '../../components/Header';
 import { Dropdown } from 'react-native-element-dropdown';
 import { set, useForm } from "react-hook-form";
 import { useNavigation,useFocusEffect } from "@react-navigation/native";
-import { Feather,AntDesign } from '@expo/vector-icons';
+import { Feather,AntDesign,Entypo } from '@expo/vector-icons';
 import BluetoothSerial from 'react-native-bluetooth-serial-2';
 import monitor from '../../../assets/monitor.jpg';
 import Modal from 'react-native-modal';
 import axios from 'axios';
+import Toast from 'react-native-toast-message';
 
 import {
   PERMISSIONS,
@@ -101,7 +102,7 @@ export default function CheckFertilizerScreen({ route }) {
   const { id } = route.params;
 
   const navigation = useNavigation();
-  const [months, setMonths] = useState('');
+  const [age, setage] = useState(0);
   const [stage, setStage] = useState(null);
   const [nitrogen, setNitrogen] = useState(0);
   const [phosporus, setPhosporus] = useState(0);
@@ -120,6 +121,9 @@ export default function CheckFertilizerScreen({ route }) {
   const [kvalue,setkvalue]=useState(0);
   const[fertilizer,setfertilizer]=useState('');
   const[quantity,setquantity]=useState(0);
+  const[newfertilizer,setnewfertilizer]=useState('');
+  const[newquantity,setnewquantity]=useState(0);
+  const [isMonitored, setMonitored] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -163,6 +167,7 @@ export default function CheckFertilizerScreen({ route }) {
             setkvalue(record.data.K_level);
             setfertilizer(record.data.fertilizer);
             setquantity(Math.ceil(record.data.quantity / 10) * 10);
+            setage(record.data.age);
             
           } else {
             setDate('');
@@ -324,7 +329,7 @@ export default function CheckFertilizerScreen({ route }) {
   };
 
   //Send data to backend
-  const onSubmit = () => {
+  const onSubmit = async() => {
     error = 0;
     if (stage == null) {
       error = 1;
@@ -337,15 +342,31 @@ export default function CheckFertilizerScreen({ route }) {
         const pvalue = parseInt(phosporus.replace('mg/kg', ''));
         const kvalue = parseInt(potassium.replace('mg/kg', ''));
 
-        const data = {
-          //age: (years * 12 + months),
-          stage: stage,
-          nitrogen: nvalue,
-          phosporus: pvalue,
-          potassium: kvalue
-        };
-        console.log(data);
-        navigation.navigate('FertilizerSuggestionScreen', { data: data });
+        try {
+          Toast.show({
+            type: 'info',
+            text1: 'Calculating Fertilizer...Please wait!',
+            position: 'bottom',
+            visibilityTime: 2000,
+          });
+         const response= await axios.post('http://192.168.1.246:8070/fertilizer/monitor',
+            {
+              "nvalue": nvalue,
+              "pvalue": pvalue,
+              "kvalue": kvalue,
+              "age": age,
+              "growthStage": stage
+
+            })
+              const { result, result2 } = response.data
+              setnewfertilizer(result);
+              setnewquantity(Math.ceil(result2/ 10) * 10);;
+              setMonitored(true);
+
+        }
+        catch (error) {
+          console.error(error);
+        }
       } catch (error) {
         Alert.alert(
           'Error',
@@ -386,6 +407,28 @@ export default function CheckFertilizerScreen({ route }) {
             <AntDesign name="warning" size={50} color="red" />
             <Text style={styles.modalText}> Please select a growth stage </Text>
             <TouchableOpacity style={styles.okButton} onPress={() => setError(false)}>
+              <Text style={{ fontSize: 14, fontWeight: 'bold', padding: 5, color: 'white', textAlign: 'center' }}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+
+        <Modal isVisible={isMonitored}>
+          <View style={styles.modalContent}>
+          {newquantity > 50 ? (
+           <View>
+             <Entypo name="tree" size={60} color="#118424" style={{ marginTop: 5,marginLeft: 110 }}/>
+             <Text style={{ fontSize: 16, marginTop: 40, fontWeight: 'bold'}}> Please add  {newfertilizer}  {newquantity}g </Text>
+             <Text style={{ fontSize: 16, marginTop: 10, fontWeight: 'bold',marginLeft: 100 }}> per tree. </Text>
+            </View>
+             ) : (
+            <View style={{ flexDirection: 'row', marginTop: 5  }}>
+             <AntDesign name="checkcircle" size={50} color="#118424" style={{ marginTop: 5,marginLeft: 0 }} />
+             <Text style={{ fontSize: 16, marginTop: 20, fontWeight: 'bold', marginLeft: 10,marginBottom:10  }}>No need to add fertilizer.</Text>
+            </View>
+          )}
+           
+
+            <TouchableOpacity style={styles.okButton} onPress={() => setMonitored(false)}>
               <Text style={{ fontSize: 14, fontWeight: 'bold', padding: 5, color: 'white', textAlign: 'center' }}>OK</Text>
             </TouchableOpacity>
           </View>
