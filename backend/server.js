@@ -7,6 +7,9 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import chalk from "chalk";
 
+//import routes
+import suggestRoutes from "./routes/suggest.route.js";
+
 const app = express();
 
 //server run in this port 8070
@@ -25,6 +28,9 @@ app.use(cookieParser());
 app.get("/", (req, res) => {
   res.json("Server Online");
 })
+
+//routes
+app.use("/suggest", suggestRoutes);
 
 
 app.listen(PORT, () => {
