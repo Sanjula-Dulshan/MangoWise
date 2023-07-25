@@ -9,7 +9,7 @@ export const getLocationData = async (req, res) => {
     return axios.get(url)
     .then((response) => {
         console.log("AAA : "+response.data.data[0].region);
-        return response.data;
+        res.json(response.data.data[0].region);
     })
     .catch((error) => {
         console.log(error);
