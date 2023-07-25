@@ -10,6 +10,10 @@ import chalk from "chalk";
 //import routes
 import suggestRoutes from "./routes/suggest.route.js";
 
+//import route files
+import SuitableQuantityRoute from "./routes/FertilizerSuggestion/SuitableQuantityRoute.js";
+import SaveRecordsRoute from "./routes/FertilizerSuggestion/SaveRecordsRoute.js";
+
 const app = express();
 
 //server run in this port 8070
@@ -31,6 +35,10 @@ app.get("/", (req, res) => {
 
 //routes
 app.use("/suggest", suggestRoutes);
+
+//Define routes
+app.use("/fertilizer", SuitableQuantityRoute);
+app.use("/records", SaveRecordsRoute);
 
 
 app.listen(PORT, () => {
