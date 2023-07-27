@@ -147,7 +147,7 @@ export default function FertilizationHomeScreen() {
   };
 
   return (
-    <View style={{ backgroundColor: '#fdfafa', height: '90%' }}>
+    <View style={{ backgroundColor: '#fdfafa', height: '100%' }}>
       <View style={styles.topic}>
         <TouchableOpacity onPress={() => navigation.navigate('CheckFertilizerScreen')}>
           <View style={styles.backButton}>

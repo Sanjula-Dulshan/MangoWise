@@ -13,8 +13,8 @@ import {
 import Header from '../../components/Header';
 import { Dropdown } from 'react-native-element-dropdown';
 import { set, useForm } from "react-hook-form";
-import { useNavigation,useFocusEffect } from "@react-navigation/native";
-import { Feather,AntDesign,Entypo } from '@expo/vector-icons';
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { Feather, AntDesign, Entypo } from '@expo/vector-icons';
 import BluetoothSerial from 'react-native-bluetooth-serial-2';
 import monitor from '../../../assets/monitor.jpg';
 import Modal from 'react-native-modal';
@@ -113,16 +113,16 @@ export default function CheckFertilizerScreen({ route }) {
   const [devices, setDevices] = useState([]);
   const [selectedDeviceAddress, setSelectedDeviceAddress] = useState('');
   const [isError, setError] = useState(false);
-  const [date,setDate]=useState('');
-  const [time,setTime]=useState('');
-  const [record_id,setRecordId]=useState(0);
-  const [nvalue,setnvalue]=useState(0);
-  const [pvalue,setpvalue]=useState(0);
-  const [kvalue,setkvalue]=useState(0);
-  const[fertilizer,setfertilizer]=useState('');
-  const[quantity,setquantity]=useState(0);
-  const[newfertilizer,setnewfertilizer]=useState('');
-  const[newquantity,setnewquantity]=useState(0);
+  const [date, setDate] = useState('');
+  const [time, setTime] = useState('');
+  const [record_id, setRecordId] = useState(0);
+  const [nvalue, setnvalue] = useState(0);
+  const [pvalue, setpvalue] = useState(0);
+  const [kvalue, setkvalue] = useState(0);
+  const [fertilizer, setfertilizer] = useState('');
+  const [quantity, setquantity] = useState(0);
+  const [newfertilizer, setnewfertilizer] = useState('');
+  const [newquantity, setnewquantity] = useState(0);
   const [isMonitored, setMonitored] = useState(false);
 
   useEffect(() => {
@@ -135,7 +135,7 @@ export default function CheckFertilizerScreen({ route }) {
       if (connected == false) {
         setModalVisible(true);
       }
-      
+
 
       if (!granted || !granted2) {
         const permission = await requestPermission();
@@ -168,12 +168,12 @@ export default function CheckFertilizerScreen({ route }) {
             setfertilizer(record.data.fertilizer);
             setquantity(Math.ceil(record.data.quantity / 10) * 10);
             setage(record.data.age);
-            
+
           } else {
             setDate('');
             setTime('');
             setRecordId(0);
-          }         
+          }
         } catch (error) {
           console.error(error);
         }
@@ -347,7 +347,7 @@ export default function CheckFertilizerScreen({ route }) {
   };
 
   //Send data to backend
-  const onSubmit = async() => {
+  const onSubmit = async () => {
     error = 0;
     if (stage == null) {
       error = 1;
@@ -367,7 +367,7 @@ export default function CheckFertilizerScreen({ route }) {
             position: 'bottom',
             visibilityTime: 2000,
           });
-         const response= await axios.post('http://192.168.1.246:8070/fertilizer/monitor',
+          const response = await axios.post('http://192.168.1.246:8070/fertilizer/monitor',
             {
               "nvalue": nvalue,
               "pvalue": pvalue,
@@ -376,10 +376,10 @@ export default function CheckFertilizerScreen({ route }) {
               "growthStage": stage
 
             })
-              const { result, result2 } = response.data
-              setnewfertilizer(result);
-              setnewquantity(Math.ceil(result2/ 10) * 10);;
-              setMonitored(true);
+          const { result, result2 } = response.data
+          setnewfertilizer(result);
+          setnewquantity(Math.ceil(result2 / 10) * 10);;
+          setMonitored(true);
 
         }
         catch (error) {
@@ -399,7 +399,7 @@ export default function CheckFertilizerScreen({ route }) {
 
 
   return (
-    <View style={{ backgroundColor: '#fdfafa', height: '100%' }}>
+    <View style={{ backgroundColor: '#fdfafa', height: '101%' }}>
 
       <View style={styles.topic}>
         <TouchableOpacity onPress={() => navigation.navigate('PreviousRecordsScreen')}>
@@ -432,19 +432,19 @@ export default function CheckFertilizerScreen({ route }) {
 
         <Modal isVisible={isMonitored}>
           <View style={styles.modalContent}>
-          {newquantity > 50 ? (
-           <View>
-             <Entypo name="tree" size={60} color="#118424" style={{ marginTop: 5,marginLeft: 110 }}/>
-             <Text style={{ fontSize: 16, marginTop: 40, fontWeight: 'bold'}}> Please add  {newfertilizer}  {newquantity}g </Text>
-             <Text style={{ fontSize: 16, marginTop: 10, fontWeight: 'bold',marginLeft: 100 }}> per tree. </Text>
-            </View>
-             ) : (
-            <View style={{ flexDirection: 'row', marginTop: 5  }}>
-             <AntDesign name="checkcircle" size={50} color="#118424" style={{ marginTop: 5,marginLeft: 0 }} />
-             <Text style={{ fontSize: 16, marginTop: 20, fontWeight: 'bold', marginLeft: 10,marginBottom:10  }}>No need to add fertilizer.</Text>
-            </View>
-          )}
-           
+            {newquantity > 50 ? (
+              <View>
+                <Entypo name="tree" size={60} color="#118424" style={{ marginTop: 5, marginLeft: 110 }} />
+                <Text style={{ fontSize: 16, marginTop: 40, fontWeight: 'bold' }}> Please add  {newfertilizer}  {newquantity}g </Text>
+                <Text style={{ fontSize: 16, marginTop: 10, fontWeight: 'bold', marginLeft: 100 }}> per tree. </Text>
+              </View>
+            ) : (
+              <View style={{ flexDirection: 'row', marginTop: 5 }}>
+                <AntDesign name="checkcircle" size={50} color="#118424" style={{ marginTop: 5, marginLeft: 0 }} />
+                <Text style={{ fontSize: 16, marginTop: 20, fontWeight: 'bold', marginLeft: 10, marginBottom: 10 }}>No need to add fertilizer.</Text>
+              </View>
+            )}
+
 
             <TouchableOpacity style={styles.okButton} onPress={() => setMonitored(false)}>
               <Text style={{ fontSize: 14, fontWeight: 'bold', padding: 5, color: 'white', textAlign: 'center' }}>OK</Text>
@@ -475,11 +475,11 @@ export default function CheckFertilizerScreen({ route }) {
 
         <Text style={{
           fontSize: 14, marginLeft: 10, marginBottom: 0, fontWeight: 'bold',
-          marginTop: 10, textAlign: 'left'
+          marginTop: 8, textAlign: 'left'
         }}>Previous Nutrient Status</Text>
         <View style={styles.inputmultiline}>
 
-          <View style={{ flexDirection: 'row', marginTop: 5 }}>
+          <View style={{ flexDirection: 'row', marginTop: 3 }}>
             <Text style={{ fontSize: 10, marginTop: 0, marginLeft: 20 }}> Date : {date}        </Text>
             <Text style={{ fontSize: 10, marginTop: 0, marginLeft: 20 }}> Time: {time}</Text>
           </View>
@@ -499,14 +499,14 @@ export default function CheckFertilizerScreen({ route }) {
             <Text style={{ fontSize: 10, marginTop: 0, marginLeft: 20 }}> {kvalue} mg/kg</Text>
           </View>
 
-          <View style={{ flexDirection: 'row', marginTop: 15 }}>
+          <View style={{ flexDirection: 'row', marginTop: 12 }}>
             <Text style={{ fontSize: 12, fontWeight: 'bold', marginTop: 0, marginLeft: 20 }}> {fertilizer}  {quantity}g  Added</Text>
           </View>
         </View>
 
         <Text style={{
-          fontSize: 14, marginLeft: 10, marginBottom: -10, fontWeight: 'bold',
-          marginTop: 10, textAlign: 'left'
+          fontSize: 14, marginLeft: 10, marginBottom: -12, fontWeight: 'bold',
+          marginTop: 8, textAlign: 'left'
         }}>Select current growth stage of the tree</Text>
 
         <Dropdown
@@ -526,8 +526,8 @@ export default function CheckFertilizerScreen({ route }) {
           renderItem={renderItem} />
 
         <Text style={{
-          fontSize: 14, marginLeft: 15, marginBottom: -10, fontWeight: 'bold',
-          marginTop: 10, textAlign: 'left'
+          fontSize: 14, marginLeft: 15, marginBottom: -12, fontWeight: 'bold',
+          marginTop: 5, textAlign: 'left'
         }}>Current Nutrient Status</Text>
 
         <View style={{ flexDirection: 'row', marginTop: 8 }}>
@@ -677,12 +677,12 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#fdc50b',
     width: 130,
-    height: 45,
-    paddingBottom: 15,
+    height: 42,
+    paddingBottom: 12,
     borderRadius: 25,
     marginTop: 0,
     alignSelf: 'center',
-    marginBottom: 10,
+    marginBottom: 20,
   },
   btntext: {
     textAlign: 'center',
