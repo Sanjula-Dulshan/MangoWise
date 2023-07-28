@@ -10,6 +10,7 @@ import {
   SafeAreaView,
   SectionList,
   PermissionsAndroid,
+  FlatList,
   Image
 } from 'react-native';
 import Header from '../../components/Header';
@@ -31,13 +32,15 @@ import {
 
 const ListItem = ({ item }) => {
   return (
-    <View style={styles.item}>
+    <View style={styles2.item}>
       <Image
-        source={bud}
-        style={styles.itemPhoto}
+        source={{
+          uri: item.uri,
+        }}
+        style={styles2.itemPhoto}
         resizeMode="cover"
       />
-      <Text style={styles.itemText}>{item.text}</Text>
+      <Text style={styles2.itemText}>{item.text}</Text>
     </View>
   );
 };
@@ -45,32 +48,33 @@ const ListItem = ({ item }) => {
 const SECTIONS = [
   {
     title: 'Made for you',
+    horizontal: true,
     data: [
       {
         key: '1',
         text: 'Item text 1',
-        uri: 'https://res.cloudinary.com/sliit-yasantha/image/upload/v1667575475/bus_dtnaa2.png',
+        uri: 'https://picsum.photos/id/1/200',
       },
       {
         key: '2',
         text: 'Item text 2',
-        uri: 'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aHVtYW58ZW58MHx8MHx8fDA%3D&w=1000&q=80',
+        uri: 'https://picsum.photos/id/10/200',
       },
 
       {
         key: '3',
         text: 'Item text 3',
-        uri: 'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aHVtYW58ZW58MHx8MHx8fDA%3D&w=1000&q=80',
+        uri: 'https://picsum.photos/id/1002/200',
       },
       {
         key: '4',
         text: 'Item text 4',
-        uri: 'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aHVtYW58ZW58MHx8MHx8fDA%3D&w=1000&q=80',
+        uri: 'https://picsum.photos/id/1006/200',
       },
       {
         key: '5',
         text: 'Item text 5',
-        uri: 'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aHVtYW58ZW58MHx8MHx8fDA%3D&w=1000&q=80',
+        uri: 'https://picsum.photos/id/1008/200',
       },
     ],
   },
@@ -80,7 +84,7 @@ const SECTIONS = [
       {
         key: '1',
         text: 'Item text 1',
-        uri: 'https://res.cloudinary.com/sliit-yasantha/image/upload/v1667575475/bus_dtnaa2.png',
+        uri: 'https://picsum.photos/id/1011/200',
       },
       {
         key: '2',
