@@ -1,6 +1,7 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { AppRegistry } from 'react-native';
 
 //import screens
 import FertilizationHomeScreen from "../screens/FertilizationHomeScreen/FertilizationHomeScreen";
@@ -9,13 +10,33 @@ import FertilizerSuggestionScreen from "../screens/FertilizerSuggestionScreen/Fe
 import MonitorFertilizationScreen from "../screens/MoniterFertilizationScreen/MonitorFertilizationScreen";
 import PreviousRecordsScreen from "../screens/MoniterFertilizationScreen/PreviousRecordsScreen";
 
+//budding 
+import BuddingHomeScreen from "../screens/BuddingHomeScreen/BuddingHomeScreen";
+import ImageCapture from "../screens/ImageCampture/Image.capture";
+
+AppRegistry.registerComponent('FertilizationHomeScreen', () => FertilizationHomeScreen);
+
 const Stack = createNativeStackNavigator();
 
 const Navigation = () => {
   return (
     <NavigationContainer>
 
-      <Stack.Navigator >
+      <Stack.Navigator initialRouteName="BuddingHomeScreen">
+
+
+      <Stack.Screen
+          name="ImageCaptureScreen"
+          component={ImageCapture}
+          options={{ headerShown: false }}
+        />
+
+
+      <Stack.Screen
+          name="BuddingHomeScreen"
+          component={BuddingHomeScreen}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="FertilizationHomeScreen"
           component={FertilizationHomeScreen}
