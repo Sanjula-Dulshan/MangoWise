@@ -1,6 +1,8 @@
-import { SafeAreaView, StyleSheet, Text, View } from "react-native";
-import Navigation from "./src/navigation";
 import { NativeBaseProvider } from "native-base";
+import { LogBox, StyleSheet } from "react-native";
+import Navigation from "./src/navigation";
+LogBox.ignoreLogs(["Warning: ..."]); // Ignore log notification by message
+LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 export default function App() {
   return (
