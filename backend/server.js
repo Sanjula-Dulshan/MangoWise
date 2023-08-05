@@ -7,6 +7,10 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import chalk from "chalk";
 
+//import route files
+import SuitableQuantityRoute from "./routes/FertilizerSuggestion/SuitableQuantityRoute.js";
+import SaveRecordsRoute from "./routes/FertilizerSuggestion/SaveRecordsRoute.js";
+
 const app = express();
 
 //server run in this port 8070
@@ -25,6 +29,10 @@ app.use(cookieParser());
 app.get("/", (req, res) => {
   res.json("Server Online");
 })
+
+//Define routes
+app.use("/fertilizer", SuitableQuantityRoute);
+app.use("/records", SaveRecordsRoute);
 
 
 app.listen(PORT, () => {

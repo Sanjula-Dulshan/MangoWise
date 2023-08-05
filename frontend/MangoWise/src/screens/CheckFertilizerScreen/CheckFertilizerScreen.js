@@ -1,76 +1,395 @@
-import React, { useState } from 'react';
-import { StyleSheet, TextInput, View, Text, ScrollView,TouchableOpacity,Alert} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  StyleSheet,
+  TextInput,
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+  Platform,
+  PermissionsAndroid,
+  Image
+} from 'react-native';
+import Header from '../../components/Header';
 import { Dropdown } from 'react-native-element-dropdown';
-import { FloatingLabelInput } from 'react-native-floating-label-input';
 import { useForm } from "react-hook-form";
-import { useNavigation } from "@react-navigation/native";
-import { Feather } from '@expo/vector-icons';
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { Feather, AntDesign } from '@expo/vector-icons';
+import BluetoothSerial from 'react-native-bluetooth-serial-2';
+import sensorimage from '../../../assets/NPKSensor.png'
+import Modal from 'react-native-modal';
+import Toast from 'react-native-toast-message';
+import axios from 'axios';
+
+
+import {
+  PERMISSIONS,
+  RESULTS,
+  request,
+  requestMultiple,
+} from 'react-native-permissions';
+
+const hasPermission = async () => {
+  if (Platform.OS === 'android' && Platform.Version >= 23) {
+    const granted = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+    );
+    if (granted) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return true;
+  }
+};
+
+const hasPermission2 = async () => {
+  if (Platform.OS === 'android' && Platform.Version >= 23) {
+    const granted2 = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN
+    );
+
+    if (granted2) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return true;
+  }
+};
+
+const requestPermission = async () => {
+
+  if (Platform.OS === 'android' && Platform.Version >= 23) {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+    );
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return true;
+  }
+};
+
+const requestPermission2 = async () => {
+
+  await requestMultiple([PERMISSIONS.ANDROID.BLUETOOTH_SCAN, PERMISSIONS.ANDROID.BLUETOOTH_CONNECT]);
+
+  if (Platform.OS === 'android' && Platform.Version >= 23) {
+    const granted2 = await request(
+      PERMISSIONS.ANDROID.BLUETOOTH_CONNECT,
+      PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
+      PERMISSIONS.ANDROID.BLUETOOTH_ADVERTISE,
+      PERMISSIONS.ANDROID.BLUETOOTH
+    );
+    if (granted2 === RESULTS.GRANTED) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return true;
+  }
+};
+
 
 export default function CheckFertilizerScreen() {
   const navigation = useNavigation();
   const [years, setYears] = useState('');
   const [months, setMonths] = useState('');
   const [stage, setStage] = useState(null);
-  const [nitrogen, setNitrogen] = useState('0');
+  const [nitrogen, setNitrogen] = useState(0);
   const [phosporus, setPhosporus] = useState(0);
   const [potassium, setPotassium] = useState(0);
   let error = 0;
-  
-   const stagedata = [
+  const [permissionGranted, setPermissionGranted] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [devices, setDevices] = useState([]);
+  const [selectedDeviceAddress, setSelectedDeviceAddress] = useState('');
+  const [isError, setError] = useState(false);
+  const [isAgeError, setAgeError] = useState(false);
+  const [record_id, setRecord_id] = useState(1);
+
+  useEffect(() => {
+    (async () => {
+      const granted = await hasPermission();
+      const granted2 = await hasPermission2();
+
+      const connected = await BluetoothSerial.isConnected();
+
+      if (connected == false) {
+        setModalVisible(true);
+      }
+
+      if (!granted || !granted2) {
+        const permission = await requestPermission();
+        const permission2 = await requestPermission2();
+
+        if (permission && permission2) {
+          setPermissionGranted(true);
+
+        } else {
+          setPermissionGranted(false);
+        }
+      } else {
+        setPermissionGranted(true);
+      }
+
+    })();
+  }, [record_id]);
+
+
+  useFocusEffect(
+    React.useCallback(() => {
+      (async function id() {
+        try {
+          const record = await axios.get("http://192.168.1.246:8070/records/get");
+          if (record) {
+            const newRecord = record.data.record_id + 1;
+            setRecord_id(newRecord);
+          } else {
+            setRecord_id(1);
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      })();
+    }, [])
+  );
+
+
+
+  let previousValues = {
+    nitrogenValue: '',
+    phosphorousValue: '',
+    potassiumValue: ''
+  };
+
+  const turnOnBluetooth = async () => {
+
+    const permission2 = await requestPermission2();
+
+    if (permission2) {
+      try {
+        const sensorData = await BluetoothSerial.readFromDevice();
+        const lines = sensorData.split('\n');
+
+        let nitrogenValue, phosphorousValue, potassiumValue;
+
+        // Iterating through each line and extracting the nutrient name and value
+        await lines.forEach((line) => {
+          if (line.includes(':')) { // Check if the line contains the delimiter
+            const [nutrient, value] = line.split(':');
+            const trimmedNutrient = nutrient.trim();
+            const trimmedValue = value.trim();
+
+
+            if (trimmedNutrient === 'Nitrogen') {
+              nitrogenValue = trimmedValue;
+            }
+            if (trimmedNutrient === 'Phosphorous') {
+              phosphorousValue = trimmedValue;
+            }
+            if (trimmedNutrient === 'Potassium') {
+              potassiumValue = trimmedValue;
+            }
+          }
+        });
+
+        if (nitrogenValue == undefined) {
+          nitrogenValue = 0;
+        }
+        if (phosphorousValue == undefined) {
+          phosphorousValue = 0;
+        }
+        if (potassiumValue == undefined) {
+          potassiumValue = 0;
+        }
+
+        // Check if any of the nutrient values have changed
+        if (
+          nitrogenValue !== previousValues.nitrogenValue ||
+          phosphorousValue !== previousValues.phosphorousValue ||
+          potassiumValue !== previousValues.potassiumValue
+        ) {
+          if (nitrogenValue !== undefined && phosphorousValue !== undefined && potassiumValue !== undefined &&
+            nitrogenValue !== 0 && phosphorousValue !== 0 && potassiumValue !== 0
+          ) {
+            setNitrogen(nitrogenValue);
+            setPhosporus(phosphorousValue);
+            setPotassium(potassiumValue);
+          }
+
+          // Update previous values with the current ones
+          previousValues = {
+            nitrogenValue,
+            phosphorousValue,
+            potassiumValue
+          };
+        }
+
+      } catch (error) {
+        Alert.alert(
+          'Error',
+          'Can not read data from the sensor. Please make sure the sensor is connected and turned on.',
+          [{ text: 'OK' }],
+          { cancelable: false }
+        );
+      }
+    } else {
+      Alert.alert(
+        'Error',
+        'Can not read data from the sensor. Please make sure the sensor is connected and turned on.',
+        [{ text: 'OK' }],
+        { cancelable: false }
+      );
+    }
+  };
+
+  // Set the interval to periodically call the turnOnBluetooth function
+  setInterval(turnOnBluetooth, 1000);
+
+  const discoverBluetoothDevices = async () => {
+    Toast.show({
+      type: 'info',
+      text1: 'Searching for devices',
+      position: 'bottom',
+      visibilityTime: 1000,
+    });
+    try {
+      const discoveredDevices = await BluetoothSerial.list();
+      setDevices(discoveredDevices);
+    } catch (error) {
+      Alert.alert(
+        'Error',
+        'Can not find a device.Please check the sensor device is turend on and connected to the phone.',
+        [{ text: 'OK' }],
+        { cancelable: false }
+      );
+    }
+  };
+
+  const handleDeviceSelection = async (address) => {
+    setSelectedDeviceAddress(address);
+    Toast.show({
+      type: 'info',
+      text1: 'Connecting Please Wait!',
+      position: 'bottom',
+      visibilityTime: 5000,
+    });
+    try {
+      await BluetoothSerial.connect(address);
+
+      const connected = await BluetoothSerial.isConnected();
+
+      if (connected == true) {
+        setModalVisible(false);
+        Toast.show({
+          type: 'success',
+          text1: 'Connected successfully!',
+          position: 'bottom',
+          visibilityTime: 1000,
+        });
+      }
+    } catch (error) {
+      Alert.alert(
+        'Error',
+        'Can not connect to the device.Please check and try again.',
+        [{ text: 'OK' }],
+        { cancelable: false }
+      );
+    }
+  };
+
+
+  const stagedata = [
     { label: 'Before Flowering', value: 'Before Flowering' },
-    { label: 'After Flowering', value: 'After Flowering' },
-    { label: 'Before Harvest', value: 'Before Harvest' },
+    { label: 'At Flowering', value: 'At Flowering' },
     { label: 'After Harvest', value: 'After Harvest' }
-    
+
   ];
-    const {
-    control,
+  const {
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-   const renderItem = item => {
-      return (
-        <View style={styles.item}>
-          <Text style={styles.textItem}>{item.label}</Text>
-          {item.value === stage}
-        </View>
-      );
-    };
+  const renderItem = item => {
+    return (
+      <View style={styles.item}>
+        <Text style={styles.textItem}>{item.label}</Text>
+        {item.value === stage}
+      </View>
+    );
+  };
 
   //Send data to backend
-  const onSubmit = () => {
+  const onSubmit = async () => {
     error = 0;
     if (years == 0 && months == 0) {
       error = 1;
-      Alert.alert(
-        'Error',
-        'Please enter a valid value for age of the tree',
-        [{ text: 'OK' }],
-        { cancelable: false }
-      );
+      setAgeError(true);
     };
     if (stage == null) {
       error = 1;
-      Alert.alert(
-        'Error',
-        'Please select a growth stage',
-        [{ text: 'OK' }],
-        { cancelable: false }
-      );
+      setError(true)
     };
-    
+
     if (error == 0) {
-      const data = {
-        age: (years * 12 + months),
-        stage: stage,
-        nitrogen: nitrogen,
-        phosporus: phosporus,
-        potassium: potassium
-      };
-      console.log(data);
-      navigation.navigate('FertilizerSuggestionScreen', { data: data });
-    };
+      try {
+        const nvalue = parseInt(nitrogen.replace('mg/kg', ''));
+        const pvalue = parseInt(phosporus.replace('mg/kg', ''));
+        const kvalue = parseInt(potassium.replace('mg/kg', ''));
+
+        const data = {
+          age: (years * 12 + months),
+          stage: stage,
+          nitrogen: nvalue,
+          phosporus: pvalue,
+          potassium: kvalue
+        };
+        //send data to backend
+        try {
+          Toast.show({
+            type: 'info',
+            text1: 'Calculating Fertilizer...Please wait!',
+            position: 'bottom',
+            visibilityTime: 2000,
+          });
+          await axios.post('http://192.168.1.246:8070/fertilizer/get',
+            {
+              "nvalue": nvalue,
+              "pvalue": pvalue,
+              "kvalue": kvalue,
+              "record_id": record_id,
+              "age": data.age,
+              "growthStage": stage
+
+            })
+            .then(
+              setTimeout(() => {
+                navigation.navigate('FertilizerSuggestionScreen');
+              }, 3000))
+        }
+        catch (error) {
+          console.error(error);
+        }
+
+      }
+      catch (error) {
+        Alert.alert(
+          'Error',
+          'Please make sure the sensor is connected and turned on.',
+          [{ text: 'OK' }],
+          { cancelable: false }
+        );
+      }
+    }
   };
 
   const handleMonthChange = (text) => {
@@ -90,255 +409,299 @@ export default function CheckFertilizerScreen() {
 
 
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
-     <View style={styles.topic}>
-     <TouchableOpacity onPress={() => navigation.navigate('MoniterFertilizationScreen')}>
-      <View style={styles.backButton}>
-       <Feather name="arrow-left" size={40} color="white" />
+    <View style={{ backgroundColor: '#fdfafa', height: '100%' }}>
+      <View style={styles.topic}>
+        <TouchableOpacity onPress={() => navigation.navigate('FertilizationHomeScreen')}>
+          <View style={styles.backButton}>
+            <Feather name="arrow-left" size={40} color="#000000" />
+          </View>
+        </TouchableOpacity>
+        <Header />
+      </View>
+
+      <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
+        <View style={styles.imageContainer}>
+          <Image
+            source={sensorimage}
+            style={styles.sensorimage}
+            resizeMode="contain"
+          />
+          <Text style={{ fontSize: 24, fontFamily: 'Roboto', fontWeight: 'bold', paddingTop: 2, textAlign: 'right', paddingRight: 13, marginLeft: 4 }}>Check Suitable     Fertilizer</Text>
         </View>
-     </TouchableOpacity>
-      <Text style={{ fontSize: 26, fontWeight: 'bold', paddingTop: 30, textAlign: 'left' }}>MangoWise</Text>
-       </View>
-      <View style={styles.container}>
-        <Text style={{fontSize: 16, fontWeight: 'bold', marginLeft:10,marginBottom: -18,marginTop: 60,textAlign:'left'}}>Enter estimated age of the mango tree</Text>
-      <View style={styles.inputContainer}>
-       <FloatingLabelInput
-          label="Years"
-          style={styles.input}
-          value={years.toString()}
-            staticLabel
-            hint='Age in years'
-          customLabelStyles={{
-          colorFocused: 'darkblue',
-          fontSizeFocused: 20,
-          
-        }}
-        labelStyles={{
-          paddingHorizontal: 2,
-          paddingVertical: 2,
-          marginVertical: -9,
-          backgroundColor: '#fdfde6',
-        }}
-        inputStyles={{
-          color: 'black',
-          paddingHorizontal: 10,
-        }}
-          onChangeText={(text) => {
-          const parsedValue = parseInt(text);
-          setYears(isNaN(parsedValue) ? '' : parsedValue);
-            }}
-          keyboardType="numeric"
-        />
-          <Text>     </Text>
-          
-       <FloatingLabelInput
-          label="Months"
-          style={styles.input}
-            value={months.toString()}
-            hint='Months 1 to 11'
-          staticLabel
-          customLabelStyles={{
-          colorFocused: '#01016d',
-          fontSizeFocused: 14
-            }}
-       labelStyles={{
-          paddingHorizontal: 2,
-          paddingVertical: 2,
-          marginVertical: -9,
-          backgroundColor: '#fdfde6',
-        }}
-        inputStyles={{
-          color: 'black',
-          paddingHorizontal: 0,
-          paddingVertical:10
-        }}
-          onChangeText={handleMonthChange}
-          keyboardType="numeric"
-        />
-       </View>
-    
+
+        <Text style={{ fontSize: 12, fontWeight: 'bold', marginLeft: 10, marginBottom: 10, textAlign: 'left' }}>Record ID: {record_id} </Text>
+        <Text style={{ fontSize: 10, fontStyle: 'italic', marginLeft: 10, marginBottom: 8, marginTop: -10, textAlign: 'left', color: 'red' }}>*Please note this id for use in nutrition monitor stage </Text>
+
+        <Text style={{ fontSize: 14, fontWeight: 'bold', marginLeft: 10, marginBottom: -18, marginTop: 10, textAlign: 'left' }}>Enter estimated age of the mango tree</Text>
+
+        <View style={styles.inputContainer}>
+          <View style={{ flexDirection: 'row', marginTop: 30 }}>
+            <TextInput style={styles.input}
+              value={years.toString()}
+              placeholder='Age in years'
+              onChangeText={(text) => {
+                const parsedValue = parseInt(text);
+                setYears(isNaN(parsedValue) ? '' : parsedValue);
+              }}
+              keyboardType="numeric"
+            ></TextInput>
+            <Text style={{ fontSize: 12, fontWeight: 'bold', marginTop: -25, marginLeft: -10 }}> Years </Text>
+
+            <TextInput style={styles.inputMonths}
+              value={months.toString()}
+              placeholder='Months 1 to 11'
+              onChangeText={handleMonthChange}
+              keyboardType="numeric"
+            ></TextInput>
+            <Text style={{ fontSize: 12, fontWeight: 'bold', marginTop: -25, marginLeft: 2 }}> Months </Text>
+          </View>
+        </View>
+
+        <Modal isVisible={isAgeError}>
+          <View style={styles.modalContent}>
+            <AntDesign name="warning" size={50} color="red" />
+            <Text style={styles.modalText}> Please enter a valid value for age of the tree </Text>
+            <TouchableOpacity style={styles.okButton} onPress={() => setAgeError(false)}>
+              <Text style={{ fontSize: 14, fontWeight: 'bold', padding: 5, color: 'white', textAlign: 'center' }}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+
+        <Modal isVisible={isError}>
+          <View style={styles.modalContent}>
+            <AntDesign name="warning" size={50} color="red" />
+            <Text style={styles.modalText}> Please select a growth stage </Text>
+            <TouchableOpacity style={styles.okButton} onPress={() => setError(false)}>
+              <Text style={{ fontSize: 14, fontWeight: 'bold', padding: 5, color: 'white', textAlign: 'center' }}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+
+
+        <Modal isVisible={isModalVisible} style={styles.blModal}>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <TouchableOpacity style={styles.blButton} onPress={discoverBluetoothDevices} >
+                <Text style={styles.blButtonText}>Discover Devices</Text>
+              </TouchableOpacity>
+              {devices.map((device, index) => (
+                <TouchableOpacity key={index} onPress={() => handleDeviceSelection(device.address)}>
+                  <Text style={styles.devices}>
+                    {device.name}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+            <View>
+              <TouchableOpacity style={{ backgroundColor: 'grey', width: 70, height: 30, borderRadius: 10, marginTop: 190, alignItems: 'center', marginLeft: 80 }} onPress={() => navigation.navigate('FertilizationHomeScreen')} >
+                <Text style={{ fontSize: 12, fontWeight: 'bold', color: 'white', textAlign: 'center', paddingTop: 5 }}>Go Back</Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </Modal>
+
+
+
         <Text style={{
-          fontSize: 16, fontWeight: 'bold', marginLeft: 10, marginBottom: -20,
-          marginTop: 50,textAlign: 'left'
+          fontSize: 14, fontWeight: 'bold', marginLeft: 10, marginBottom: -10,
+          marginTop: 20, textAlign: 'left'
         }}>Select current growth stage of the tree</Text>
 
-      <Dropdown
-        style={styles.dropdown}
-        placeholderStyle={styles.placeholderStyle}
-        selectedTextStyle={styles.selectedTextStyle}
-        data={stagedata}
-        maxHeight={220}
-        labelField="label"
-        valueField="value"
-        placeholder="Select Growth Stage"
-        value={stage}
-        
-        onChange={item => {
-        setStage(item.value);
-            }}
+        <Dropdown
+          style={styles.dropdown}
+          placeholderStyle={styles.placeholderStyle}
+          selectedTextStyle={styles.selectedTextStyle}
+          data={stagedata}
+          maxHeight={200}
+          labelField="label"
+          valueField="value"
+          placeholder="Select Growth Stage"
+          value={stage}
+
+          onChange={item => {
+            setStage(item.value);
+          }}
           renderItem={renderItem} />
-        
-        <View style={{ flexDirection: 'row', marginTop: 30 }}>
-          
-        <Text style={{ fontSize: 16, fontWeight: 'bold', marginTop: 25,marginLeft:20,marginRight:16 }}> Nitrogen </Text>
-       
-        <TextInput style={styles.npk}
-          value={nitrogen}
-          onChangeText={(text) => setNitrogen(text)}
-          />
 
-        <Text style={{margin:10,marginTop:25}}> mg/kg</Text>
-        </View>
-        
-        <View style={{ flexDirection:'row'}}> 
-        <Text style={{ fontSize: 16, fontWeight: 'bold', marginLeft:20,marginTop: 20 }}> Phosporus </Text>
-        <TextInput style={styles.npk}
-          value={phosporus.toString()}
-             control={control}
-             onChangeText={(text) => {
-             const parsedValue = parseFloat(text);
-             setPhosporus(isNaN(parsedValue) ? '' : parsedValue);
-            }}
-            />
-          <Text style={{margin:10,marginTop:25}}> mg/kg</Text>
+        <View style={{ flexDirection: 'row', marginTop: 10 }}>
+          <Text style={{ fontSize: 14, fontWeight: 'bold', marginTop: 25, marginLeft: 20 }}> Nitrogen     (N)  : </Text>
+          <Text style={styles.npk} >{nitrogen}</Text>
         </View>
 
-        <View style={{ flexDirection:'row',marginBottom:20}}> 
-        <Text style={{ fontSize: 16, fontWeight: 'bold', marginLeft:20,marginTop: 20 }}> Potassium </Text>
-          <TextInput style={styles.npk}
-             value={potassium.toString()}
-             control={control}
-             onChangeText={(text) => {
-             const parsedValue = parseFloat(text);
-             setPotassium(isNaN(parsedValue) ? '' : parsedValue);
-            }}
-            keyboardType="numeric" />
-          
-          <Text style={{margin:10,marginTop:25}}> mg/kg</Text>
+        <View style={{ flexDirection: 'row' }}>
+          <Text style={{ fontSize: 14, fontWeight: 'bold', marginLeft: 20, marginTop: 20 }}> Phosporus (P)  : </Text>
+          <Text style={styles.npk} >{phosporus}</Text>
+        </View>
+
+        <View style={{ flexDirection: 'row', marginBottom: 20 }} >
+          <Text style={{ fontSize: 14, fontWeight: 'bold', marginLeft: 20, marginTop: 20 }}> Potassium (K)  : </Text>
+          <Text style={styles.npk} >{potassium}</Text>
         </View>
 
         <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
           <Text style={styles.btntext}>Generate Recommendations</Text>
         </TouchableOpacity>
-          
-      </View> 
-    </ScrollView>
+
+      </ScrollView>
+      <Toast ref={(ref) => Toast.setRef(ref)} />
+    </View >
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    backgroundColor:'#fdfde6',
+    backgroundColor: '#f3fdee',
+    padding: 10,
+    marginLeft: 10,
+    marginRight: 10,
+    marginBottom: 10,
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0.5,
+      height: 1,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 1.21,
+    elevation: 2,
   },
-   topic: {
+  imageContainer: {
     flexDirection: 'row',
-    backgroundColor:'#fdc50b',
-    paddingTop: 30,
-    paddingBottom: 10,
+    justifyContent: 'center',
   },
-   error: {
+  topic: {
+    flexDirection: 'row',
+    paddingTop: 20,
+    backgroundColor: '#fdfafa',
+  },
+  error: {
     color: 'red',
-     marginTop: 5,
-    fontSize:8
+    marginTop: 5,
+    fontSize: 8
   },
   backButton: {
-    width: 60,
-    height: 40,
-    justifyContent:'flex-start',
+    width: 30,
+    height: 35,
+    justifyContent: 'flex-start',
     alignItems: 'flex-start',
-      marginTop: 30,
-      marginLeft: 15,
-    marginRight:60
+    marginTop: -10,
+    marginLeft: 15,
+    marginRight: 60
   },
   inputContainer: {
     flexDirection: 'row',
-    justifyContent:'center',
+    justifyContent: 'center',
     marginBottom: 10,
     marginTop: 40,
     width: '90%',
     marginLeft: 20,
   },
-  npk: {   
-    backgroundColor: 'white', 
+  npk: {
+    backgroundColor: 'white',
     borderRadius: 8,
     padding: 10,
     marginTop: 15,
     marginLeft: 30,
     height: 40,
-    width: '25%',
-     shadowColor: '#000',
-      shadowOffset: {
-        width: 0.5,
-        height: 1,
-      },
-      shadowOpacity: 0.4,
-      shadowRadius: 1.21,
+    fontSize: 12,
+    width: '30%',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0.5,
+      height: 1,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 1.21,
 
-      elevation: 2,
+    elevation: 2,
   },
-  input: {   
-    backgroundColor: 'white', 
+  input: {
+    backgroundColor: 'white',
+    justifyContent: 'flex-start',
+    alignContent: 'flex-start',
     borderRadius: 10,
-    padding: 10,
-    marginTop: 20,
-    marginRight: 0,
-    height: 60,
-    width: '20%',
-     shadowColor: '#000',
-      shadowOffset: {
-        width: 0.5,
-        height: 1,
-      },
-      shadowOpacity: 0.4,
-      shadowRadius: 1.21,
+    padding: 5,
+    marginTop: -35,
+    marginLeft: 0,
+    marginRight: 15,
+    height: 40,
+    width: '30%',
+    fontSize: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0.5,
+      height: 1,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 1.21,
 
-      elevation: 2,
+    elevation: 2,
   },
-    dropdown: {
-     margin: 16,
-     marginTop: 40,
-      height: 50,
-      width: 360,
-      backgroundColor: 'white',
-      borderRadius: 12,
-      padding: 12,
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 1,
-      },
-      shadowOpacity: 0.2,
-      shadowRadius: 1.41,
-      elevation: 2,
+  inputMonths: {
+    backgroundColor: 'white',
+    justifyContent: 'flex-end',
+    borderRadius: 10,
+    padding: 5,
+    fontSize: 10,
+    marginTop: -35,
+    marginLeft: 35,
+    height: 40,
+    width: '30%',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0.5,
+      height: 1,
     },
-    item: {
-      padding: 17,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
+    shadowOpacity: 0.4,
+    shadowRadius: 1.21,
+
+    elevation: 2,
+  },
+  dropdown: {
+    margin: 16,
+    marginTop: 20,
+    height: 45,
+    width: 260,
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
     },
-    textItem: {
-      flex: 1,
-      fontSize: 14,
-    },
-    placeholderStyle: {
-      fontSize: 14,
-    },
-    selectedTextStyle: {
-      fontSize: 14,
-      borderRadius: 10,      
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
+  },
+  item: {
+    padding: 17,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  textItem: {
+    flex: 1,
+    fontSize: 12,
+    fontFamily: 'sans-serif'
+  },
+  placeholderStyle: {
+    fontSize: 12,
+  },
+  selectedTextStyle: {
+    fontSize: 12,
+    borderRadius: 20,
   },
   button: {
     backgroundColor: '#fdc50b',
     padding: 10,
     width: 280,
     height: 65,
-    borderRadius: 20,
-    marginTop: 40,
+    borderRadius: 25,
+    marginTop: 20,
     alignSelf: 'center',
-    marginBottom: 70,
+    marginBottom: 10,
   },
   btntext: {
     textAlign: 'center',
@@ -346,5 +709,104 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#144100',
     paddingTop: 10,
+  },
+  blModal: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: '#e3f7d9',
+    width: '60%',
+    maxHeight: '40%',
+    minHeight: '10%',
+    marginTop: 170,
+    marginLeft: 80,
+    borderRadius: 20,
+  },
+  blButton: {
+    backgroundColor: '#fdc50b',
+    padding: 10,
+    width: 200,
+    height: 50,
+    textAlign: 'center',
+    color: '#144100',
+    borderRadius: 25,
+    marginTop: 10,
+    alignSelf: 'center',
+    marginBottom: 20,
+  },
+  devices: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    padding: 10,
+    marginTop: 10,
+    backgroundColor: '#e6f7dc',
+    borderRadius: 8,
+    width: '100%',
+    alignSelf: 'center',
+    textAlign: 'center',
+    color: '#030303',
+    fontFamily: 'Roboto',
+    fontStyle: 'italic',
+    fontWeight: 'bold',
+    fontSize: 12,
+    shadowColor: '#b4b4b4',
+    shadowOffset: {
+      width: 0.5,
+      height: 1,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 1.21,
+
+    elevation: 2,
+  },
+  blButtonText: {
+    textAlign: 'center',
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#144100',
+    padding: 6,
+  },
+  sensorimage: {
+    width: 100,
+    height: 110,
+    marginTop: -15,
+    marginLeft: 10,
+    marginRight: -40,
+  },
+  modalContent: {
+    backgroundColor: '#ffffff',
+    padding: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    borderColor: '#899186',
+    shadowOffset: {
+      width: 0.8,
+      height: 1,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 1.21,
+    elevation: 2
+  },
+  modalText: {
+    fontSize: 14,
+    fontStyle: 'italic',
+    padding: 5,
+    color: '#000000',
+    textAlign: 'center',
+    marginTop: 25,
+    marginBottom: -20
+  },
+  okButton: {
+    backgroundColor: '#fdc50b',
+    padding: 10,
+    width: 80,
+    height: 50,
+    textAlign: 'center',
+    color: '#144100',
+    borderRadius: 25,
+    marginTop: 50,
+    alignSelf: 'center',
+    marginBottom: 20,
   },
 });
