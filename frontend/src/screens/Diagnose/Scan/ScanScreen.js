@@ -1,5 +1,4 @@
 import { Camera } from "expo-camera";
-import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library";
 import { useEffect, useRef, useState } from "react";
@@ -10,6 +9,7 @@ export default function ScanScreen() {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [image, setImage] = useState(null);
   const [gallery, setGallery] = useState(false);
+  const [base64Data, setBase64Data] = useState(null);
   const type = Camera.Constants.back;
   const cameraRef = useRef(null);
 
@@ -28,7 +28,8 @@ export default function ScanScreen() {
   const takePicture = async () => {
     if (cameraRef) {
       try {
-        const data = await cameraRef.current.takePictureAsync();
+        const data = await cameraRef.current.takePictureAsync({ base64: true });
+        setBase64Data(data.base64);
         setImage(data.uri);
         setGallery(false);
       } catch (error) {
@@ -46,6 +47,7 @@ export default function ScanScreen() {
 
       if (!result.canceled) {
         setImage(result.assets[0].uri);
+        setBase64Data(result.assets[0].base64);
         setGallery(true);
       }
     } catch (error) {
@@ -61,8 +63,8 @@ export default function ScanScreen() {
           await MediaLibrary.createAssetAsync(image);
         }
 
-        const base64Image = await convertToBase64(image); //Convert image to base64
-        await logBase64(base64Image); //to see in console
+        const base64String = await generateBase64String(image, base64Data); //Convert image to base64
+        await logBase64(base64String); //to see in console
 
         //TODO: Send this base64Image to the YOLO model
       } catch (error) {
@@ -71,12 +73,9 @@ export default function ScanScreen() {
     }
   };
 
-  const convertToBase64 = async (image) => {
+  const generateBase64String = async (image, base64Data) => {
     const parts = image.split(".");
     const extension = parts[parts.length - 1];
-    const base64Data = await FileSystem.readAsStringAsync(image, {
-      encoding: "base64",
-    });
     const base64 = `data:image/${extension};base64,${base64Data}`;
 
     return base64;
