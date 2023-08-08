@@ -53,7 +53,7 @@ const SECTIONS = [
       {
         key: '1',
         text: 'Item text 1',
-        uri: 'https://picsum.photos/id/1/200',
+        uri: 'https://res.cloudinary.com/sliit-yasantha/image/upload/v1684854307/5e7ce671cae140d06311ca2db50a5698_hrhwib.jpg',
       },
       {
         key: '2',
@@ -69,12 +69,12 @@ const SECTIONS = [
       {
         key: '4',
         text: 'Item text 4',
-        uri: 'https://picsum.photos/id/1006/200',
+        uri: 'https://res.cloudinary.com/sliit-yasantha/image/upload/v1684854307/5e7ce671cae140d06311ca2db50a5698_hrhwib.jpg',
       },
       {
         key: '5',
         text: 'Item text 5',
-        uri: 'https://picsum.photos/id/1008/200',
+        uri: 'https://res.cloudinary.com/sliit-yasantha/image/upload/v1684854307/5e7ce671cae140d06311ca2db50a5698_hrhwib.jpg',
       },
     ],
   },
@@ -100,52 +100,23 @@ const SECTIONS = [
       {
         key: '4',
         text: 'Item text 4',
-        uri: 'https://picsum.photos/id/1015/200',
+        uri: 'https://res.cloudinary.com/sliit-yasantha/image/upload/v1684854307/5e7ce671cae140d06311ca2db50a5698_hrhwib.jpg',
       },
       {
         key: '5',
         text: 'Item text 5',
-        uri: 'https://picsum.photos/id/1016/200',
+        uri: 'https://res.cloudinary.com/sliit-yasantha/image/upload/v1684854307/5e7ce671cae140d06311ca2db50a5698_hrhwib.jpg',
       },
     ],
   },
-  {
-    title: 'Based on your recent listening',
-    data: [
-      {
-        key: '1',
-        text: 'Item text 1',
-        uri: 'https://picsum.photos/id/1020/200',
-      },
-      {
-        key: '2',
-        text: 'Item text 2',
-        uri: 'https://picsum.photos/id/1024/200',
-      },
-
-      {
-        key: '3',
-        text: 'Item text 3',
-        uri: 'https://picsum.photos/id/1027/200',
-      },
-      {
-        key: '4',
-        text: 'Item text 4',
-        uri: 'https://picsum.photos/id/1035/200',
-      },
-      {
-        key: '5',
-        text: 'Item text 5',
-        uri: 'https://picsum.photos/id/1038/200',
-      },
-    ],
-  },
+  
 ];
 
 const styles2 = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
+    backgroundColor: '#FDFAFA',
+    height: 100,
   },
   sectionHeader: {
     fontWeight: '800',
