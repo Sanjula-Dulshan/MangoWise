@@ -1,8 +1,10 @@
+import { useNavigation } from "@react-navigation/native";
 import { Camera } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library";
 import { useEffect, useRef, useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
+import Header from "../../../components/Common/Header";
 import Button from "./Button";
 
 export default function ScanScreen() {
@@ -12,6 +14,7 @@ export default function ScanScreen() {
   const [base64Data, setBase64Data] = useState(null);
   const type = Camera.Constants.back;
   const cameraRef = useRef(null);
+  const navigation = useNavigation();
 
   useEffect(() => {
     (async () => {
@@ -43,6 +46,7 @@ export default function ScanScreen() {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         quality: 1,
+        base64: true,
       });
 
       if (!result.canceled) {
@@ -67,6 +71,7 @@ export default function ScanScreen() {
         await logBase64(base64String); //to see in console
 
         //TODO: Send this base64Image to the YOLO model
+        navigation.navigate("DetectedAllDiseaseScreen");
       } catch (error) {
         console.log("error ", error);
       }
@@ -90,6 +95,7 @@ export default function ScanScreen() {
 
   return (
     <View style={styles.container}>
+      <Header />
       {!image ? (
         <Camera style={styles.camera} type={type} ref={cameraRef}>
           <Text>Hello</Text>

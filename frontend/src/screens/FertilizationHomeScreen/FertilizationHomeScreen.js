@@ -1,4 +1,4 @@
-import { AntDesign, Feather } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import {
@@ -17,7 +17,7 @@ import sensorimage from "../../../assets/NPKSensor.png";
 import vector from "../../../assets/Vector.png";
 import monitor from "../../../assets/monitor_nutrients.jpg";
 import report from "../../../assets/report.png";
-import Header from "../../components/Header";
+import Header from "../../components/Common/Header";
 
 import {
   PERMISSIONS,
@@ -144,16 +144,7 @@ export default function FertilizationHomeScreen() {
   return (
     <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
       <View style={{ backgroundColor: "#fdfafa", height: "100%" }}>
-        <View style={styles.topic}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("CheckFertilizerScreen")}
-          >
-            <View style={styles.backButton}>
-              <Feather name="arrow-left" size={40} color="#000000" />
-            </View>
-          </TouchableOpacity>
-          <Header />
-        </View>
+        <Header />
 
         <Text
           style={{
