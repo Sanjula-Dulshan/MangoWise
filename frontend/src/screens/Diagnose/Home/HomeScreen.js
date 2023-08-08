@@ -1,122 +1,16 @@
-import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
-import {
-  Image,
-  PermissionsAndroid,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import sensorimage from "../../../../assets/NPKSensor.png";
+import React from "react";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import vector from "../../../../assets/Vector.png";
-import monitor from "../../../../assets/monitor_nutrients.jpg";
+import focusLeaf from "../../../../assets/focus-leaf.png";
 import report from "../../../../assets/report.png";
-import Header from "../../../components/Header";
-
-import {
-  PERMISSIONS,
-  RESULTS,
-  request,
-  requestMultiple,
-} from "react-native-permissions";
-
-const hasPermission = async () => {
-  if (Platform.OS === "android" && Platform.Version >= 23) {
-    const granted = await PermissionsAndroid.check(
-      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-    );
-    if (granted) {
-      return true;
-    } else {
-      return false;
-    }
-  } else {
-    return true;
-  }
-};
-
-const hasPermission2 = async () => {
-  if (Platform.OS === "android" && Platform.Version >= 23) {
-    const granted2 = await PermissionsAndroid.check(
-      PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN
-    );
-
-    if (granted2) {
-      return true;
-    } else {
-      return false;
-    }
-  } else {
-    return true;
-  }
-};
-
-const requestPermission = async () => {
-  if (Platform.OS === "android" && Platform.Version >= 23) {
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-    );
-    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      return true;
-    } else {
-      return false;
-    }
-  } else {
-    return true;
-  }
-};
-
-const requestPermission2 = async () => {
-  await requestMultiple([
-    PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
-    PERMISSIONS.ANDROID.BLUETOOTH_CONNECT,
-  ]);
-
-  if (Platform.OS === "android" && Platform.Version >= 23) {
-    const granted2 = await request(
-      PERMISSIONS.ANDROID.BLUETOOTH_CONNECT,
-      PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
-      PERMISSIONS.ANDROID.BLUETOOTH_ADVERTISE,
-      PERMISSIONS.ANDROID.BLUETOOTH
-    );
-    if (granted2 === RESULTS.GRANTED) {
-      return true;
-    } else {
-      return false;
-    }
-  } else {
-    return true;
-  }
-};
+import sampleMangoLaaf from "../../../../assets/sample-mango-leaf.jpg";
+import searchLeaf from "../../../../assets/search-leaf-icon.png";
+import VirusIcon from "../../../../assets/virus-icon.png";
+import Header from "../../../components/Common/Header";
 
 export default function HomeScreen() {
   const navigation = useNavigation();
-  const [permissionGranted, setPermissionGranted] = useState(false);
-  const [isModalVisible, setModalVisible] = useState(false);
-  const [isError, setError] = useState(false);
-
-  useEffect(() => {
-    (async () => {
-      const granted = await hasPermission();
-      const granted2 = await hasPermission2();
-
-      if (!granted || !granted2) {
-        const permission = await requestPermission();
-        const permission2 = await requestPermission2();
-
-        if (permission && permission2) {
-          setPermissionGranted(true);
-        } else {
-          setPermissionGranted(false);
-        }
-      } else {
-        setPermissionGranted(true);
-      }
-    })();
-  }, []);
 
   const handleTakePicture = async () => {
     navigation.navigate("DiagnoseScanScreen");
@@ -124,175 +18,240 @@ export default function HomeScreen() {
 
   return (
     <View style={{ backgroundColor: "#fdfafa", height: "100%" }}>
-      <View style={styles.topic}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("CheckFertilizerScreen")}
-        >
-          <View style={styles.backButton}>
-            <Feather name="arrow-left" size={40} color="#000000" />
-          </View>
-        </TouchableOpacity>
-        <Header />
-      </View>
+      <Header />
 
       <Text
         style={{
           fontSize: 20,
           fontFamily: "Roboto",
-          paddingTop: 2,
+          paddingTop: 10,
           textAlign: "left",
           paddingRight: 13,
           marginLeft: 20,
           fontStyle: "italic",
         }}
       >
-        Empower your plants with
+        It's time to identify
       </Text>
-      <Text
-        style={{
-          fontSize: 20,
-          fontFamily: "Roboto",
-          paddingTop: 2,
-          textAlign: "left",
-          paddingRight: 13,
-          marginLeft: 20,
-          fontStyle: "italic",
-        }}
-      >
-        essential nutrients
-      </Text>
+      <View style={styles.titleContainer}>
+        <Text
+          style={{
+            fontSize: 20,
+            fontFamily: "Roboto",
+            paddingTop: 2,
+            textAlign: "left",
+            paddingRight: 13,
+            marginLeft: 20,
+            fontStyle: "italic",
+          }}
+        >
+          mango diseases
+        </Text>
+        <Image
+          source={VirusIcon}
+          style={styles.virusIcon}
+          resizeMode="contain"
+        />
+      </View>
       <View style={styles.imageContainer}>
-        <View style={{ flexDirection: "row", marginTop: 5 }}>
+        <View
+          style={{
+            flexDirection: "row",
+            marginTop: 5,
+            justifyContent: "space-between",
+          }}
+        >
           <Image
-            source={sensorimage}
-            style={styles.sensorimage}
+            source={focusLeaf}
+            style={styles.focusLeaf}
+            resizeMode="contain"
+          />
+          <Image
+            source={vector}
+            style={styles.vectorimage}
             resizeMode="contain"
           />
 
+          <Image
+            source={searchLeaf}
+            style={styles.searchLeaf}
+            resizeMode="contain"
+          />
+          <Image
+            source={vector}
+            style={styles.vectorimage}
+            resizeMode="contain"
+          />
           <Image
             source={report}
             style={styles.reportimage}
             resizeMode="contain"
           />
-          <Image
-            source={monitor}
-            style={styles.monitorimage}
-            resizeMode="contain"
-          />
         </View>
-        <View style={{ flexDirection: "row", marginTop: 0 }}>
-          <View style={{ flexDirection: "column", marginTop: 5 }}>
-            <Text
-              style={{
-                fontSize: 12,
-                fontFamily: "Roboto",
-                textAlign: "left",
-                paddingRight: 13,
-                marginLeft: 10,
-                marginTop: -20,
-              }}
-            >
-              Test soil{" "}
-            </Text>
-          </View>
-          <Image
-            source={vector}
-            style={styles.vectorimage}
-            resizeMode="contain"
-          />
-          <View style={{ flexDirection: "column", marginTop: 5 }}>
-            <Text
-              style={{
-                fontSize: 12,
-                fontFamily: "Roboto",
-                textAlign: "left",
-                paddingRight: 13,
-                marginLeft: 5,
-                marginTop: -20,
-              }}
-            >
-              Get fertilizer{" "}
-            </Text>
-            <Text
-              style={{
-                fontSize: 12,
-                fontFamily: "Roboto",
-                textAlign: "left",
-                paddingRight: 13,
-                marginLeft: 5,
-                marginTop: 0,
-              }}
-            >
-              suggestions
-            </Text>
-          </View>
-          <Image
-            source={vector}
-            style={styles.vectorimage}
-            resizeMode="contain"
-          />
-          <View style={{ flexDirection: "column", marginTop: 5 }}>
-            <Text
-              style={{
-                fontSize: 12,
-                fontFamily: "Roboto",
-                textAlign: "left",
-                paddingRight: 13,
-                marginLeft: 5,
-                marginTop: -20,
-              }}
-            >
-              Monitor{" "}
-            </Text>
-            <Text
-              style={{
-                fontSize: 12,
-                fontFamily: "Roboto",
-                textAlign: "left",
-                paddingRight: 13,
-                marginLeft: 5,
-                marginTop: 0,
-              }}
-            >
-              nutrients level
-            </Text>
-          </View>
-        </View>
-      </View>
-
-      <View style={{ marginTop: 10 }}>
-        <Text
+        <View
           style={{
-            fontSize: 12,
-            fontFamily: "Roboto",
-            textAlign: "left",
-            paddingRight: 13,
-            marginLeft: 15,
+            flexDirection: "row",
             marginTop: 0,
-            fontStyle: "italic",
-            color: "red",
+            justifyContent: "space-between",
           }}
         >
-          Please note:
-        </Text>
-        <Text
-          style={{
-            fontSize: 10,
-            textAlign: "left",
-            paddingRight: 13,
-            marginLeft: 15,
-            marginTop: 3,
-            fontStyle: "italic",
-          }}
-        >
-          You need to connect your mobile phone with the sensor using Bluetooth
-          connection.
-        </Text>
+          <View style={{ flexDirection: "column", marginTop: 5 }}>
+            <Text
+              style={{
+                fontSize: 12,
+                fontFamily: "Roboto",
+                textAlign: "left",
+                paddingRight: 13,
+                marginTop: -5,
+                marginLeft: 10,
+              }}
+            >
+              Take a
+            </Text>
+            <Text
+              style={{
+                fontSize: 12,
+                fontFamily: "Roboto",
+                textAlign: "left",
+                paddingRight: 13,
+                marginTop: 0,
+                marginLeft: 10,
+              }}
+            >
+              picture
+            </Text>
+          </View>
+
+          <View style={{ flexDirection: "column", marginTop: 5 }}>
+            <Text
+              style={{
+                fontSize: 12,
+                fontFamily: "Roboto",
+                textAlign: "left",
+                paddingRight: 13,
+                marginLeft: 15,
+                marginTop: -5,
+              }}
+            >
+              See{" "}
+            </Text>
+            <Text
+              style={{
+                fontSize: 12,
+                fontFamily: "Roboto",
+                textAlign: "left",
+                paddingRight: 13,
+                marginLeft: 5,
+                marginTop: 0,
+              }}
+            >
+              Diagnose
+            </Text>
+          </View>
+
+          <View style={{ flexDirection: "column", marginTop: 5 }}>
+            <Text
+              style={{
+                fontSize: 12,
+                fontFamily: "Roboto",
+                textAlign: "left",
+                paddingRight: 13,
+                marginLeft: 15,
+                marginTop: -5,
+              }}
+            >
+              See{" "}
+            </Text>
+            <Text
+              style={{
+                fontSize: 12,
+                fontFamily: "Roboto",
+                textAlign: "left",
+                paddingRight: 13,
+                marginLeft: 5,
+                marginTop: 0,
+              }}
+            >
+              Remedies
+            </Text>
+          </View>
+        </View>
       </View>
 
       <TouchableOpacity style={styles.button} onPress={handleTakePicture}>
         <Text style={styles.btntext}>Take a Picture</Text>
       </TouchableOpacity>
+
+      <View
+        style={{
+          flexDirection: "row",
+          marginTop: 40,
+          justifyContent: "space-between",
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 20,
+            textAlign: "left",
+            paddingRight: 13,
+            marginLeft: 21,
+            marginTop: 0,
+            fontWeight: 500,
+          }}
+        >
+          Previous Detections
+        </Text>
+        <TouchableOpacity>
+          <Text
+            style={{
+              fontSize: 20,
+              textAlign: "left",
+              paddingRight: 15,
+              marginTop: 0,
+              fontWeight: 500,
+              color: "#fdc50b",
+            }}
+          >
+            View All
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      <View
+        style={{
+          flexDirection: "row",
+          marginTop: 30,
+          justifyContent: "space-between",
+        }}
+      >
+        <TouchableOpacity>
+          <View style={styles.image}>
+            <Image
+              source={sampleMangoLaaf}
+              style={styles.sampleMangoLeaf}
+              resizeMode="contain"
+            />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <View style={styles.image}>
+            <Image
+              source={sampleMangoLaaf}
+              style={styles.sampleMangoLeaf}
+              resizeMode="contain"
+            />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <View style={styles.image}>
+            <Image
+              source={sampleMangoLaaf}
+              style={styles.sampleMangoLeaf}
+              resizeMode="contain"
+            />
+          </View>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -300,8 +259,9 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   imageContainer: {
     marginBottom: 5,
-    marginTop: 30,
+    marginTop: 40,
     width: "95%",
+    height: "20%",
     marginLeft: 10,
     padding: 10,
     backgroundColor: "#f3fdee",
@@ -314,6 +274,7 @@ const styles = StyleSheet.create({
     shadowRadius: 1.21,
     elevation: 2,
   },
+
   topic: {
     flexDirection: "row",
     paddingTop: 20,
@@ -336,10 +297,10 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: "#fdc50b",
     width: 220,
-    height: 65,
+    height: 60,
     paddingBottom: 0,
     borderRadius: 25,
-    marginTop: 20,
+    marginTop: 30,
     alignSelf: "center",
     marginBottom: 10,
   },
@@ -349,7 +310,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#144100",
     paddingTop: 10,
-    marginTop: 10,
+    marginTop: 8,
   },
   infoModal: {
     flex: 1,
@@ -382,25 +343,25 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginBottom: 20,
   },
-  sensorimage: {
-    width: 100,
-    height: 110,
-    marginTop: -20,
-    marginLeft: -5,
+  focusLeaf: {
+    width: 60,
+    height: 60,
+    marginTop: -5,
+    marginLeft: 5,
     marginRight: 0,
     marginBottom: 5,
   },
-  monitorimage: {
-    width: 95,
-    height: 120,
-    marginTop: -20,
+  searchLeaf: {
+    width: 80,
+    height: 80,
+    marginTop: -10,
     marginLeft: 25,
     marginRight: 0,
     marginBottom: 5,
   },
   reportimage: {
-    width: 100,
-    height: 110,
+    width: 80,
+    height: 90,
     marginTop: -20,
     marginLeft: 15,
     marginRight: 15,
@@ -409,9 +370,8 @@ const styles = StyleSheet.create({
   vectorimage: {
     width: 30,
     height: 30,
-    marginTop: -10,
-    marginLeft: 5,
-    marginRight: 5,
+    marginTop: 10,
+    marginLeft: 15,
     marginBottom: 15,
   },
   modalContent: {
@@ -437,5 +397,41 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 25,
     marginBottom: -20,
+  },
+
+  virusIcon: {
+    width: 20,
+    height: 20,
+    marginTop: 7,
+  },
+  image: {
+    marginBottom: 5,
+    marginTop: 10,
+    width: "80%",
+    height: "37%",
+    marginLeft: 10,
+
+    backgroundColor: "#f3fdee",
+    borderRadius: 20,
+    shadowOffset: {
+      width: 0.5,
+      height: 1,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 1.21,
+    elevation: 2,
+  },
+  sampleMangoLeaf: {
+    width: 80,
+    height: 90,
+
+    marginLeft: 5,
+    marginRight: 20,
+    marginTop: 7,
+    marginBottom: 5,
+    borderRadius: 20,
+  },
+  titleContainer: {
+    flexDirection: "row",
   },
 });
