@@ -16,11 +16,11 @@ export default function DiagnoseAllScreens() {
         component={DiagnoseHomeScreen}
         options={{ headerShown: false }}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="DiagnoseScanScreen"
         component={DiagnoseScanScreen}
         options={{ headerShown: false }}
-      />
+      /> */}
       <Stack.Screen
         name="DetectedAllDiseaseScreen"
         component={DetectedAllDiseaseScreen}
