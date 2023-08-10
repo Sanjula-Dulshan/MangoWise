@@ -16,6 +16,10 @@ export default function HomeScreen() {
     navigation.navigate("DiagnoseScanScreen");
   };
 
+  const handlePreviousDiagnose = async () => {
+    navigation.navigate("PreviousDiseasesScreen");
+  };
+
   return (
     <View style={{ backgroundColor: "#fdfafa", height: "100%" }}>
       <Header />
@@ -201,7 +205,7 @@ export default function HomeScreen() {
         >
           Previous Detections
         </Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handlePreviousDiagnose}>
           <Text
             style={{
               fontSize: 20,

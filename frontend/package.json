@@ -17,6 +17,8 @@
     "@react-navigation/bottom-tabs": "^6.5.8",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/native-stack": "^6.9.12",
+    "@rneui/base": "^4.0.0-rc.8",
+    "@rneui/themed": "^4.0.0-rc.8",
     "axios": "^1.4.0",
     "eas-cli": "^3.18.3",
     "expo": "^48.0.16",
@@ -51,6 +53,7 @@
     "react-native-screens": "~3.20.0",
     "react-native-svg": "13.4.0",
     "react-native-toast-message": "^2.1.6",
+    "react-native-vector-icons": "^10.0.0",
     "react-native-web": "~0.18.10"
   },
   "devDependencies": {
