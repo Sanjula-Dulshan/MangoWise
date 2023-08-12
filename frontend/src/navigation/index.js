@@ -2,12 +2,13 @@ import { NavigationContainer } from "@react-navigation/native";
 import React from "react";
 
 //import screens
-import BottomTabs from "../components/BottomTab/BottomTabs";
+import StackNav from "../components/BottomTab/StackNav";
 
 const Navigation = () => {
   return (
     <NavigationContainer>
-      <BottomTabs />
+      {/* <BottomTabs /> */}
+      <StackNav />
     </NavigationContainer>
   );
 };
