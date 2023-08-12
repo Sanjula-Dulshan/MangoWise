@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import Header from "../../components/Common/Header";
+import constants from "../../constants/constants";
 
 export default function PreviousRecordsScreen() {
   const navigation = useNavigation();
@@ -24,7 +25,7 @@ export default function PreviousRecordsScreen() {
       (async function id() {
         try {
           const record = await axios.get(
-            "http://192.168.1.246:8070/records/getall"
+            constants.backend_url + "/records/getall"
           );
           if (record) {
             const records = record.data;
