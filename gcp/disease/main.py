@@ -38,14 +38,13 @@ def disease_predict(request):
 
     image = request.files["file"]
 
-    image = np.array(
-        Image.open(image).convert("RGB").resize((320, 240))  # image resizing
+    image_array = np.array(
+        Image.open(image).convert("RGB").resize((240, 240))  # image resizing
     )
     print("Image loaded")
-    image = image/255  # normalize the image in 0 to 1 range
 
-    img_array = tf.expand_dims(image, 0)
-    predictions = model.predict(img_array)
+    img_batch = np.expand_dims(image_array, 0)
+    predictions = model.predict(img_batch)
 
     print("Predictions: ", predictions)
 
