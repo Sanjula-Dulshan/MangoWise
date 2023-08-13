@@ -13,14 +13,14 @@ import {
   FlatList,
   Image
 } from 'react-native';
-import Header from '../../components/Header';
+import Header from "../../../components/Common/Header";
 import { useNavigation } from "@react-navigation/native";
 import { Feather, AntDesign } from '@expo/vector-icons';
 import BluetoothSerial from 'react-native-bluetooth-serial-2';
-import plant from '../../../assets/plant.png'
-import check from '../../../assets/check.png'
-import bud from '../../../assets/bud.png';
-import vector from '../../../assets/Vector.png';
+import plant from '../../../../assets/plant.png'
+import check from '../../../../assets/check.png'
+import bud from '../../../../assets/bud.png';
+import vector from '../../../../assets/Vector.png';
 import Modal from 'react-native-modal';
 
 import {
@@ -138,75 +138,8 @@ const styles2 = StyleSheet.create({
   },
 });
 
-const hasPermission = async () => {
-  if (Platform.OS === 'android' && Platform.Version >= 23) {
-    const granted = await PermissionsAndroid.check(
-      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-    );
-    if (granted) {
-      return true;
-    } else {
-      return false;
-    }
-  } else {
-    return true;
-  }
-};
 
-const hasPermission2 = async () => {
-  if (Platform.OS === 'android' && Platform.Version >= 23) {
-    const granted2 = await PermissionsAndroid.check(
-      PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN
-    );
-
-    if (granted2) {
-      return true;
-    } else {
-      return false;
-    }
-  } else {
-    return true;
-  }
-};
-
-const requestPermission = async () => {
-
-  if (Platform.OS === 'android' && Platform.Version >= 23) {
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-    );
-    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      return true;
-    } else {
-      return false;
-    }
-  } else {
-    return true;
-  }
-};
-
-const requestPermission2 = async () => {
-
-  await requestMultiple([PERMISSIONS.ANDROID.BLUETOOTH_SCAN, PERMISSIONS.ANDROID.BLUETOOTH_CONNECT]);
-
-  if (Platform.OS === 'android' && Platform.Version >= 23) {
-    const granted2 = await request(
-      PERMISSIONS.ANDROID.BLUETOOTH_CONNECT,
-      PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
-      PERMISSIONS.ANDROID.BLUETOOTH_ADVERTISE,
-      PERMISSIONS.ANDROID.BLUETOOTH
-    );
-    if (granted2 === RESULTS.GRANTED) {
-      return true;
-    } else {
-      return false;
-    }
-  } else {
-    return true;
-  }
-};
-
-export default function BuddingHomeScreen() {
+export default function BuddingResultScreen() {
 
   const navigation = useNavigation();
   const [permissionGranted, setPermissionGranted] = useState(false);
@@ -234,28 +167,9 @@ export default function BuddingHomeScreen() {
     })();
   }, []);
 
-  const handlebtn1 = async () => {
-    await BluetoothSerial.isEnabled().then(
-      (res) => {
-        if (res) {
-              navigation.navigate('CheckFertilizerScreen');
-            } else {
-              setError(true);
-            }
-      }
-    );
-  };
-
-  const handlebtn2 = async () => {
-   await BluetoothSerial.isEnabled().then(
-      (res) => {
-        if (res) {
-              navigation.navigate('PreviousRecordsScreen');
-            } else {
-              setError(true);
-            }
-      }
-    );
+  
+  const handleTakePicture = async () => {
+    navigation.navigate("DiagnoseScanScreen");
   };
 
   return (
@@ -346,11 +260,11 @@ export default function BuddingHomeScreen() {
         </View>
       </TouchableOpacity>
 
-      <TouchableOpacity style={{ ...styles.button, marginTop: 10 }} onPress={handlebtn1}>
+      <TouchableOpacity style={{ ...styles.button, marginTop: 10 }} onPress={handleTakePicture}>
         <Text style={styles.btntext}>Take a Picture</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={{ ...styles.button, marginTop: 10 }}onPress={handlebtn2}>
+      <TouchableOpacity style={{ ...styles.button, marginTop: 10 }}onPress={handleTakePicture}>
         <Text style={styles.btntext}>Choose a photo</Text>
       </TouchableOpacity>
 
