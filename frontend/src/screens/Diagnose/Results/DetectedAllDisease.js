@@ -1,17 +1,35 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import sampleMangoLeaf from "../../../../assets/sample-mango-leaf2.jpg";
 import Header from "../../../components/Common/Header";
+import { useRoute } from "@react-navigation/native";
+import { useEffect, useState } from "react";
 
 export default function DetectedAllDisease() {
+  const [instantImage, setInstantImage] = useState();
+  const route = useRoute();
+
+  useEffect(() => {
+    const { data } = route.params;
+
+    console.log("DetectedAllDisease> ", data);
+    convertBase64ToImage(data.image);
+  }, []);
+  //convert base64 to image
+  function convertBase64ToImage(base64String) {
+    if (base64String) {
+      const imageUri = `data:image/png;base64,${base64String}`;
+      setInstantImage(imageUri);
+    }
+  }
+
   return (
     <View style={{ backgroundColor: "#fdfafa", height: "100%" }}>
       <Header />
       <View style={styles.imageContainer}>
-        <Image
-          source={sampleMangoLeaf}
-          resizeMode="contain"
-          style={styles.image}
-        />
+        {console.log("instantImage> ", instantImage)}
+        {instantImage && (
+          <Image source={{ uri: instantImage }} style={styles.image} />
+        )}
       </View>
       <View style={styles.details}>
         <Text>Anthracnose</Text>
@@ -34,8 +52,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   image: {
-    flex: 1,
-    borderRadius: 2,
+    width: "80%",
+    height: "100%",
+    borderRadius: 5,
   },
   details: {
     flex: 1,

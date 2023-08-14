@@ -3,15 +3,18 @@ import { Camera } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library";
 import { useEffect, useRef, useState } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Image, StyleSheet, Text, View } from "react-native";
 import Header from "../../../components/Common/Header";
 import Button from "./Button";
+import axios from "axios";
+import constants from "../../../constants/constants";
 
 export default function ScanScreen() {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [image, setImage] = useState(null);
   const [gallery, setGallery] = useState(false);
   const [base64Data, setBase64Data] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const type = Camera.Constants.back;
   const cameraRef = useRef(null);
   const navigation = useNavigation();
@@ -66,12 +69,34 @@ export default function ScanScreen() {
         if (!gallery) {
           await MediaLibrary.createAssetAsync(image);
         }
+        console.log("Loading...\n");
+        console.log(constants.backend_url + "/disease/predict");
+        setIsLoading(true);
+        await axios({
+          method: "POST",
+          url: constants.backend_url + "/disease/predict",
+          data: {
+            image: base64Data,
+          },
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => {
+            setIsLoading(false);
+            navigation.navigate("DetectedAllDiseaseScreen", {
+              data: response.data,
+            });
+          })
+          .catch((error) => {
+            console.log(error);
+          });
 
-        const base64String = await generateBase64String(image, base64Data); //Convert image to base64
-        await logBase64(base64String); //to see in console
+        //const base64String = await generateBase64String(image, base64Data); //Convert image to base64
+        //await logBase64(base64String); //to see in console
 
         //TODO: Send this base64Image to the YOLO model
-        navigation.navigate("DetectedAllDiseaseScreen");
+        //navigation.navigate("DetectedAllDiseaseScreen");
       } catch (error) {
         console.log("error ", error);
       }
@@ -101,7 +126,17 @@ export default function ScanScreen() {
           <Text>Hello</Text>
         </Camera>
       ) : (
-        <Image source={{ uri: image }} style={styles.camera} />
+        <>
+          {isLoading ? (
+            <ActivityIndicator
+              size="large"
+              style={styles.camera}
+              color="#fdc50b"
+            />
+          ) : (
+            <Image source={{ uri: image }} style={styles.camera} />
+          )}
+        </>
       )}
       <View>
         {!image ? (
