@@ -3,30 +3,61 @@ import sampleMangoLeaf from "../../../../assets/sample-mango-leaf2.jpg";
 import Header from "../../../components/Common/Header";
 import { useRoute } from "@react-navigation/native";
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function DetectedAllDisease() {
   const [instantImage, setInstantImage] = useState();
+  const [imageUri, setImageUri] = useState();
+
   const route = useRoute();
 
   useEffect(() => {
-    const { data } = route.params;
-
-    console.log("DetectedAllDisease> ", data);
-    convertBase64ToImage(data.image);
+    const { base64, imageUri } = route.params;
+    setImageUri(imageUri);
+    convertBase64ToImage(base64.image);
   }, []);
   //convert base64 to image
   function convertBase64ToImage(base64String) {
     if (base64String) {
-      const imageUri = `data:image/png;base64,${base64String}`;
-      setInstantImage(imageUri);
+      const imageBase64Uri = `data:image/png;base64,${base64String}`;
+      setInstantImage(imageBase64Uri);
     }
   }
+
+  const getRemedies = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("image", {
+        uri: imageUri, // Replace with your image file path
+        type: "image/jpeg", // Adjust the image type if needed
+        name: "image.jpg", // Provide a suitable name for the image
+      });
+
+      await axios
+        .post(
+          "https://us-central1-mangowise-395709.cloudfunctions.net/disease_predict",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        )
+        .then((response) => {
+          console.log("response>> ", response);
+        })
+        .catch((error) => {
+          console.log("error>> ", error);
+        });
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   return (
     <View style={{ backgroundColor: "#fdfafa", height: "100%" }}>
       <Header />
       <View style={styles.imageContainer}>
-        {console.log("instantImage> ", instantImage)}
         {instantImage && (
           <Image source={{ uri: instantImage }} style={styles.image} />
         )}
@@ -37,7 +68,7 @@ export default function DetectedAllDisease() {
 
         <Text>Powdery Mildew</Text>
 
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={getRemedies}>
           <Text style={styles.btntext}>Get remedies</Text>
         </TouchableOpacity>
       </View>

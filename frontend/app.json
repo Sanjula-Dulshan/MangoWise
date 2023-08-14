@@ -45,7 +45,8 @@
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Allow $(PRODUCT_NAME) to access your photos.",
         "NSPhotoLibraryAddUsageDescription": "Allow $(PRODUCT_NAME) to save photos."
-      }
+      },
+      "bundleIdentifier": "com.dulanjanalakshan.MangoWise"
     },
     "android": {
       "adaptiveIcon": {
@@ -61,8 +62,6 @@
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.CAMERA",
-        "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.ACCESS_MEDIA_LOCATION"
       ],
       "jsEngine": "jsc"
@@ -72,7 +71,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "817b5a9e-159f-44c1-892f-67c2dcab235f"
+        "projectId": "6d58a48d-f15c-46d9-95b4-024d5a4042d3"
       }
     }
   }

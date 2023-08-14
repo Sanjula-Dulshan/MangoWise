@@ -8,12 +8,12 @@ import Header from "../../../components/Common/Header";
 import Button from "./Button";
 import axios from "axios";
 import constants from "../../../constants/constants";
+import { manipulateAsync } from "expo-image-manipulator";
 
 export default function ScanScreen() {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [image, setImage] = useState(null);
   const [gallery, setGallery] = useState(false);
-  const [base64Data, setBase64Data] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const type = Camera.Constants.back;
   const cameraRef = useRef(null);
@@ -34,8 +34,7 @@ export default function ScanScreen() {
   const takePicture = async () => {
     if (cameraRef) {
       try {
-        const data = await cameraRef.current.takePictureAsync({ base64: true });
-        setBase64Data(data.base64);
+        const data = await cameraRef.current.takePictureAsync();
         setImage(data.uri);
         setGallery(false);
       } catch (error) {
@@ -49,12 +48,10 @@ export default function ScanScreen() {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         quality: 1,
-        base64: true,
       });
 
       if (!result.canceled) {
         setImage(result.assets[0].uri);
-        setBase64Data(result.assets[0].base64);
         setGallery(true);
       }
     } catch (error) {
@@ -69,8 +66,15 @@ export default function ScanScreen() {
         if (!gallery) {
           await MediaLibrary.createAssetAsync(image);
         }
-        console.log("Loading...\n");
-        console.log(constants.backend_url + "/disease/predict");
+
+        //Resize image and convert to base64
+        const manipulatedResult = await manipulateAsync(
+          image,
+          [{ resize: { width: 240, height: 240 } }],
+          { base64: true }
+        );
+        const base64Data = manipulatedResult.base64;
+
         setIsLoading(true);
         await axios({
           method: "POST",
@@ -84,37 +88,18 @@ export default function ScanScreen() {
         })
           .then((response) => {
             setIsLoading(false);
+            console.log("response>> ", response);
             navigation.navigate("DetectedAllDiseaseScreen", {
-              data: response.data,
+              base64: response.data,
+              imageUri: image,
             });
           })
           .catch((error) => {
             console.log(error);
           });
-
-        //const base64String = await generateBase64String(image, base64Data); //Convert image to base64
-        //await logBase64(base64String); //to see in console
-
-        //TODO: Send this base64Image to the YOLO model
-        //navigation.navigate("DetectedAllDiseaseScreen");
       } catch (error) {
         console.log("error ", error);
       }
-    }
-  };
-
-  const generateBase64String = async (image, base64Data) => {
-    const parts = image.split(".");
-    const extension = parts[parts.length - 1];
-    const base64 = `data:image/${extension};base64,${base64Data}`;
-
-    return base64;
-  };
-
-  const logBase64 = async (base64String, chunkSize = 200) => {
-    for (let i = 0; i < 100; i += chunkSize) {
-      const chunk = base64String.slice(i, i + chunkSize);
-      console.log("base64String: ", chunk);
     }
   };
 
@@ -146,14 +131,18 @@ export default function ScanScreen() {
             <Button icon="info-with-circle" />
           </View>
         ) : (
-          <View style={styles.buttons}>
-            <Button
-              title={"Re-take"}
-              icon="retweet"
-              onPress={() => setImage(null)}
-            />
-            <Button title={"Check"} icon="check" onPress={checkImage} />
-          </View>
+          <>
+            {!isLoading && (
+              <View style={styles.buttons}>
+                <Button
+                  title={"Re-take"}
+                  icon="retweet"
+                  onPress={() => setImage(null)}
+                />
+                <Button title={"Check"} icon="check" onPress={checkImage} />
+              </View>
+            )}
+          </>
         )}
       </View>
     </View>
