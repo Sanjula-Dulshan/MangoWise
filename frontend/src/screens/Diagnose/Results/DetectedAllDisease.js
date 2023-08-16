@@ -8,13 +8,16 @@ import axios from "axios";
 export default function DetectedAllDisease() {
   const [instantImage, setInstantImage] = useState();
   const [imageUri, setImageUri] = useState();
+  const [diseaseData, setDiseaseData] = useState();
 
   const route = useRoute();
 
   useEffect(() => {
-    const { base64, imageUri } = route.params;
+    const { response, imageUri } = route.params;
     setImageUri(imageUri);
-    convertBase64ToImage(base64.image);
+    setDiseaseData(response.diseaseData);
+    convertBase64ToImage(response.image);
+    console.log("response>> ", response);
   }, []);
   //convert base64 to image
   function convertBase64ToImage(base64String) {
@@ -27,11 +30,12 @@ export default function DetectedAllDisease() {
   const getRemedies = async () => {
     try {
       const formData = new FormData();
-      formData.append("image", {
-        uri: imageUri, // Replace with your image file path
-        type: "image/jpeg", // Adjust the image type if needed
-        name: "image.jpg", // Provide a suitable name for the image
+      formData.append("file", {
+        uri: imageUri,
+        type: "image/jpeg",
+        name: "image.jpg",
       });
+      console.log("CallPredictionAPI");
 
       await axios
         .post(
@@ -63,10 +67,19 @@ export default function DetectedAllDisease() {
         )}
       </View>
       <View style={styles.details}>
-        <Text>Anthracnose</Text>
-        <Text>Sooty Mould</Text>
-
-        <Text>Powdery Mildew</Text>
+        {console.log("diseaseData:", diseaseData)}
+        {diseaseData?.map((disease, index) => (
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+            key={index}
+          >
+            <View
+              style={{ ...styles.diseaseColor, backgroundColor: disease.color }}
+            />
+            <Text>{disease.class}</Text>
+            <Text>{disease.affectedAreaPercentage} %</Text>
+          </View>
+        ))}
 
         <TouchableOpacity style={styles.button} onPress={getRemedies}>
           <Text style={styles.btntext}>Get remedies</Text>
@@ -89,13 +102,13 @@ const styles = StyleSheet.create({
   },
   details: {
     flex: 1,
-    marginTop: 40,
-    justifyContent: "center",
+    marginTop: 20,
     borderTopRightRadius: 35,
     borderTopLeftRadius: 35,
     height: 20,
     backgroundColor: "#EAEAEA",
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 40,
   },
   button: {
     backgroundColor: "#fdc50b",
@@ -113,5 +126,11 @@ const styles = StyleSheet.create({
     color: "#144100",
     paddingTop: 10,
     marginTop: 8,
+  },
+  diseaseColor: {
+    width: 25,
+    height: 25,
+    marginRight: 15,
+    marginTop: 3,
   },
 });

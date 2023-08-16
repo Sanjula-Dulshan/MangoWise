@@ -88,9 +88,8 @@ export default function ScanScreen() {
         })
           .then((response) => {
             setIsLoading(false);
-            console.log("response>> ", response);
             navigation.navigate("DetectedAllDiseaseScreen", {
-              base64: response.data,
+              response: response.data,
               imageUri: image,
             });
           })
