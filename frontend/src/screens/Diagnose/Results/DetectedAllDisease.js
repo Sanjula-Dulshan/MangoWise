@@ -8,13 +8,16 @@ import axios from "axios";
 export default function DetectedAllDisease() {
   const [instantImage, setInstantImage] = useState();
   const [imageUri, setImageUri] = useState();
+  const [diseaseData, setDiseaseData] = useState();
 
   const route = useRoute();
 
   useEffect(() => {
-    const { base64, imageUri } = route.params;
+    const { response, imageUri } = route.params;
     setImageUri(imageUri);
-    convertBase64ToImage(base64.image);
+    setDiseaseData(response.diseaseData);
+    convertBase64ToImage(response.image);
+    console.log("response>> ", response);
   }, []);
   //convert base64 to image
   function convertBase64ToImage(base64String) {
@@ -64,20 +67,19 @@ export default function DetectedAllDisease() {
         )}
       </View>
       <View style={styles.details}>
-        <View style={{ flexDirection: "row" }}>
-          <View style={styles.anthracnose} />
-
-          <Text>Anthracnose</Text>
-        </View>
-        <View style={{ flexDirection: "row" }}>
-          <View style={styles.sootyMould} />
-          <Text>Sooty Mould</Text>
-        </View>
-        <View style={{ flexDirection: "row" }}>
-          <View style={styles.powderyMildew} />
-
-          <Text>Powdery Mildew</Text>
-        </View>
+        {console.log("diseaseData:", diseaseData)}
+        {diseaseData?.map((disease, index) => (
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+            key={index}
+          >
+            <View
+              style={{ ...styles.diseaseColor, backgroundColor: disease.color }}
+            />
+            <Text>{disease.class}</Text>
+            <Text>{disease.affectedAreaPercentage} %</Text>
+          </View>
+        ))}
 
         <TouchableOpacity style={styles.button} onPress={getRemedies}>
           <Text style={styles.btntext}>Get remedies</Text>
@@ -125,24 +127,9 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     marginTop: 8,
   },
-  anthracnose: {
+  diseaseColor: {
     width: 25,
     height: 25,
-    backgroundColor: "#8622FF",
-    marginRight: 15,
-    marginTop: 3,
-  },
-  sootyMould: {
-    width: 25,
-    height: 25,
-    backgroundColor: "#FE0056",
-    marginRight: 15,
-    marginTop: 3,
-  },
-  powderyMildew: {
-    width: 25,
-    height: 25,
-    backgroundColor: "#00F9C9",
     marginRight: 15,
     marginTop: 3,
   },

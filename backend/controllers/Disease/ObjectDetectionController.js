@@ -138,7 +138,6 @@ export const detectDiseases = async (req, res) => {
         sooty_mould: sootyMouldPercentage,
       };
     }
-    console.log(affectedAreaPercentage);
 
     // Function to calculate the area of a polygon using the Shoelace formula
     function calculatePolygonArea(points) {
@@ -157,20 +156,41 @@ export const detectDiseases = async (req, res) => {
     // Convert the canvas to a Buffer (PNG image data)
     const buffer = canvas.toBuffer();
 
-    // Convert the buffer to a base64 string
     const base64Image = buffer.toString("base64");
+    const classesSet = new Set();
+    const diseaseData = [];
+
+    const colorMapping = {
+      "Sooty mould": "#FE0056",
+      Anthracnose: "#8622FF",
+      "Powdery mildew": "#00F9C9",
+    };
 
     //get the classes
-    const classes = imageData["predictions"].map((prediction) => {
-      return prediction["class"];
+    imageData["predictions"].map((prediction) => {
+      classesSet.add(prediction["class"]);
     });
+    const classes = Array.from(classesSet);
+
+    // Loop through each class and create a combined data object
+    classes.forEach((className) => {
+      const normalizedClassName = className.toLowerCase().replace(" ", "_"); // Convert class name to lowercase and replace spaces with underscores
+      const combinedObject = {
+        class: className,
+        affectedAreaPercentage:
+          affectedAreaPercentage[normalizedClassName] || 0,
+        color: colorMapping[className] || "#000000",
+      };
+      diseaseData.push(combinedObject);
+    });
+
+    console.log(diseaseData);
 
     // Send the base64 image, classes and the full response from the API in the response
     res.json({
       image: base64Image,
       apiResponse: imageData,
-      classes: classes,
-      affectedAreaPercentage: affectedAreaPercentage,
+      diseaseData: diseaseData,
     });
   } catch (error) {
     console.log("error ", error);
