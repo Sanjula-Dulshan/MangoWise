@@ -27,11 +27,12 @@ export default function DetectedAllDisease() {
   const getRemedies = async () => {
     try {
       const formData = new FormData();
-      formData.append("image", {
-        uri: imageUri, // Replace with your image file path
-        type: "image/jpeg", // Adjust the image type if needed
-        name: "image.jpg", // Provide a suitable name for the image
+      formData.append("file", {
+        uri: imageUri,
+        type: "image/jpeg",
+        name: "image.jpg",
       });
+      console.log("CallPredictionAPI");
 
       await axios
         .post(
@@ -63,10 +64,20 @@ export default function DetectedAllDisease() {
         )}
       </View>
       <View style={styles.details}>
-        <Text>Anthracnose</Text>
-        <Text>Sooty Mould</Text>
+        <View style={{ flexDirection: "row" }}>
+          <View style={styles.anthracnose} />
 
-        <Text>Powdery Mildew</Text>
+          <Text>Anthracnose</Text>
+        </View>
+        <View style={{ flexDirection: "row" }}>
+          <View style={styles.sootyMould} />
+          <Text>Sooty Mould</Text>
+        </View>
+        <View style={{ flexDirection: "row" }}>
+          <View style={styles.powderyMildew} />
+
+          <Text>Powdery Mildew</Text>
+        </View>
 
         <TouchableOpacity style={styles.button} onPress={getRemedies}>
           <Text style={styles.btntext}>Get remedies</Text>
@@ -89,13 +100,13 @@ const styles = StyleSheet.create({
   },
   details: {
     flex: 1,
-    marginTop: 40,
-    justifyContent: "center",
+    marginTop: 20,
     borderTopRightRadius: 35,
     borderTopLeftRadius: 35,
     height: 20,
     backgroundColor: "#EAEAEA",
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 40,
   },
   button: {
     backgroundColor: "#fdc50b",
@@ -113,5 +124,26 @@ const styles = StyleSheet.create({
     color: "#144100",
     paddingTop: 10,
     marginTop: 8,
+  },
+  anthracnose: {
+    width: 25,
+    height: 25,
+    backgroundColor: "#8622FF",
+    marginRight: 15,
+    marginTop: 3,
+  },
+  sootyMould: {
+    width: 25,
+    height: 25,
+    backgroundColor: "#FE0056",
+    marginRight: 15,
+    marginTop: 3,
+  },
+  powderyMildew: {
+    width: 25,
+    height: 25,
+    backgroundColor: "#00F9C9",
+    marginRight: 15,
+    marginTop: 3,
   },
 });
