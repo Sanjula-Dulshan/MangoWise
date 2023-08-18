@@ -1,24 +1,26 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import sampleMangoLeaf from "../../../../assets/sample-mango-leaf2.jpg";
 import Header from "../../../components/Common/Header";
-import { useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import greenTick from "../../../../assets/green_tick.png";
 
 export default function DetectedAllDisease() {
   const [instantImage, setInstantImage] = useState();
-  const [imageUri, setImageUri] = useState();
-  const [diseaseData, setDiseaseData] = useState();
+  const [imageUri, setImageUri] = useState(null);
+  const [diseaseData, setDiseaseData] = useState([]);
+  const navigation = useNavigation();
 
   const route = useRoute();
 
   useEffect(() => {
     const { response, imageUri } = route.params;
+    console.log(" route.params>> ", route.params);
     setImageUri(imageUri);
     setDiseaseData(response.diseaseData);
     convertBase64ToImage(response.image);
-    console.log("response>> ", response);
-  }, []);
+  }, [route.params]);
   //convert base64 to image
   function convertBase64ToImage(base64String) {
     if (base64String) {
@@ -27,7 +29,11 @@ export default function DetectedAllDisease() {
     }
   }
 
-  const getRemedies = async () => {
+  const handleReTakePicture = async () => {
+    navigation.navigate("DiagnoseScanScreen");
+  };
+
+  const severityPercentage = async () => {
     try {
       const formData = new FormData();
       formData.append("file", {
@@ -66,25 +72,56 @@ export default function DetectedAllDisease() {
           <Image source={{ uri: instantImage }} style={styles.image} />
         )}
       </View>
-      <View style={styles.details}>
-        {console.log("diseaseData:", diseaseData)}
-        {diseaseData?.map((disease, index) => (
-          <View
-            style={{ flexDirection: "row", justifyContent: "space-between" }}
-            key={index}
-          >
-            <View
-              style={{ ...styles.diseaseColor, backgroundColor: disease.color }}
-            />
-            <Text>{disease.class}</Text>
-            <Text>{disease.affectedAreaPercentage} %</Text>
+      {console.log("diseaseData length:", diseaseData.length)}
+      {diseaseData.length === 0 ? (
+        <View style={styles.noDiseaseContainer}>
+          <View>
+            <Image source={greenTick} style={styles.greenTick} />
+            <Text style={styles.noDiseaseTitle}>Disease{"\n"}Not Found</Text>
           </View>
-        ))}
-
-        <TouchableOpacity style={styles.button} onPress={getRemedies}>
-          <Text style={styles.btntext}>Get remedies</Text>
-        </TouchableOpacity>
-      </View>
+          <View>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={handleReTakePicture}
+            >
+              <Text style={styles.btntext}>Re-take</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      ) : (
+        <View style={styles.detailsContainer}>
+          <Text style={styles.title}>Detected Diseases</Text>
+          <View style={styles.detailsCard}>
+            <View>
+              {diseaseData?.map((disease, index) => (
+                <View style={styles.diseaseList} key={index}>
+                  <View
+                    style={{
+                      ...styles.diseaseColor,
+                      backgroundColor: disease.color,
+                    }}
+                  />
+                  <Text style={styles.diseaseName}>{disease.class}</Text>
+                </View>
+              ))}
+            </View>
+            <View style={styles.buttonGroups}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handleReTakePicture}
+              >
+                <Text style={styles.btntext}>Re-take</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={severityPercentage}
+              >
+                <Text style={styles.btntext}>Check Percentage</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      )}
     </View>
   );
 }
@@ -100,37 +137,84 @@ const styles = StyleSheet.create({
     height: "100%",
     borderRadius: 5,
   },
-  details: {
-    flex: 1,
+  detailsContainer: {
     marginTop: 20,
+    flex: 1,
+    height: 20,
+    paddingHorizontal: 20,
+    paddingTop: 15,
     borderTopRightRadius: 35,
     borderTopLeftRadius: 35,
-    height: 20,
-    backgroundColor: "#EAEAEA",
-    paddingHorizontal: 20,
-    paddingTop: 40,
+    backgroundColor: "#FFE5E5",
   },
-  button: {
-    backgroundColor: "#fdc50b",
-    width: 200,
-    height: 50,
-    borderRadius: 25,
-    marginTop: 30,
-    marginBottom: -40,
-    alignSelf: "center",
+  detailsCard: {
+    justifyContent: "space-between",
+    height: "90%",
+    paddingVertical: 15,
   },
-  btntext: {
-    textAlign: "center",
-    fontSize: 16,
+  title: {
+    fontSize: 32,
     fontWeight: "bold",
-    color: "#144100",
-    paddingTop: 10,
-    marginTop: 8,
+    color: "#C10303",
+    marginHorizontal: 40,
+  },
+  diseaseList: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    marginVertical: 10,
+    marginHorizontal: 80,
   },
   diseaseColor: {
     width: 25,
     height: 25,
     marginRight: 15,
     marginTop: 3,
+  },
+  diseaseName: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  buttonGroups: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  button: {
+    backgroundColor: "#fdc50b",
+    width: 165,
+    height: 50,
+    borderRadius: 10,
+    marginBottom: 20,
+    alignSelf: "center",
+  },
+  btntext: {
+    textAlign: "center",
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#144100",
+    paddingTop: 10,
+    marginTop: 3,
+  },
+  noDiseaseContainer: {
+    marginTop: 20,
+    flex: 1,
+    height: 20,
+    paddingHorizontal: 20,
+    paddingTop: 15,
+    borderTopRightRadius: 35,
+    borderTopLeftRadius: 35,
+    backgroundColor: "#E5FFE7",
+    justifyContent: "space-between",
+  },
+  greenTick: {
+    width: 100,
+    height: 100,
+    alignSelf: "center",
+  },
+  noDiseaseTitle: {
+    fontSize: 32,
+    fontWeight: "bold",
+    marginHorizontal: 40,
+    textAlign: "center",
   },
 });
