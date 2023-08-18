@@ -10,7 +10,7 @@ export const detectVariety = async (req, res) => {
   }
   try {
     //Call the Roboflow API
-    const response = await axios({
+    const response = await axios({ 
         method: "POST",
         url: "https://outline.roboflow.com/mangowise-ecg8e/3",
         params: {
