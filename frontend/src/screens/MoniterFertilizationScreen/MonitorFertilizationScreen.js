@@ -20,6 +20,7 @@ import Modal from "react-native-modal";
 import Toast from "react-native-toast-message";
 import monitor from "../../../assets/monitor.jpg";
 import Header from "../../components/Common/Header";
+import constants from "../../constants/constants";
 
 import {
   PERMISSIONS,
@@ -155,7 +156,7 @@ export default function CheckFertilizerScreen({ route }) {
       (async function getRecord() {
         try {
           const record = await axios.get(
-            `http://192.168.1.246:8070/records/get/${id}`
+            `${constants.backend_url}/records/get/${id}`
           );
           if (record) {
             setDate(record.data.savedDate);
@@ -366,7 +367,7 @@ export default function CheckFertilizerScreen({ route }) {
             visibilityTime: 2000,
           });
           const response = await axios.post(
-            "http://192.168.1.246:8070/fertilizer/monitor",
+            constants.backend_url + "/fertilizer/monitor",
             {
               nvalue: nvalue,
               pvalue: pvalue,

@@ -23,13 +23,15 @@ export const detectDiseases = async (req, res) => {
     });
 
     const imageData = response.data;
-    console.log(imageData);
+    let sootyMouldArea = 0;
+    let anthracnoseArea = 0;
+    let powderyMildewArea = 0;
+    let affectedAreaPercentage;
 
     // Load the image using the canvas library
     const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
     const bufferImage = Buffer.from(base64Data, "base64");
     const canvasImage = await loadImage(bufferImage);
-    console.log("canvasImage", canvasImage);
     const canvas = createCanvas(canvasImage.width, canvasImage.height);
     const ctx = canvas.getContext("2d");
 
@@ -79,13 +81,6 @@ export const detectDiseases = async (req, res) => {
     for (const prediction of imageData["predictions"]) {
       const { class: className, points, confidence } = prediction;
 
-      // Calculate the center point of the identified object
-      const centerX =
-        points.reduce((sum, point) => sum + point.x, 0) / points.length;
-      const centerY =
-        points.reduce((sum, point) => sum + point.y, 0) / points.length;
-      // Get the style for the current class
-
       let classStyle;
       if (className === "Powdery mildew") {
         classStyle = classStyles[0];
@@ -109,46 +104,93 @@ export const detectDiseases = async (req, res) => {
 
       // Add border around the instance segmented object with the class-specific border color
       ctx.strokeStyle = classStyle.borderColor;
-      ctx.lineWidth = 3;
+      ctx.lineWidth = 1;
       ctx.stroke();
 
-      // Label background rectangle with class-specific background color and width
-      const textWidth =
-        ctx.measureText(className).width + classStyle.labelWidth;
-      const textHeight = classStyle.labelHeight; // Increase the height for a larger label
-      const labelBgX = centerX - textWidth / 2;
-      const labelBgY = centerY - textHeight / 2; // Center the label on the identified object
-      ctx.fillStyle = classStyle.backgroundColor; // Use the specified background color
-      ctx.fillRect(labelBgX, labelBgY, textWidth, textHeight);
+      // Calculate the area of the drawn mask using the Shoelace formula
+      const maskArea = calculatePolygonArea(points);
 
-      // Draw the class name label at the center of the identified object with class-specific label color and font size
-      ctx.fillStyle = classStyle.labelColor; // Use the specified label color
-      ctx.font = `${classStyle.fontSize}px Arial`; // Use the specified font size for the label
-      ctx.textAlign = "center"; // Center the label text horizontally
-      ctx.textBaseline = "middle"; // Center the label text vertically
-      ctx.fillText(
-        `${className}  ${confidence.toFixed(2) * 100}%`,
-        centerX,
-        centerY
-      ); // Display the class name and confidence at the center of the identified object
+      if (className === "Powdery mildew") {
+        powderyMildewArea += maskArea;
+      } else if (className === "Anthracnose") {
+        anthracnoseArea += maskArea;
+      } else if (className === "Sooty mould") {
+        sootyMouldArea += maskArea;
+      }
+    }
+    const totalArea = powderyMildewArea + anthracnoseArea + sootyMouldArea;
+    if (totalArea !== 0) {
+      const powderyMildewPercentage = parseFloat(
+        ((powderyMildewArea / totalArea) * 100).toFixed(2)
+      );
+
+      const anthracnosePercentage = parseFloat(
+        ((anthracnoseArea / totalArea) * 100).toFixed(2)
+      );
+
+      const sootyMouldPercentage = parseFloat(
+        ((sootyMouldArea / totalArea) * 100).toFixed(2)
+      );
+
+      affectedAreaPercentage = {
+        powdery_mildew: powderyMildewPercentage,
+        anthracnose: anthracnosePercentage,
+        sooty_mould: sootyMouldPercentage,
+      };
+    }
+
+    // Function to calculate the area of a polygon using the Shoelace formula
+    function calculatePolygonArea(points) {
+      let area = 0;
+      const numPoints = points.length;
+
+      for (let i = 0; i < numPoints; i++) {
+        const current = points[i];
+        const next = points[(i + 1) % numPoints];
+        area += current.x * next.y - next.x * current.y;
+      }
+
+      return Math.abs(area / 2);
     }
 
     // Convert the canvas to a Buffer (PNG image data)
     const buffer = canvas.toBuffer();
 
-    // Convert the buffer to a base64 string
     const base64Image = buffer.toString("base64");
+    const classesSet = new Set();
+    const diseaseData = [];
+
+    const colorMapping = {
+      "Sooty mould": "#FE0056",
+      Anthracnose: "#8622FF",
+      "Powdery mildew": "#00F9C9",
+    };
 
     //get the classes
-    const classes = imageData["predictions"].map((prediction) => {
-      return prediction["class"];
+    imageData["predictions"].map((prediction) => {
+      classesSet.add(prediction["class"]);
     });
+    const classes = Array.from(classesSet);
+
+    // Loop through each class and create a combined data object
+    classes.forEach((className) => {
+      const normalizedClassName = className.toLowerCase().replace(" ", "_"); // Convert class name to lowercase and replace spaces with underscores
+      const combinedObject = {
+        class: className,
+        affectedAreaPercentage:
+          affectedAreaPercentage[normalizedClassName] || 0,
+        color: colorMapping[className] || "#000000",
+      };
+      diseaseData.push(combinedObject);
+    });
+
+    console.log(diseaseData);
 
     // Send the base64 image, classes and the full response from the API in the response
     res.json({
       image: base64Image,
       apiResponse: imageData,
-      classes: classes,
+      diseaseData: diseaseData,
     });
   } catch (error) {
     console.log("error ", error);

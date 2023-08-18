@@ -21,6 +21,7 @@ import Modal from "react-native-modal";
 import Toast from "react-native-toast-message";
 import sensorimage from "../../../assets/NPKSensor.png";
 import Header from "../../components/Common/Header";
+import constants from "../../constants/constants";
 
 import {
   PERMISSIONS,
@@ -146,7 +147,7 @@ export default function CheckFertilizerScreen() {
       (async function id() {
         try {
           const record = await axios.get(
-            "http://192.168.1.246:8070/records/get"
+            constants.backend_url + "/records/get"
           );
           if (record) {
             const newRecord = record.data.record_id + 1;
@@ -359,7 +360,7 @@ export default function CheckFertilizerScreen() {
             visibilityTime: 2000,
           });
           await axios
-            .post("http://192.168.1.246:8070/fertilizer/get", {
+            .post(constants.backend_url + "/fertilizer/get", {
               nvalue: nvalue,
               pvalue: pvalue,
               kvalue: kvalue,
