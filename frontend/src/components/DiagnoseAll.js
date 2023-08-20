@@ -5,6 +5,7 @@ import React from "react";
 import DiagnoseHomeScreen from "../screens/Diagnose/Home";
 import PreviousDiseasesScreen from "../screens/Diagnose/Previous/PreviousDiseases";
 import DetectedAllDiseaseScreen from "../screens/Diagnose/Results/DetectedAllDisease";
+import RemediesScreen from "../screens/Diagnose/Remedies/Remedies";
 
 const Stack = createNativeStackNavigator();
 
@@ -25,6 +26,11 @@ export default function DiagnoseAllScreens() {
       <Stack.Screen
         name="PreviousDiseasesScreen"
         component={PreviousDiseasesScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="RemediesScreen"
+        component={RemediesScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

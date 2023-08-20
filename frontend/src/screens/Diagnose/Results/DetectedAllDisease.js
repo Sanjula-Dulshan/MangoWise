@@ -5,18 +5,19 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import greenTick from "../../../../assets/green_tick.png";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 export default function DetectedAllDisease() {
   const [instantImage, setInstantImage] = useState();
   const [imageUri, setImageUri] = useState(null);
   const [diseaseData, setDiseaseData] = useState([]);
+  const [diseasePercentage, setDiseasePercentage] = useState();
   const navigation = useNavigation();
 
   const route = useRoute();
 
   useEffect(() => {
     const { response, imageUri } = route.params;
-    console.log(" route.params>> ", route.params);
     setImageUri(imageUri);
     setDiseaseData(response.diseaseData);
     convertBase64ToImage(response.image);
@@ -33,6 +34,10 @@ export default function DetectedAllDisease() {
     navigation.navigate("DiagnoseScanScreen");
   };
 
+  const getRemedies = async () => {
+    navigation.navigate("RemediesScreen", { disease: diseasePercentage.class });
+  };
+
   const severityPercentage = async () => {
     try {
       const formData = new FormData();
@@ -41,7 +46,6 @@ export default function DetectedAllDisease() {
         type: "image/jpeg",
         name: "image.jpg",
       });
-      console.log("CallPredictionAPI");
 
       await axios
         .post(
@@ -54,7 +58,7 @@ export default function DetectedAllDisease() {
           }
         )
         .then((response) => {
-          console.log("response>> ", response);
+          setDiseasePercentage(response.data);
         })
         .catch((error) => {
           console.log("error>> ", error);
@@ -72,7 +76,6 @@ export default function DetectedAllDisease() {
           <Image source={{ uri: instantImage }} style={styles.image} />
         )}
       </View>
-      {console.log("diseaseData length:", diseaseData.length)}
       {diseaseData.length === 0 ? (
         <View style={styles.noDiseaseContainer}>
           <View>
@@ -89,38 +92,68 @@ export default function DetectedAllDisease() {
           </View>
         </View>
       ) : (
-        <View style={styles.detailsContainer}>
-          <Text style={styles.title}>Detected Diseases</Text>
-          <View style={styles.detailsCard}>
-            <View>
-              {diseaseData?.map((disease, index) => (
-                <View style={styles.diseaseList} key={index}>
-                  <View
-                    style={{
-                      ...styles.diseaseColor,
-                      backgroundColor: disease.color,
-                    }}
-                  />
-                  <Text style={styles.diseaseName}>{disease.class}</Text>
+        <>
+          {!diseasePercentage ? (
+            <View style={styles.detailsContainer}>
+              <Text style={styles.title}>Detected Diseases</Text>
+              <View style={styles.detailsCard}>
+                <View>
+                  {diseaseData?.map((disease, index) => (
+                    <View style={styles.diseaseList} key={index}>
+                      <View
+                        style={{
+                          ...styles.diseaseColor,
+                          backgroundColor: disease.color,
+                        }}
+                      />
+                      <Text style={styles.diseaseName}>{disease.class}</Text>
+                    </View>
+                  ))}
                 </View>
-              ))}
+                <View style={styles.buttonGroups}>
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={handleReTakePicture}
+                  >
+                    <Text style={styles.btntext}>Re-take</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={severityPercentage}
+                  >
+                    <Text style={styles.btntext}>Check Percentage</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
-            <View style={styles.buttonGroups}>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={handleReTakePicture}
-              >
-                <Text style={styles.btntext}>Re-take</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={severityPercentage}
-              >
-                <Text style={styles.btntext}>Check Percentage</Text>
-              </TouchableOpacity>
+          ) : (
+            <View style={styles.percentageContainer}>
+              <Text style={styles.severityTitle}>Severity Percentage</Text>
+              <View style={styles.detailsCard}>
+                <View>
+                  {diseaseData?.map((disease, index) => (
+                    <View style={styles.diseaseList} key={index}>
+                      <View
+                        style={{
+                          ...styles.diseaseColor,
+                          backgroundColor: disease.color,
+                        }}
+                      />
+                      <Text style={styles.diseaseName}>{disease.class}</Text>
+                      <Text style={styles.diseaseName}>
+                        {disease.affectedAreaPercentage}%
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+
+                <TouchableOpacity style={styles.button} onPress={getRemedies}>
+                  <Text style={styles.btntext}>Get Remedies</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </View>
+          )}
+        </>
       )}
     </View>
   );
@@ -173,6 +206,8 @@ const styles = StyleSheet.create({
   },
   diseaseName: {
     fontSize: 16,
+    marginRight: 15,
+
     fontWeight: "bold",
   },
   buttonGroups: {
@@ -216,5 +251,20 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginHorizontal: 40,
     textAlign: "center",
+  },
+  percentageContainer: {
+    marginTop: 20,
+    flex: 1,
+    height: 20,
+    paddingHorizontal: 20,
+    paddingTop: 15,
+    borderTopRightRadius: 35,
+    borderTopLeftRadius: 35,
+    backgroundColor: "#FFF6D4",
+  },
+  severityTitle: {
+    fontSize: 32,
+    fontWeight: "bold",
+    marginHorizontal: 30,
   },
 });
