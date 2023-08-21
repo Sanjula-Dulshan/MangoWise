@@ -16,7 +16,7 @@ const treatment = [
   },
   {
     id: 2,
-    disease: "Sooty Mold",
+    disease: "Sooty_Mould",
     symptoms: [
       "Black or dark brown powdery on leaves, stems, and fruits",
       "Leaves may die and fall off",
@@ -30,7 +30,7 @@ const treatment = [
   },
   {
     id: 3,
-    disease: "Powdery Mildew",
+    disease: "Powdery_Mildew",
     symptoms: [
       "White or gray powdery spots on leaves, stems, and flowers",
       "Distorted or stunted growth of new shoots",
