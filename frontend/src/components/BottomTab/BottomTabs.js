@@ -8,6 +8,7 @@ import VarietyIcon from "../../../assets/Variety.png";
 import FertilizerIcon from "../../../assets/fertilizerIcon.png";
 import DiagnoseAllScreens from "../DiagnoseAll";
 import FertilizationAll from "../FertilizationAll";
+import VarietyAllScreens from "../VarietyAll";
 import Budding from "./Budding";
 import Home from "./Home";
 import Variety from "./Variety";
@@ -64,7 +65,7 @@ export default function BottomTabs() {
       <Tab.Screen name="Budding" component={Budding} />
       <Tab.Screen name="Diagnose" component={DiagnoseAllScreens} />
       <Tab.Screen name="Home" component={Home} />
-      <Tab.Screen name="Variety" component={Variety} />
+      <Tab.Screen name="Variety" component={VarietyAllScreens} />
       <Tab.Screen name="Fertilization" component={FertilizationAll} />
     </Tab.Navigator>
   );
