@@ -5,7 +5,6 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import greenTick from "../../../../assets/green_tick.png";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 export default function DetectedAllDisease() {
   const [instantImage, setInstantImage] = useState();
@@ -17,7 +16,7 @@ export default function DetectedAllDisease() {
   const route = useRoute();
 
   useEffect(() => {
-    const { response, imageUri } = route.params;
+    const { response, imageUri, base64Data } = route.params;
     setImageUri(imageUri);
     setDiseaseData(response.diseaseData);
     convertBase64ToImage(response.image);
@@ -35,7 +34,11 @@ export default function DetectedAllDisease() {
   };
 
   const getRemedies = async () => {
-    navigation.navigate("RemediesScreen", { disease: diseasePercentage.class });
+    navigation.navigate("RemediesScreen", {
+      disease: diseasePercentage.class,
+      diseasesInfo: diseaseData,
+      base64Data: base64Data,
+    });
   };
 
   const severityPercentage = async () => {
@@ -47,6 +50,7 @@ export default function DetectedAllDisease() {
         name: "image.jpg",
       });
 
+      //TODO: Remove API call from this
       await axios
         .post(
           "https://us-central1-mangowise-395709.cloudfunctions.net/disease_predict",

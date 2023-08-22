@@ -32,6 +32,7 @@
     "link": "^1.5.1",
     "metro-core": "^0.76.3",
     "metro-react-native-babel-preset": "^0.76.3",
+    "moment": "^2.29.4",
     "native-base": "^3.4.21",
     "npm": "^9.6.6",
     "patch-package": "^7.0.0",

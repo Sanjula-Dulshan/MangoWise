@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-// import { Image } from "expo-image";
+import { useEffect, useState } from "react";
 import { Entypo } from "@expo/vector-icons";
 import { Card } from "@rneui/themed";
 import * as React from "react";
@@ -12,65 +12,73 @@ import {
   View,
 } from "react-native";
 import Header from "../../../components/Common/Header";
+import axios from "axios";
+import moment from "moment";
 
-const diseasesList = [
-  {
-    disease: "Anthracnose",
-    date: "10/05/2023",
-    image:
-      "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
-  },
-  {
-    disease: "Anthracnose",
-    date: "10/05/2023",
-    image:
-      "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
-  },
-  {
-    disease: "Anthracnose",
-    date: "10/05/2023",
-    image:
-      "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
-  },
-  {
-    disease: "Anthracnose",
-    date: "10/05/2023",
-    image:
-      "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
-  },
-  {
-    disease: "Anthracnose",
-    date: "10/05/2023",
-    image:
-      "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
-  },
-  {
-    disease: "Anthracnose",
-    date: "10/05/2023",
-    image:
-      "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
-  },
-  {
-    disease: "Anthracnose",
-    date: "10/05/2023",
-    image:
-      "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
-  },
-  {
-    disease: "Anthracnose",
-    date: "10/05/2023",
-    image:
-      "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
-  },
-  {
-    disease: "Anthracnose",
-    date: "10/05/2023",
-    image:
-      "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
-  },
-];
+// const diseasesList = [
+//   {
+//     disease: "Anthracnose",
+//     date: "10/05/2023",
+//     image:
+//       "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
+//   },
+//   {
+//     disease: "Anthracnose",
+//     date: "10/05/2023",
+//     image:
+//       "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
+//   },
+//   {
+//     disease: "Anthracnose",
+//     date: "10/05/2023",
+//     image:
+//       "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
+//   },
+//   {
+//     disease: "Anthracnose",
+//     date: "10/05/2023",
+//     image:
+//       "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
+//   },
+//   {
+//     disease: "Anthracnose",
+//     date: "10/05/2023",
+//     image:
+//       "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
+//   },
+//   {
+//     disease: "Anthracnose",
+//     date: "10/05/2023",
+//     image:
+//       "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
+//   },
+//   {
+//     disease: "Anthracnose",
+//     date: "10/05/2023",
+//     image:
+//       "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
+//   },
+//   {
+//     disease: "Anthracnose",
+//     date: "10/05/2023",
+//     image:
+//       "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
+//   },
+//   {
+//     disease: "Anthracnose",
+//     date: "10/05/2023",
+//     image:
+//       "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
+//   },
+// ];
 
 export default function PreviousDiseases() {
+  const [diseasesList, setDiseasesList] = useState([]);
+  useEffect(() => {
+    axios.get(constants.backend_url + "/disease").then((response) => {
+      setDiseasesList(response.data);
+    });
+  }, []);
   const navigation = useNavigation();
 
   return (
@@ -85,19 +93,21 @@ export default function PreviousDiseases() {
       <ScrollView>
         <View style={styles.container}>
           <Text style={[styles.previousPictures]}>Previous Pictures</Text>
-          {diseasesList.map((u, i) => {
+          {diseasesList?.map((disease, key) => {
             return (
-              <View key={i}>
+              <View key={key}>
                 <Card containerStyle={styles.card}>
                   <View style={styles.cardContainer}>
                     <Image
                       style={styles.image}
                       resizeMode="cover"
-                      source={{ uri: u.image }}
+                      source={{ uri: disease?.image }}
                     />
                     <View style={styles.description}>
-                      <Text style={styles.name}>{u.disease}</Text>
-                      <Text style={styles.date}>{u.date}</Text>
+                      <Text style={styles.name}>{disease?.mainDisease}</Text>
+                      <Text style={styles.date}>
+                        {moment(disease.createdAt).format("DD/MM/YYYY")}
+                      </Text>
                       <TouchableOpacity style={styles.button}>
                         <Text style={styles.btntext}>Recheck</Text>
                       </TouchableOpacity>

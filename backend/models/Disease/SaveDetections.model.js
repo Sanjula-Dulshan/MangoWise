@@ -2,11 +2,11 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 const DiseaseDetails = new Schema({
-  disease: {
+  class: {
     type: String,
     required: true,
   },
-  percentage: {
+  affectedAreaPercentage: {
     type: Number,
     required: true,
   },
@@ -37,22 +37,16 @@ export default SaveDetections;
 
 //give me a sample json
 // {
-//     "mainDisease": "PowderyMildew",
-//     "diseasesInfo": [
-//         {
-//             "disease": "PowderyMildew",
-//             "percentage": 0.999
-//         },
-//         {
-//             "disease": "Anthracnose",
-//             "percentage": 0.001
-//         },
-//         {
-//             "disease": "SootyMould",
-//             "percentage": 0.001
-//         }
-//     ],
-
-//     "image": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxMTEhUTExMWFhUXGBgYGBgYGBgYGBgYGBgYGBgYGBgYHSggGBolHRgXITEhJSkrLi4uGB8zODM
-//     sNygtLisBCgoKDg0OGxAQGy0lICUtL"
+//   "mainDisease": "Anthracnose",
+//   "diseasesInfo": [
+//     {
+//       "class": "Anthracnose",
+//       "affectedAreaPercentage": 25.98
+//     },
+//     {
+//       "class": "Sooty Mold",
+//       "affectedAreaPercentage": 74.02
+//     }
+//   ],
+//   "image": "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg"
 // }
