@@ -8,10 +8,10 @@ import express from "express";
 import connectDB from "./config/db_config.js";
 
 //import route files
-import DiseasePredictionRoute from "./routes/Disease/Prediction.routes.js";
+import DiseaseRoute from "./routes/Disease/Disease.routes.js";
 import SaveRecordsRoute from "./routes/FertilizerSuggestion/SaveRecordsRoute.js";
 import SuitableQuantityRoute from "./routes/FertilizerSuggestion/SuitableQuantityRoute.js";
-import VarietyPredictionRoute from "./routes/Variety/Prediction.routes.js"
+import VarietyPredictionRoute from "./routes/Variety/Prediction.routes.js";
 
 const app = express();
 
@@ -33,8 +33,8 @@ app.get("/", (req, res) => {
 //Define routes
 app.use("/fertilizer", SuitableQuantityRoute);
 app.use("/records", SaveRecordsRoute);
-app.use("/disease", DiseasePredictionRoute);
-app.use("/variety",VarietyPredictionRoute)
+app.use("/disease", DiseaseRoute);
+app.use("/variety", VarietyPredictionRoute);
 
 app.listen(PORT, () => {
   console.log(
