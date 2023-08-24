@@ -1,5 +1,5 @@
-import { useNavigation } from "@react-navigation/native";
-import React from "react";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import React, { useEffect, useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import vector from "../../../../assets/Vector.png";
 import focusLeaf from "../../../../assets/focus-leaf.png";
@@ -8,9 +8,13 @@ import sampleMangoLaaf from "../../../../assets/sample-mango-leaf.jpg";
 import searchLeaf from "../../../../assets/search-leaf-icon.png";
 import VirusIcon from "../../../../assets/virus-icon.png";
 import Header from "../../../components/Common/Header";
+import axios from "axios";
+import constants from "../../../constants/constants";
 
 export default function HomeScreen() {
+  const [diseasesList, setDiseasesList] = useState([]);
   const navigation = useNavigation();
+  const route = useRoute();
 
   const handleTakePicture = async () => {
     navigation.navigate("DiagnoseScanScreen");
@@ -19,6 +23,12 @@ export default function HomeScreen() {
   const handlePreviousDiagnose = async () => {
     navigation.navigate("PreviousDiseasesScreen");
   };
+
+  useEffect(() => {
+    axios.get(constants.backend_url + "/disease").then((response) => {
+      setDiseasesList(response.data);
+    });
+  }, [route.params]);
 
   return (
     <View style={{ backgroundColor: "#fdfafa", height: "100%" }}>
@@ -228,33 +238,20 @@ export default function HomeScreen() {
           justifyContent: "space-between",
         }}
       >
-        <TouchableOpacity>
-          <View style={styles.image}>
-            <Image
-              source={sampleMangoLaaf}
-              style={styles.sampleMangoLeaf}
-              resizeMode="contain"
-            />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <View style={styles.image}>
-            <Image
-              source={sampleMangoLaaf}
-              style={styles.sampleMangoLeaf}
-              resizeMode="contain"
-            />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <View style={styles.image}>
-            <Image
-              source={sampleMangoLaaf}
-              style={styles.sampleMangoLeaf}
-              resizeMode="contain"
-            />
-          </View>
-        </TouchableOpacity>
+        {diseasesList.slice(0, 3).map((disease, key) => {
+          // Limiting to 3 iterations
+          return (
+            <TouchableOpacity>
+              <View style={styles.image}>
+                <Image
+                  source={{ uri: disease?.image }}
+                  style={styles.sampleMangoLeaf}
+                  resizeMode="contain"
+                />
+              </View>
+            </TouchableOpacity>
+          );
+        })}
       </View>
     </View>
   );
