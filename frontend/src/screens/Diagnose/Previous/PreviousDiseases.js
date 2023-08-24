@@ -1,4 +1,4 @@
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { Entypo } from "@expo/vector-icons";
 import { Card } from "@rneui/themed";
@@ -14,81 +14,23 @@ import {
 import Header from "../../../components/Common/Header";
 import axios from "axios";
 import moment from "moment";
-
-// const diseasesList = [
-//   {
-//     disease: "Anthracnose",
-//     date: "10/05/2023",
-//     image:
-//       "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
-//   },
-//   {
-//     disease: "Anthracnose",
-//     date: "10/05/2023",
-//     image:
-//       "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
-//   },
-//   {
-//     disease: "Anthracnose",
-//     date: "10/05/2023",
-//     image:
-//       "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
-//   },
-//   {
-//     disease: "Anthracnose",
-//     date: "10/05/2023",
-//     image:
-//       "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
-//   },
-//   {
-//     disease: "Anthracnose",
-//     date: "10/05/2023",
-//     image:
-//       "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
-//   },
-//   {
-//     disease: "Anthracnose",
-//     date: "10/05/2023",
-//     image:
-//       "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
-//   },
-//   {
-//     disease: "Anthracnose",
-//     date: "10/05/2023",
-//     image:
-//       "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
-//   },
-//   {
-//     disease: "Anthracnose",
-//     date: "10/05/2023",
-//     image:
-//       "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
-//   },
-//   {
-//     disease: "Anthracnose",
-//     date: "10/05/2023",
-//     image:
-//       "https://res.cloudinary.com/waste123/image/upload/v1691680008/yuyntgfmipxtqibwyfjd.jpg",
-//   },
-// ];
+import constants from "../../../constants/constants";
 
 export default function PreviousDiseases() {
   const [diseasesList, setDiseasesList] = useState([]);
+  const route = useRoute();
+
   useEffect(() => {
     axios.get(constants.backend_url + "/disease").then((response) => {
       setDiseasesList(response.data);
     });
-  }, []);
+  }, [route.params]);
+
   const navigation = useNavigation();
 
   return (
     <View style={{ backgroundColor: "#fdfafa", height: "100%" }}>
       <Header />
-      {/* <Image
-        style={[styles.sanjulaPreviousPictureChild, styles.vectorIconLayout]}
-        contentFit="cover"
-      /> */}
-      {/* <Image style={styles.logo2Icon} contentFit="cover" /> */}
 
       <ScrollView>
         <View style={styles.container}>

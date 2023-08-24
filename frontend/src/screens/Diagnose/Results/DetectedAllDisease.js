@@ -11,6 +11,8 @@ export default function DetectedAllDisease() {
   const [imageUri, setImageUri] = useState(null);
   const [diseaseData, setDiseaseData] = useState([]);
   const [diseasePercentage, setDiseasePercentage] = useState();
+  const [base64Data, setBase64Data] = useState();
+
   const navigation = useNavigation();
 
   const route = useRoute();
@@ -20,6 +22,7 @@ export default function DetectedAllDisease() {
     setImageUri(imageUri);
     setDiseaseData(response.diseaseData);
     convertBase64ToImage(response.image);
+    setBase64Data(base64Data);
   }, [route.params]);
   //convert base64 to image
   function convertBase64ToImage(base64String) {
@@ -37,7 +40,7 @@ export default function DetectedAllDisease() {
     navigation.navigate("RemediesScreen", {
       disease: diseasePercentage.class,
       diseasesInfo: diseaseData,
-      base64Data: base64Data,
+      base64Data: `data:image/png;base64,${base64Data}`,
     });
   };
 
