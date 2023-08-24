@@ -12,6 +12,7 @@ export default function DetectedAllDisease() {
   const [diseaseData, setDiseaseData] = useState([]);
   const [diseasePercentage, setDiseasePercentage] = useState();
   const [base64Data, setBase64Data] = useState();
+  const [advanceSearchData, setAdvanceSearchData] = useState([]);
 
   const navigation = useNavigation();
 
@@ -37,6 +38,7 @@ export default function DetectedAllDisease() {
   };
 
   const getRemedies = async () => {
+    console.log("diseaseData>> ", diseaseData);
     navigation.navigate("RemediesScreen", {
       disease: diseasePercentage.class,
       diseasesInfo: diseaseData,
@@ -65,6 +67,43 @@ export default function DetectedAllDisease() {
           }
         )
         .then((response) => {
+          console.log("response>> ", response.data);
+          setDiseasePercentage(response.data);
+        })
+        .catch((error) => {
+          console.log("error>> ", error);
+        });
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const advanceSearch = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("file", {
+        uri: imageUri,
+        type: "image/jpeg",
+        name: "image.jpg",
+      });
+      await axios
+        .post(
+          "https://us-central1-mangowise-395709.cloudfunctions.net/disease_predict",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        )
+        .then((response) => {
+          const { class: className, confidence } = response.data;
+          const data = {
+            class: className,
+            affectedAreaPercentage: confidence,
+          };
+
+          setDiseaseData(data);
           setDiseasePercentage(response.data);
         })
         .catch((error) => {
@@ -90,12 +129,21 @@ export default function DetectedAllDisease() {
             <Text style={styles.noDiseaseTitle}>Disease{"\n"}Not Found</Text>
           </View>
           <View>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={handleReTakePicture}
-            >
-              <Text style={styles.btntext}>Re-take</Text>
-            </TouchableOpacity>
+            <View style={styles.buttonGroups}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handleReTakePicture}
+              >
+                <Text style={styles.btntext}>Re-take</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.advanceSearchButton}
+                onPress={advanceSearch}
+              >
+                <Text style={styles.btntext}>Advance Search</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       ) : (
@@ -143,12 +191,12 @@ export default function DetectedAllDisease() {
                       <View
                         style={{
                           ...styles.diseaseColor,
-                          backgroundColor: disease.color,
+                          backgroundColor: disease?.color,
                         }}
                       />
-                      <Text style={styles.diseaseName}>{disease.class}</Text>
+                      <Text style={styles.diseaseName}>{disease?.class}</Text>
                       <Text style={styles.diseaseName}>
-                        {disease.affectedAreaPercentage}%
+                        {disease?.affectedAreaPercentage}%
                       </Text>
                     </View>
                   ))}
@@ -223,6 +271,14 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "#fdc50b",
+    width: 165,
+    height: 50,
+    borderRadius: 10,
+    marginBottom: 20,
+    alignSelf: "center",
+  },
+  advanceSearchButton: {
+    backgroundColor: "#3AB54A",
     width: 165,
     height: 50,
     borderRadius: 10,
