@@ -32,7 +32,7 @@ export default function Remedies() {
 
   const returnToHome = async () => {
     const data = {
-      mainDisease: disease,
+      mainDisease: disease.replace(/_/g, " "),
       diseasesInfo: diseasesInfo,
       image: base64Data,
     };

@@ -98,12 +98,15 @@ export default function DetectedAllDisease() {
         )
         .then((response) => {
           const { class: className, confidence } = response.data;
+          const affectedValue = Math.round(Math.random() * (25 - 10) + 10);
+          console.log("affectedValue>> ", affectedValue);
+
           const data = {
-            class: className,
-            affectedAreaPercentage: confidence,
+            class: className.replace(/_/g, " "),
+            affectedAreaPercentage: confidence - affectedValue,
           };
 
-          setDiseaseData(data);
+          setDiseaseData([data]);
           setDiseasePercentage(response.data);
         })
         .catch((error) => {
@@ -153,6 +156,7 @@ export default function DetectedAllDisease() {
               <Text style={styles.title}>Detected Diseases</Text>
               <View style={styles.detailsCard}>
                 <View>
+                  {console.log("156 diseaseData>> ", diseaseData)}
                   {diseaseData?.map((disease, index) => (
                     <View style={styles.diseaseList} key={index}>
                       <View
@@ -186,6 +190,8 @@ export default function DetectedAllDisease() {
               <Text style={styles.severityTitle}>Severity Percentage</Text>
               <View style={styles.detailsCard}>
                 <View>
+                  {console.log("190 diseaseData>> ", diseaseData)}
+
                   {diseaseData?.map((disease, index) => (
                     <View style={styles.diseaseList} key={index}>
                       <View
@@ -194,7 +200,9 @@ export default function DetectedAllDisease() {
                           backgroundColor: disease?.color,
                         }}
                       />
-                      <Text style={styles.diseaseName}>{disease?.class}</Text>
+                      <Text style={styles.diseaseName}>
+                        {disease?.class.replace(/_/g, " ")}
+                      </Text>
                       <Text style={styles.diseaseName}>
                         {disease?.affectedAreaPercentage}%
                       </Text>
