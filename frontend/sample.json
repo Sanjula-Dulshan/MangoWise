@@ -1,0 +1,25 @@
+response = {
+    "class": "Anthracnose",
+    "confidence": 100
+}
+
+diseaseData = [
+    {
+        "class": "Anthracnose",
+        "affectedAreaPercentage": 100,
+        "color": "#8622FF"
+    }
+]
+
+route.params>>  {
+    "disease": "Anthracnose",
+    "diseasesInfo": [
+        {
+            "class": "Anthracnose",
+            "affectedAreaPercentage": 100,
+            "color": "#8622FF"
+        }
+    ],
+    "base64Data": "data:image/png;base64,/9j/4AAQSkZ//Z"
+}
+
