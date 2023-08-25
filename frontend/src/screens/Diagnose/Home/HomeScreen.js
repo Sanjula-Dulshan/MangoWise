@@ -4,7 +4,6 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import vector from "../../../../assets/Vector.png";
 import focusLeaf from "../../../../assets/focus-leaf.png";
 import report from "../../../../assets/report.png";
-import sampleMangoLaaf from "../../../../assets/sample-mango-leaf.jpg";
 import searchLeaf from "../../../../assets/search-leaf-icon.png";
 import VirusIcon from "../../../../assets/virus-icon.png";
 import Header from "../../../components/Common/Header";
@@ -25,9 +24,14 @@ export default function HomeScreen() {
   };
 
   useEffect(() => {
-    axios.get(constants.backend_url + "/disease").then((response) => {
-      setDiseasesList(response.data);
-    });
+    try {
+      axios.get(constants.backend_url + "/disease").then((response) => {
+        console.log("response.data ", response.data);
+        setDiseasesList(response.data);
+      });
+    } catch (error) {
+      console.log("error ", error);
+    }
   }, [route.params]);
 
   return (
