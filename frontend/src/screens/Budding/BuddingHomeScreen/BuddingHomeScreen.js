@@ -169,7 +169,7 @@ export default function BuddingHomeScreen() {
 
   
   const handleTakePicture = async () => {
-    navigation.navigate("DiagnoseScanScreen");
+    navigation.navigate("BuddingScanScreen");
   };
 
   return (

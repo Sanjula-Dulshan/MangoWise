@@ -20,13 +20,13 @@ export default function BuddingAllScreens() {
         />
 
         <Stack.Screen
-            name="DiagnoseScanScreen"
+            name="BuddingScanScreen"
             component={BuddingScanScreen}
             options={{ headerShown: false }}
         />
 
         <Stack.Screen
-            name="BuudinResultScreen"
+            name="BuddingResultScreen"
             component={BuddingResultScreen}
             options={{ headerShown: false }}
         />

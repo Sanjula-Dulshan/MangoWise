@@ -71,7 +71,7 @@ export default function ScanScreen() {
         await logBase64(base64String); //to see in console
 
         //TODO: Send this base64Image to the YOLO model
-        navigation.navigate("DetectedAllDiseaseScreen");
+        navigation.navigate("BuddingResultScreen");
       } catch (error) {
         console.log("error ", error);
       }

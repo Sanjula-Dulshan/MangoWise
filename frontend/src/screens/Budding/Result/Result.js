@@ -16,101 +16,13 @@ import {
 import Header from "../../../components/Common/Header";
 import { useNavigation } from "@react-navigation/native";
 import { Feather, AntDesign } from '@expo/vector-icons';
-import BluetoothSerial from 'react-native-bluetooth-serial-2';
-import plant from '../../../../assets/plant.png'
-import check from '../../../../assets/check.png'
-import bud from '../../../../assets/bud.png';
-import vector from '../../../../assets/Vector.png';
+import green_tick from '../../../../assets/green_tick.png';
 import Modal from 'react-native-modal';
+import backgroundImage from '../../../../assets/tmp-plant.png';
 
-import {
-  PERMISSIONS,
-  RESULTS,
-  request,
-  requestMultiple,
-} from 'react-native-permissions';
 
-const ListItem = ({ item }) => {
-  return (
-    <View style={styles2.item}>
-      <Image
-        source={{
-          uri: item.uri,
-        }}
-        style={styles2.itemPhoto}
-        resizeMode="cover"
-      />
-      <Text style={styles2.itemText}>{item.text}</Text>
-    </View>
-  );
-};
 
-const SECTIONS = [
-  {
-    title: 'Made for you',
-    horizontal: true,
-    data: [
-      {
-        key: '1',
-        text: 'Item text 1',
-        uri: 'https://res.cloudinary.com/sliit-yasantha/image/upload/v1684854307/5e7ce671cae140d06311ca2db50a5698_hrhwib.jpg',
-      },
-      {
-        key: '2',
-        text: 'Item text 2',
-        uri: 'https://picsum.photos/id/10/200',
-      },
 
-      {
-        key: '3',
-        text: 'Item text 3',
-        uri: 'https://picsum.photos/id/1002/200',
-      },
-      {
-        key: '4',
-        text: 'Item text 4',
-        uri: 'https://res.cloudinary.com/sliit-yasantha/image/upload/v1684854307/5e7ce671cae140d06311ca2db50a5698_hrhwib.jpg',
-      },
-      {
-        key: '5',
-        text: 'Item text 5',
-        uri: 'https://res.cloudinary.com/sliit-yasantha/image/upload/v1684854307/5e7ce671cae140d06311ca2db50a5698_hrhwib.jpg',
-      },
-    ],
-  },
-  {
-    title: 'Punk and hardcore',
-    data: [
-      {
-        key: '1',
-        text: 'Item text 1',
-        uri: 'https://picsum.photos/id/1011/200',
-      },
-      {
-        key: '2',
-        text: 'Item text 2',
-        uri: 'https://picsum.photos/id/1012/200',
-      },
-
-      {
-        key: '3',
-        text: 'Item text 3',
-        uri: 'https://picsum.photos/id/1013/200',
-      },
-      {
-        key: '4',
-        text: 'Item text 4',
-        uri: 'https://res.cloudinary.com/sliit-yasantha/image/upload/v1684854307/5e7ce671cae140d06311ca2db50a5698_hrhwib.jpg',
-      },
-      {
-        key: '5',
-        text: 'Item text 5',
-        uri: 'https://res.cloudinary.com/sliit-yasantha/image/upload/v1684854307/5e7ce671cae140d06311ca2db50a5698_hrhwib.jpg',
-      },
-    ],
-  },
-  
-];
 
 const styles2 = StyleSheet.create({
   container: {
@@ -147,33 +59,19 @@ export default function BuddingResultScreen() {
   const [isError, setError] = useState(false);
 
   useEffect(() => {
-    (async () => {
-      const granted = await hasPermission();
-      const granted2 = await hasPermission2();
-
-      if (!granted || !granted2) {
-        const permission = await requestPermission();
-        const permission2 = await requestPermission2();
-
-        if (permission && permission2) {
-          setPermissionGranted(true);
-
-        } else {
-          setPermissionGranted(false);
-        }
-      } else {
-        setPermissionGranted(true);
-      }    
-    })();
+    setModalVisible(true)
   }, []);
 
   
-  const handleTakePicture = async () => {
-    navigation.navigate("DiagnoseScanScreen");
-  };
+
+  const handleRetakePicture = async () => {
+    navigation.navigate("BuddingScanScreen");
+  }
 
   return (
-    <View style={{ backgroundColor: '#fdfafa', height: '90%' }}>
+    
+    <View style={{ backgroundColor: '#FFFFFF', height: '100%' }}>
+      <Image source={backgroundImage} style={{ flex: 1, resizeMode: 'cover' }}></Image>
       <View style={styles.topic}>
         <TouchableOpacity onPress={() => navigation.navigate('CheckFertilizerScreen')}>
           <View style={styles.backButton}>
@@ -183,68 +81,24 @@ export default function BuddingResultScreen() {
         <Header />
       </View>
 
-      <Text style={{ fontSize: 20, fontFamily: 'Roboto', paddingTop: 2, textAlign: 'left', paddingRight: 13, marginLeft: 20, fontStyle: 'italic' }}>Time your bud </Text>
-      <Text style={{ fontSize: 20, fontFamily: 'Roboto', paddingTop: 2, textAlign: 'left', paddingRight: 13, marginLeft: 20, fontStyle: 'italic' }}>perfectly</Text>
-      <View style={styles.imageContainer}>
-        <View style={{ flexDirection: 'row', marginTop: 5 }}>
-          <Image
-            source={plant}
-            style={styles.sensorimage}
-            resizeMode="contain"
-          />
-
-          <Image
-            source={check}
-            style={styles.reportimage}
-            resizeMode="contain"
-          />
-          <Image
-            source={bud}
-            style={styles.monitorimage}
-            resizeMode="contain"
-          />
-        </View>
-        <View style={{ flexDirection: 'row', marginTop: 0 }}>
-          <View style={{ flexDirection: 'column', marginTop: 5 }}>
-            <Text style={{ fontSize: 12, fontFamily: 'Roboto', textAlign: 'left', paddingRight: 23, marginLeft: 20, marginTop: -20 }}>Take a </Text>
-            <Text style={{ fontSize: 12, fontFamily: 'Roboto', textAlign: 'left', paddingRight: 23, marginLeft: 20, marginTop: 0 }}>picture</Text>
-          </View>
-          <Image
-            source={vector}
-            style={styles.vectorimage}
-            resizeMode="contain"
-          />
-          <View style={{ flexDirection: 'column', marginTop: 5 }}>
-            <Text style={{ fontSize: 12, fontFamily: 'Roboto', textAlign: 'left', paddingRight: 23, marginLeft: 15, marginTop: -20 }}>Check </Text>
-            <Text style={{ fontSize: 12, fontFamily: 'Roboto', textAlign: 'left', paddingRight: 23, marginLeft: 15, marginTop: 0 }}>Suitability</Text>
-          </View>
-          <Image
-            source={vector}
-            style={styles.vectorimage}
-            resizeMode="contain"
-          />
-          <View style={{ flexDirection: 'column', marginTop: 5 }}>
-            <Text style={{ fontSize: 12, fontFamily: 'Roboto', textAlign: 'left', paddingRight: 23, marginLeft: 15, marginTop: -20 }}>Proceed </Text>
-            <Text style={{ fontSize: 12, fontFamily: 'Roboto', textAlign: 'left', paddingRight: 23, marginLeft: 15, marginTop: 0 }}>budding</Text>
-          </View>
-        </View>
-
-      </View>
+      
 
       <Modal isVisible={isModalVisible} style={styles.infoModal} >
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={{ fontSize: 14, fontWeight: 'bold', padding: 5, margin: 8, textDecorationLine: 'underline' }}> How to connect with the sensor </Text>
+            
+            <Image source={green_tick} style={{ marginTop: 45, width: 130, height: 130, marginVertical: 8 }} />
 
-            <Text style={{ fontSize: 14, padding: 5, margin: 8, textAlign: 'left', marginRight: 12 }}>Insert the sensor's three pins into the soil sample.  </Text>
-            <Text style={{ fontSize: 14, paddingTop: 5, marginTop: 8, textAlign: 'left', paddingHorizontal: 5 }}> Switch on the sensor device(Need two 9v batteries to power up the device). </Text>
-            <Text style={{ fontSize: 14, padding: 5, marginTop: 18, textAlign: 'left' }}>Turn on mobile’s Bluetooth connection.  </Text>
-            <Text style={{ fontSize: 14, padding: 5, marginTop: 18, textAlign: 'left', marginLeft: 5 }}>Search for available Bluetooth devices.  </Text>
-            <Text style={{ fontSize: 14, padding: 5, marginTop: 18, textAlign: 'left', marginRight: 30 }}> Pair with the device name ‘HC-06’.  </Text>
-            <Text style={{ fontSize: 14, padding: 5, marginTop: 18, textAlign: 'left', marginRight: 70 }}>Insert PIN 1234 to connect.  </Text>
+            <Text style={{ fontSize: 25, padding: 5, margin: 8, textAlign: 'left', marginRight: 12 }}>Plant is  </Text>
+            <Text style={{ fontSize: 35, marginTop: -15, textAlign: 'left', fontWeight: 'bold', color: 'green' }}> Suitable </Text>
 
-            <TouchableOpacity style={styles.okButton} onPress={() => setModalVisible(false)} >
-              <Text style={{ fontSize: 14, fontWeight: 'bold', padding: 5, color: 'white', textAlign: 'center' }}> OK </Text>
+            
+            <TouchableOpacity style={styles.findVarierty} onPress={() => setModalVisible(false)} >
+              <Text style={{ fontSize: 17, fontWeight: 'bold', padding: 5, color: 'white', textAlign: 'center' }}> Find matching variety </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.retakePhoto} onPress={() => handleRetakePicture()} >
+              <Text style={{ fontSize: 17, fontWeight: 'bold', padding: 5,  textAlign: 'center' }}> Retake photo </Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -260,46 +114,8 @@ export default function BuddingResultScreen() {
         </View>
       </TouchableOpacity>
 
-      <TouchableOpacity style={{ ...styles.button, marginTop: 10 }} onPress={handleTakePicture}>
-        <Text style={styles.btntext}>Take a Picture</Text>
-      </TouchableOpacity>
 
-      <TouchableOpacity style={{ ...styles.button, marginTop: 10 }}onPress={handleTakePicture}>
-        <Text style={styles.btntext}>Choose a photo</Text>
-      </TouchableOpacity>
-
-      <Text style={{ fontSize: 14, fontWeight: 'bold', marginLeft: 20, marginTop: 15 }}>Previous Images</Text>
-
-
-      <View style={styles2.container}>
-        <StatusBar style="light" />
-        <SafeAreaView style={{ flex: 1 }}>
-        <SectionList
-          contentContainerStyle={{ paddingHorizontal: 10 }}
-          stickySectionHeadersEnabled={false}
-          sections={SECTIONS}
-          renderSectionHeader={({ section }) => (
-            <>
-              <Text style={styles.sectionHeader}>{section.title}</Text>
-              {section.horizontal ? (
-                <FlatList
-                  horizontal
-                  data={section.data}
-                  renderItem={({ item }) => <ListItem item={item} />}
-                  showsHorizontalScrollIndicator={false}
-                />
-              ) : null}
-            </>
-          )}
-          renderItem={({ item, section }) => {
-            if (section.horizontal) {
-              return null;
-            }
-            return <ListItem item={item} />;
-          }}
-        />
-      </SafeAreaView>
-      </View>
+      
     </View>
   )
 }
@@ -360,14 +176,17 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
   infoModal: {
-    flex: 1,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     justifyContent: 'center',
     backgroundColor: '#ffffff',
-    width: '80%',
-    maxHeight: '60%',
-    minHeight: '10%',
-    marginTop: 170,
-    marginLeft: 45,
+    width: '100%',
+    maxHeight: '90%',
+    minHeight: '60%',
+    marginBottom: 20,
+    marginLeft: 0,
     borderRadius: 20,
     borderColor: '#899186',
     shadowOffset: {
@@ -387,6 +206,30 @@ const styles = StyleSheet.create({
     color: '#144100',
     borderRadius: 25,
     marginTop: 50,
+    alignSelf: 'center',
+    marginBottom: 20,
+  },
+  findVarierty: {
+    backgroundColor: 'green',
+    padding: 10,
+    width: 280,
+    height: 50,
+    textAlign: 'center',
+    color: '#FFFFFF',
+    borderRadius: 15,
+    marginTop: 10,
+    alignSelf: 'center',
+    marginBottom: 10,
+  },
+  retakePhoto: {
+    backgroundColor: '#BBC6BC',
+    padding: 10,
+    width: 180,
+    height: 50,
+    textAlign: 'center',
+    color: 'black',
+    borderRadius: 15,
+    marginTop: 0,
     alignSelf: 'center',
     marginBottom: 20,
   },
