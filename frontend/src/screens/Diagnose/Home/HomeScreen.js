@@ -245,7 +245,7 @@ export default function HomeScreen() {
         {diseasesList.slice(0, 3).map((disease, key) => {
           // Limiting to 3 iterations
           return (
-            <TouchableOpacity>
+            <TouchableOpacity key={key}>
               <View style={styles.image}>
                 <Image
                   source={{ uri: disease?.image }}

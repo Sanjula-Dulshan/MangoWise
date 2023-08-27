@@ -18,6 +18,7 @@ import constants from "../../../constants/constants";
 
 export default function PreviousDiseases() {
   const [diseasesList, setDiseasesList] = useState([]);
+  const navigation = useNavigation();
   const route = useRoute();
 
   useEffect(() => {
@@ -26,7 +27,12 @@ export default function PreviousDiseases() {
     });
   }, [route.params]);
 
-  const navigation = useNavigation();
+  const recheck = (disease) => {
+    navigation.navigate("DiagnoseScanScreen", {
+      recheck: true,
+      prevDisease: disease,
+    });
+  };
 
   return (
     <View style={{ backgroundColor: "#fdfafa", height: "100%" }}>
@@ -48,10 +54,15 @@ export default function PreviousDiseases() {
                     <View style={styles.description}>
                       <Text style={styles.name}>{disease?.mainDisease}</Text>
                       <Text style={styles.date}>
-                        {moment(disease.createdAt).format("DD/MM/YYYY")}
+                        {moment(disease.updatedAt).format("DD/MM/YYYY")}
                       </Text>
                       <TouchableOpacity style={styles.button}>
-                        <Text style={styles.btntext}>Recheck</Text>
+                        <Text
+                          style={styles.btntext}
+                          onPress={() => recheck(disease)}
+                        >
+                          Recheck
+                        </Text>
                       </TouchableOpacity>
                     </View>
                     <TouchableOpacity style={styles.arrowIcon}>
@@ -76,6 +87,8 @@ const styles = StyleSheet.create({
     borderRadius: 25,
   },
   cardContainer: {
+    position: "relative",
+
     flexDirection: "row",
     padding: 1,
   },
@@ -107,7 +120,6 @@ const styles = StyleSheet.create({
     height: 30,
     borderRadius: 25,
     padding: 4,
-    alignSelf: "center",
   },
   btntext: {
     textAlign: "center",
@@ -117,9 +129,12 @@ const styles = StyleSheet.create({
     color: "#144100",
   },
   arrowIcon: {
-    marginLeft: 90,
-    marginTop: 50,
+    //marginTop: 50,
     transform: [{ rotate: "45deg" }],
+
+    position: "absolute",
+    bottom: "-10%",
+    right: "-5%",
   },
   previousPictures: {
     left: "7.69%",
