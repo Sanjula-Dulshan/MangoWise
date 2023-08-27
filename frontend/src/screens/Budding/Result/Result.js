@@ -68,6 +68,10 @@ export default function BuddingResultScreen() {
     navigation.navigate("BuddingScanScreen");
   }
 
+  const handleFindVariety = async () => {
+    navigation.navigate("VarietySelection");
+  }
+
   return (
     
     <View style={{ backgroundColor: '#FFFFFF', height: '100%' }}>
@@ -93,7 +97,7 @@ export default function BuddingResultScreen() {
             <Text style={{ fontSize: 35, marginTop: -15, textAlign: 'left', fontWeight: 'bold', color: 'green' }}> Suitable </Text>
 
             
-            <TouchableOpacity style={styles.findVarierty} onPress={() => setModalVisible(false)} >
+            <TouchableOpacity style={styles.findVarierty} onPress={() => handleFindVariety()} >
               <Text style={{ fontSize: 17, fontWeight: 'bold', padding: 5, color: 'white', textAlign: 'center' }}> Find matching variety </Text>
             </TouchableOpacity>
 

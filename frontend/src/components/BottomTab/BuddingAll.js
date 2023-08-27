@@ -5,6 +5,7 @@ import React from "react";
 import BuddingHomeScreen from "../../screens/Budding/BuddingHomeScreen/BuddingHomeScreen.js";
 import BuddingScanScreen from "../../screens/Budding/Scan";
 import BuddingResultScreen from "../../screens/Budding/Result/Result";
+import VarietySelection from "../../screens/VarietySelection/FeatureSelect/VarietySelection";
 
 
 
@@ -28,6 +29,12 @@ export default function BuddingAllScreens() {
         <Stack.Screen
             name="BuddingResultScreen"
             component={BuddingResultScreen}
+            options={{ headerShown: false }}
+        />
+
+        <Stack.Screen
+            name="VarietySelection"
+            component={VarietySelection}
             options={{ headerShown: false }}
         />
 
