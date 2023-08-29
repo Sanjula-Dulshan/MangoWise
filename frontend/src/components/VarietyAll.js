@@ -5,12 +5,19 @@ import React from "react";
 import MarketHomeScreen from "../screens/Market/Home";
 import VarietyHomeScreen from "../screens/Variety/Home";
 import ForecastScreen from "../screens/Market/Forecast/Market";
+import AnalysisScreen from "../screens/Market/Analysis/Analysis";
 
 const Stack = createNativeStackNavigator();
 
 export default function VarietyAllScreens() {
   return (
     <Stack.Navigator>
+      <Stack.Screen
+        name="AnalysisScreen"
+        component={AnalysisScreen}
+        options={{ headerShown: false }}
+      />
+
       <Stack.Screen
         name="ForecastScreen"
         component={ForecastScreen}
