@@ -22,6 +22,7 @@ import check from '../../../../assets/check.png'
 import bud from '../../../../assets/bud.png';
 import vector from '../../../../assets/Vector.png';
 import Modal from 'react-native-modal';
+import sampleImage from "../../../../assets/tmp-plant.png";
 
 import {
   PERMISSIONS,
@@ -173,6 +174,7 @@ export default function BuddingHomeScreen() {
   };
 
   return (
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
     <View style={{ backgroundColor: '#fdfafa', height: '90%' }}>
       <View style={styles.topic}>
         <TouchableOpacity onPress={() => navigation.navigate('CheckFertilizerScreen')}>
@@ -271,36 +273,43 @@ export default function BuddingHomeScreen() {
       <Text style={{ fontSize: 14, fontWeight: 'bold', marginLeft: 20, marginTop: 15 }}>Previous Images</Text>
 
 
-      <View style={styles2.container}>
-        <StatusBar style="light" />
-        <SafeAreaView style={{ flex: 1 }}>
-        <SectionList
-          contentContainerStyle={{ paddingHorizontal: 10 }}
-          stickySectionHeadersEnabled={false}
-          sections={SECTIONS}
-          renderSectionHeader={({ section }) => (
-            <>
-              <Text style={styles.sectionHeader}>{section.title}</Text>
-              {section.horizontal ? (
-                <FlatList
-                  horizontal
-                  data={section.data}
-                  renderItem={({ item }) => <ListItem item={item} />}
-                  showsHorizontalScrollIndicator={false}
-                />
-              ) : null}
-            </>
-          )}
-          renderItem={({ item, section }) => {
-            if (section.horizontal) {
-              return null;
-            }
-            return <ListItem item={item} />;
-          }}
-        />
-      </SafeAreaView>
+      <View
+        style={{
+          flexDirection: "row",
+          marginTop: 30,
+          justifyContent: "space-between",
+        }}
+      >
+        <TouchableOpacity>
+          <View style={styles.image}>
+            <Image
+              source={sampleImage}
+              style={styles.sampleMangoLeaf}
+              resizeMode="contain"
+            />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <View style={styles.image}>
+            <Image
+              source={sampleImage}
+              style={styles.sampleMangoLeaf}
+              resizeMode="contain"
+            />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <View style={styles.image}>
+            <Image
+              source={sampleImage}
+              style={styles.sampleMangoLeaf}
+              resizeMode="contain"
+            />
+          </View>
+        </TouchableOpacity>
       </View>
     </View>
+    </ScrollView>
   )
 }
 
@@ -322,6 +331,15 @@ const styles = StyleSheet.create({
     shadowRadius: 1.21,
     elevation: 2
   },
+  sampleMangoLeaf: {
+    width: 80,
+    height: 90,
+    marginLeft: 5,
+    marginRight: 20,
+    marginTop: 0,
+    marginBottom: 5,
+    borderRadius: 20,
+  }, 
   topic: {
     flexDirection: 'row',
     paddingTop: 20,
