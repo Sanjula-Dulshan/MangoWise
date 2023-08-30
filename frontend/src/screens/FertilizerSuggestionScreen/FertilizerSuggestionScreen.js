@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import FertilizerImg from "../../../assets/Fertilizer.jpg";
 import Header from "../../components/Common/Header";
+import constants from "../../constants/constants";
 
 export default function FertilizerSuggestionScreen() {
   const navigation = useNavigation();
@@ -28,7 +29,7 @@ export default function FertilizerSuggestionScreen() {
       (async function id() {
         try {
           const record = await axios.get(
-            "http://192.168.1.246:8070/records/get"
+            constants.backend_url + "/records/get"
           );
           if (record) {
             setFertilizer(record.data.fertilizer);
