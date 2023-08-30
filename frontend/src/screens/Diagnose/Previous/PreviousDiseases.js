@@ -34,6 +34,10 @@ export default function PreviousDiseases() {
     });
   };
 
+  const viewDetails = (disease) => {
+    console.log("view details", disease);
+  };
+
   return (
     <View style={{ backgroundColor: "#fdfafa", height: "100%" }}>
       <Header />
@@ -56,16 +60,17 @@ export default function PreviousDiseases() {
                       <Text style={styles.date}>
                         {moment(disease.updatedAt).format("DD/MM/YYYY")}
                       </Text>
-                      <TouchableOpacity style={styles.button}>
-                        <Text
-                          style={styles.btntext}
-                          onPress={() => recheck(disease)}
-                        >
-                          Recheck
-                        </Text>
+                      <TouchableOpacity
+                        style={styles.button}
+                        onPress={() => recheck(disease)}
+                      >
+                        <Text style={styles.btntext}>Recheck</Text>
                       </TouchableOpacity>
                     </View>
-                    <TouchableOpacity style={styles.arrowIcon}>
+                    <TouchableOpacity
+                      style={styles.arrowIcon}
+                      onPress={() => viewDetails(disease)}
+                    >
                       <Entypo name="chevron-right" size={40} color="#fdc50b" />
                     </TouchableOpacity>
                   </View>
