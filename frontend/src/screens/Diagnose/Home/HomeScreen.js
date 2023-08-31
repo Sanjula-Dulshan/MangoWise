@@ -26,7 +26,6 @@ export default function HomeScreen() {
   useEffect(() => {
     try {
       axios.get(constants.backend_url + "/disease").then((response) => {
-        console.log("response.data ", response.data);
         setDiseasesList(response.data);
       });
     } catch (error) {

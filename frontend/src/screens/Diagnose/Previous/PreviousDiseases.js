@@ -15,6 +15,7 @@ import Header from "../../../components/Common/Header";
 import axios from "axios";
 import moment from "moment";
 import constants from "../../../constants/constants";
+import Modal from "react-native-modal";
 
 export default function PreviousDiseases() {
   const [diseasesList, setDiseasesList] = useState([]);
@@ -35,7 +36,15 @@ export default function PreviousDiseases() {
   };
 
   const viewDetails = (disease) => {
-    console.log("view details", disease);
+    setSelectedDisease(disease);
+    setPopupVisible(true);
+  };
+
+  const [popupVisible, setPopupVisible] = useState(false);
+  const [selectedDisease, setSelectedDisease] = useState(null);
+
+  const closePopup = () => {
+    setPopupVisible(false);
   };
 
   return (
@@ -79,6 +88,70 @@ export default function PreviousDiseases() {
             );
           })}
         </View>
+
+        {selectedDisease && (
+          <Modal
+            isVisible={popupVisible}
+            backdropOpacity={0.75}
+            animationIn="zoomInDown"
+            animationOut="zoomOutUp"
+            animationInTiming={600}
+            animationOutTiming={700}
+            backdropTransitionInTiming={600}
+            backdropTransitionOutTiming={700}
+          >
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <View
+                style={{
+                  backgroundColor: "white",
+                  padding: 20,
+                  borderRadius: 10,
+                  width: "80%",
+                }}
+              >
+                <Image
+                  source={{ uri: selectedDisease.image }}
+                  style={{ width: "100%", height: 200, borderRadius: 10 }}
+                />
+                <Text
+                  style={{ fontSize: 18, fontWeight: "bold", marginTop: 10 }}
+                >
+                  {selectedDisease.mainDisease}
+                </Text>
+                <Text style={{ fontSize: 14, color: "gray" }}>
+                  {moment(selectedDisease.updatedAt).format("DD/MM/YYYY")}
+                </Text>
+                <Text style={{ marginTop: 10, marginBottom: 10 }}>
+                  Disease Treated:{" "}
+                  <Text style={{ color: "red" }}>
+                    {selectedDisease.mainDisease}
+                  </Text>
+                </Text>
+                <Text>All Diseases percentage:</Text>
+                {selectedDisease.diseasesInfo?.map((disease, index) => (
+                  <Text key={index}>
+                    {"   "}
+                    {disease.class}: {disease.affectedAreaPercentage}%
+                  </Text>
+                ))}
+                <TouchableOpacity
+                  style={styles.modelButton}
+                  onPress={() => {
+                    closePopup();
+                  }}
+                >
+                  <Text style={styles.modelBtnText}>Close</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+        )}
       </ScrollView>
     </View>
   );
@@ -110,13 +183,15 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   name: {
-    fontSize: 16,
     marginTop: 5,
+    fontSize: 16,
+    fontWeight: "bold",
   },
   date: {
-    fontSize: 16,
+    fontSize: 14,
     marginTop: 2,
     marginBottom: 10,
+    color: "gray",
   },
 
   button: {
@@ -130,7 +205,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 16,
     fontWeight: "bold",
-
     color: "#144100",
   },
   arrowIcon: {
@@ -146,5 +220,21 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginBottom: 10,
     fontWeight: "bold",
+  },
+
+  modelButton: {
+    backgroundColor: "#fdc50b",
+    width: 90,
+    height: 35,
+    borderRadius: 25,
+    padding: 4,
+    alignSelf: "flex-end",
+    marginTop: 30,
+    justifyContent: "center",
+  },
+  modelBtnText: {
+    alignSelf: "center",
+    fontWeight: "bold",
+    color: "#144100",
   },
 });
