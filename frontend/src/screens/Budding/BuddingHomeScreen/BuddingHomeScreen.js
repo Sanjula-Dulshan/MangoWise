@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
 import {
   StyleSheet,
   View,
@@ -176,14 +175,8 @@ export default function BuddingHomeScreen() {
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
     <View style={{ backgroundColor: '#fdfafa', height: '90%' }}>
-      <View style={styles.topic}>
-        <TouchableOpacity onPress={() => navigation.navigate('CheckFertilizerScreen')}>
-          <View style={styles.backButton}>
-            <Feather name="arrow-left" size={40} color="#000000" />
-          </View>
-        </TouchableOpacity>
         <Header />
-      </View>
+      
 
       <Text style={{ fontSize: 20, fontFamily: 'Roboto', paddingTop: 2, textAlign: 'left', paddingRight: 13, marginLeft: 20, fontStyle: 'italic' }}>Time your bud </Text>
       <Text style={{ fontSize: 20, fontFamily: 'Roboto', paddingTop: 2, textAlign: 'left', paddingRight: 13, marginLeft: 20, fontStyle: 'italic' }}>perfectly</Text>

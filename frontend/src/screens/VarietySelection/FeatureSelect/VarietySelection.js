@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
 import {
   StyleSheet,
   View,
@@ -92,15 +91,8 @@ export default function VarietySelection() {
 
   return (
     
-    <View style={{ backgroundColor: '#FFFFFF', height: '100%' }}>
-      <View style={styles.topic}>
-        <TouchableOpacity onPress={() => navigation.navigate('CheckFertilizerScreen')}>
-          <View style={styles.backButton}>
-            <Feather name="arrow-left" size={40} color="#000000" />
-          </View>
-        </TouchableOpacity>
+    <View style={{ backgroundColor: '#fdfafa', height: '100%' }}>
         <Header />
-      </View>
 
       <Text style={{ fontSize: 20, fontFamily: 'Roboto', paddingTop: 2, textAlign: 'left', paddingRight: 13, marginLeft: 20, fontStyle: 'italic' }}>Time your bud </Text>
       <Text style={{ fontSize: 20, fontFamily: 'Roboto', paddingTop: 2, textAlign: 'left', paddingRight: 13, marginLeft: 20, fontStyle: 'italic' }}>perfectly</Text>

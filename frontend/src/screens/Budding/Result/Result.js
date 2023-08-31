@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
 import {
   StyleSheet,
   View,
@@ -14,7 +13,7 @@ import {
   Image
 } from 'react-native';
 import Header from "../../../components/Common/Header";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation,useRoute } from "@react-navigation/native";
 import { Feather, AntDesign } from '@expo/vector-icons';
 import green_tick from '../../../../assets/green_tick.png';
 import Modal from 'react-native-modal';
@@ -53,14 +52,41 @@ const styles2 = StyleSheet.create({
 
 export default function BuddingResultScreen() {
 
+  const route = useRoute();
+
   const navigation = useNavigation();
   const [permissionGranted, setPermissionGranted] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const [isError, setError] = useState(false);
+  const [imageUri, setImageUri] = useState(null);
+  const [Suitability,setSuitability] = useState("");
+  const [className, setClassName] = useState("");
+  const [color, setColor] = useState("");
 
   useEffect(() => {
     setModalVisible(true)
   }, []);
+
+  useEffect(() => {
+    const { response, imageUri, base64Data } = route.params;
+    setImageUri(imageUri);
+    setSuitability(response.class);
+    console.log("response", response.class);
+  }, [route.params]);
+  
+  useEffect(() => {
+    if (Suitability == "suitable") {
+      setClassName("Suitable");
+      setColor("green");
+    }  else if (Suitability == "late") {
+      setClassName("Late");
+      setColor("red");
+    } else  {
+      setClassName("Early");
+      setColor("orange");
+    }
+      
+  }, [Suitability]);
 
   
 
@@ -76,14 +102,7 @@ export default function BuddingResultScreen() {
     
     <View style={{ backgroundColor: '#FFFFFF', height: '100%' }}>
       <Image source={backgroundImage} style={{ flex: 1, resizeMode: 'cover' }}></Image>
-      <View style={styles.topic}>
-        <TouchableOpacity onPress={() => navigation.navigate('CheckFertilizerScreen')}>
-          <View style={styles.backButton}>
-            <Feather name="arrow-left" size={40} color="#000000" />
-          </View>
-        </TouchableOpacity>
-        <Header />
-      </View>
+      
 
       
 
@@ -94,7 +113,7 @@ export default function BuddingResultScreen() {
             <Image source={green_tick} style={{ marginTop: 45, width: 130, height: 130, marginVertical: 8 }} />
 
             <Text style={{ fontSize: 25, padding: 5, margin: 8, textAlign: 'left', marginRight: 12 }}>Plant is  </Text>
-            <Text style={{ fontSize: 35, marginTop: -15, textAlign: 'left', fontWeight: 'bold', color: 'green' }}> Suitable </Text>
+            <Text style={{ fontSize: 35, marginTop: -15, textAlign: 'left', fontWeight: 'bold', color: color }}> {className} </Text>
 
             
             <TouchableOpacity style={styles.findVarierty} onPress={() => handleFindVariety()} >

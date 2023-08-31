@@ -2,6 +2,8 @@ import axios from "axios";
 import { createCanvas, loadImage } from "canvas";
 
 export const detectDiseases = async (req, res) => {
+
+  console.log("Detecting diseases");
   // Get the base64 image from the request body
   const { image } = req.body;
 

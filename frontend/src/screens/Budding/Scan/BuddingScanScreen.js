@@ -3,18 +3,23 @@ import { Camera } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library";
 import { useEffect, useRef, useState } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import {ActivityIndicator, Image, StyleSheet, Text, View } from "react-native";
 import Header from "../../../components/Common/Header";
 import Button from "./Button";
+import { manipulateAsync } from "expo-image-manipulator";
+import axios from "axios";
+import constants from "../../../constants/constants";
 
 export default function ScanScreen() {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [image, setImage] = useState(null);
   const [gallery, setGallery] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [base64Data, setBase64Data] = useState(null);
   const type = Camera.Constants.back;
   const cameraRef = useRef(null);
   const navigation = useNavigation();
+  const [imageUri, setImageUri] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -62,36 +67,90 @@ export default function ScanScreen() {
   const checkImage = async () => {
     if (image) {
       try {
-        //Save image to gallery
+        // Save image to gallery
         if (!gallery) {
           await MediaLibrary.createAssetAsync(image);
         }
-
-        const base64String = await generateBase64String(image, base64Data); //Convert image to base64
-        await logBase64(base64String); //to see in console
-
-        //TODO: Send this base64Image to the YOLO model
-        navigation.navigate("BuddingResultScreen");
+  
+        // // Resize image
+        // const manipulatedResult = await manipulateAsync(
+        //   image,
+        //   [{ resize: { width: 256, height: 256 } }],
+        //   { base64: false } // Do not convert to base64
+        // );
+  
+        // setIsLoading(true);
+  
+        // // Create a FormData object to send the image as a file
+        // const formData = new FormData();
+        // formData.append("image", {
+        //   uri: manipulatedResult.uri,
+        //   type: "image/jpeg", // Adjust the image type if needed
+        //   name: "image.jpg", // Adjust the file name if needed
+        // });
+  
+        const response = await axios.post(
+          constants.backend_url + "/bud/predict",
+          image,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data", // Important for sending files
+            },
+          }
+        );
+  
+        console.log(response.data);
+        setIsLoading(false);
+  
+        navigation.navigate("BuddingResultScreen", {
+          response: response.data,
+          imageUri: image,
+          base64Data: manipulatedResult.uri, // Change this if needed
+        });
       } catch (error) {
         console.log("error ", error);
       }
     }
   };
 
-  const generateBase64String = async (image, base64Data) => {
-    const parts = image.split(".");
-    const extension = parts[parts.length - 1];
-    const base64 = `data:image/${extension};base64,${base64Data}`;
+  const advanceBudSearch = async () => {
 
-    return base64;
-  };
+    setIsLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", {
+        uri: image,
+        type: "image/jpeg",
+        name: "image.jpg",
+      });
+      await axios
+        .post(
+          "https://us-central1-mangowise-395709.cloudfunctions.net/bud_predict",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        )
+        .then((response) => {
+          setIsLoading(false);
+          console.log("response>> ", response.data);
 
-  const logBase64 = async (base64String, chunkSize = 200) => {
-    for (let i = 0; i < 100; i += chunkSize) {
-      const chunk = base64String.slice(i, i + chunkSize);
-      console.log("base64String: ", chunk);
+          navigation.navigate("BuddingResultScreen", {
+            response: response.data,
+            imageUri: image,
+          });
+        })
+        .catch((error) => {
+          console.log("error>> ", error);
+        });
+    } catch (error) {
+      console.error("Error:", error);
     }
   };
+
+
 
   return (
     <View style={styles.container}>
@@ -101,7 +160,17 @@ export default function ScanScreen() {
           <Text>Hello</Text>
         </Camera>
       ) : (
-        <Image source={{ uri: image }} style={styles.camera} />
+        <>
+        {isLoading ? (
+          <ActivityIndicator
+            size="large"
+            style={styles.camera}
+            color="#fdc50b"
+          />
+        ) : (
+          <Image source={{ uri: image }} style={styles.camera} />
+        )}
+      </>
       )}
       <View>
         {!image ? (
@@ -117,7 +186,7 @@ export default function ScanScreen() {
               icon="retweet"
               onPress={() => setImage(null)}
             />
-            <Button title={"Check"} icon="check" onPress={checkImage} />
+            <Button title={"Check"} icon="check" onPress={advanceBudSearch} />
           </View>
         )}
       </View>
