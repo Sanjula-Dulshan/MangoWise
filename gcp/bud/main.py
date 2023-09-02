@@ -23,6 +23,7 @@ class MangoPredictionRequest(BaseModel):
 
 # Define a response model
 class MangoPredictionResponse(BaseModel):
+    print("BaseModel>> ", BaseModel)
     variety: str
     percentage: float
 
@@ -40,15 +41,20 @@ BUCKET_NAME = "mango-wise"  # Here you need to put the name of your GCP bucket
 
 
 # Helper function to convert characteristics to data indices
-def convert_to_indices(request: MangoPredictionRequest) -> List[int]:
-    print("64 request>>>> ",request)
+def convert_to_indices(request_data) -> List[int]:
+    print("request_data>> ",request_data)
+    print("request_data['harvest']>> ",request_data['harvest'])
+
+
     return [
-        harvest_level.index(request.harvest),
-        climate_zone.index(request.climate),
-        taste.index(request.taste),
-        purpose.index(request.purpose),
-        fruit_size.index(request.size)
+        harvest_level.index(request_data['harvest']),
+        climate_zone.index(request_data['climate']),
+        taste.index(request_data['taste']),
+        purpose.index(request_data['purpose']),
+        fruit_size.index(request_data['size'])
     ]
+
+
 
 def download_blob(bucket_name, source_blob_name, destination_file_name):
     """Downloads a blob from the bucket."""
@@ -70,19 +76,24 @@ def v_select_predict(request):
             "models/bud/v_select/mango_variety_classifier.h5",
             "/tmp/mango_variety_classifier.h5",
         )
-        print("Model downloaded")
         v_model = jolib.load("/tmp/mango_variety_classifier.h5")
         print("v_model loaded")
 
     data = convert_to_indices(request.json)
+    print("data>> ",data)
+
     
     prediction = v_model.predict_proba([data])[0]
     predicted_class_index = prediction.argmax()
     predicted_class = v_model.classes_[predicted_class_index]
     confidence = prediction[predicted_class_index] * 100
+
+    print("predicted_class>> ",predicted_class)
+    print("confidence>> ",confidence)
+
+
     
-    result = MangoPredictionResponse(variety=predicted_class, percentage=confidence)
-    return result
+    return {"variety": predicted_class, "percentage": confidence}
 
 def bud_predict(request):
     print("request",request)
@@ -101,7 +112,6 @@ def bud_predict(request):
         print("bud_model loaded")
 
     image = request.files["file"]
-    
 
     image_array = np.array(
         Image.open(image).convert("RGB").resize((256, 256))  # image resizing
