@@ -6,6 +6,8 @@ import MarketHomeScreen from "../screens/Market/Home";
 import VarietyHomeScreen from "../screens/Variety/Home";
 import ForecastScreen from "../screens/Market/Forecast/Market";
 import AnalysisScreen from "../screens/Market/Analysis/Analysis";
+import TimeSeriesForecastScreen from "../screens/Market/Visualize/TimeSeriesForecastScreen";
+import PreviousVarieties from "../screens/Variety/Previous";
 
 const Stack = createNativeStackNavigator();
 
@@ -13,25 +15,36 @@ export default function VarietyAllScreens() {
   return (
     <Stack.Navigator>
       <Stack.Screen
+        name="VarietyHomeScreen"
+        component={VarietyHomeScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="PreviousVarieties"
+        component={PreviousVarieties}
+        options={{ headerShown: false }}
+      />
+
+      <Stack.Screen
         name="AnalysisScreen"
         component={AnalysisScreen}
         options={{ headerShown: false }}
       />
 
       <Stack.Screen
-        name="ForecastScreen"
-        component={ForecastScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
         name="MarketHomeScreen"
         component={MarketHomeScreen}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="TimeSeriesForecastScreen"
+        component={TimeSeriesForecastScreen}
+        options={{ headerShown: false }}
+      />
 
       <Stack.Screen
-        name="VarietyHomeScreen"
-        component={VarietyHomeScreen}
+        name="ForecastScreen"
+        component={ForecastScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

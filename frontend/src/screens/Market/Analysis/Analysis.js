@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 import {
   View,
   Text,
@@ -10,8 +11,6 @@ import {
 } from "react-native";
 import Header from "../../../components/Common/Header";
 import Modal from "react-native-modal";
-import mangoAnalysis from "../../../../assets/M4.jpg";
-//import Mango from "../../../assets/MangoAni.gif";
 
 const MarketAnalysisPlan = () => {
   const [cost, setCost] = useState("");
@@ -19,6 +18,12 @@ const MarketAnalysisPlan = () => {
   const [freshMangoes, setFreshMangoes] = useState("");
   const [damagedMangoes, setDamagedMangoes] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+
+  const navigation = useNavigation();
+
+  const handleGo = () => {
+    navigation.navigate("MarketHomeScreen");
+  };
 
   const handleGoButtonPress = async () => {
     // Show the processing modal
@@ -29,6 +34,8 @@ const MarketAnalysisPlan = () => {
 
     // Hide the processing modal
     setIsProcessing(false);
+    // const navigation = useNavigation();
+    // navigation.navigate("MarketHomeScreen");
 
     // Add your logic here to process the inputs
     console.log("Cost:", cost);
@@ -114,7 +121,8 @@ const MarketAnalysisPlan = () => {
             {/* Ok button to dismiss the modal */}
             <TouchableOpacity
               style={styles.okButton}
-              onPress={() => setIsProcessing(false)}
+              // onPress={() => setIsProcessing(false)}
+              onPress={handleGo}
             >
               <Text style={styles.okButtonText}>Ok</Text>
             </TouchableOpacity>

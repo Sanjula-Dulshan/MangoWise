@@ -19,8 +19,8 @@ import mangoForecast from "../../../../assets/M5.jpg";
 export default function HomeScreen() {
   const navigation = useNavigation();
 
-  const handlePreviousPicture = () => {
-    navigation.navigate("PreviousPicture");
+  const handleForecast = () => {
+    navigation.navigate("ForecastScreen");
   };
 
   return (
@@ -109,6 +109,12 @@ export default function HomeScreen() {
             </View>
           </View>
         </ScrollView>
+        <TouchableOpacity
+          style={styles.buttonContainer}
+          onPress={handleForecast}
+        >
+          <Text style={styles.buttonText}>Show the Forecast</Text>
+        </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -360,5 +366,17 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     flexDirection: "row",
+  },
+  buttonContainer: {
+    backgroundColor: "#fdc50b",
+    margin: 20,
+    padding: 15,
+    borderRadius: 20,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#000",
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });

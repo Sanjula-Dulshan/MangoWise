@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigation } from "@react-navigation/native";
 import {
   View,
   Text,
@@ -10,7 +11,12 @@ import {
 import mangoAnalysis from "../../../../assets/M4.jpg";
 import Header from "../../../components/Common/Header";
 
-const YourNewUI = () => {
+const Analysis = () => {
+  const navigation = useNavigation();
+
+  const handleAnalysis = () => {
+    navigation.navigate("TimeSeriesForecastScreen");
+  };
   return (
     <View style={{ backgroundColor: "#ffff", height: "100%" }}>
       <Header />
@@ -54,8 +60,11 @@ const YourNewUI = () => {
           </View>
 
           {/* Button */}
-          <TouchableOpacity style={styles.buttonContainer}>
-            <Text style={styles.buttonText}>Show the Forecast</Text>
+          <TouchableOpacity
+            style={styles.buttonContainer}
+            onPress={handleAnalysis}
+          >
+            <Text style={styles.buttonText}>Show the Analysis</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -117,4 +126,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default YourNewUI;
+export default Analysis;
