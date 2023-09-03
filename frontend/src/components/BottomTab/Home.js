@@ -1,16 +1,10 @@
 import { View, Text, StyleSheet } from "react-native";
 import React, { useEffect } from "react";
 import axios from "axios";
-import { useNavigation } from "@react-navigation/native";
 
 export default function Home() {
-  const navigation = useNavigation();
-
   useEffect(() => {
     warmUpAPICall();
-
-    //TODO: remove this navigation
-    navigation.navigate("DiagnoseHomeScreen");
   }, []);
 
   const warmUpAPICall = async () => {

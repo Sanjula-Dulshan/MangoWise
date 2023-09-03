@@ -9,22 +9,37 @@ import Header from "../../../components/Common/Header";
 import { useEffect, useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import treatment from "./treatment-api";
-import { SimpleLineIcons } from "@expo/vector-icons";
-import { Ionicons } from "@expo/vector-icons";
+import { SimpleLineIcons, Ionicons } from "@expo/vector-icons";
+import axios from "axios";
+import constants from "../../../constants/constants";
 
 export default function Remedies() {
   const route = useRoute();
   const [disease, setDisease] = useState();
+  const [diseasesInfo, setDiseasesInfo] = useState();
+
+  const [base64Data, setBase64Data] = useState();
+
   const navigation = useNavigation();
 
   useEffect(() => {
     console.log("route.params>> ", route.params);
-    const { disease } = route.params;
+    const { disease, diseasesInfo, base64Data } = route.params;
     setDisease(disease);
+    setDiseasesInfo(diseasesInfo);
+    setBase64Data(base64Data);
   }, [route.params]);
 
-  const returnToHome = () => {
-    navigation.navigate("DiagnoseHomeScreen");
+  const returnToHome = async () => {
+    const data = {
+      mainDisease: disease.replace(/_/g, " "),
+      diseasesInfo: diseasesInfo,
+      image: base64Data,
+    };
+
+    await axios.post(constants.backend_url + "/disease", data).then(() => {
+      navigation.navigate("DiagnoseHomeScreen");
+    });
   };
 
   return (

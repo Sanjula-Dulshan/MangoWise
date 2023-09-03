@@ -5,22 +5,25 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import greenTick from "../../../../assets/green_tick.png";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 export default function DetectedAllDisease() {
   const [instantImage, setInstantImage] = useState();
   const [imageUri, setImageUri] = useState(null);
   const [diseaseData, setDiseaseData] = useState([]);
   const [diseasePercentage, setDiseasePercentage] = useState();
+  const [base64Data, setBase64Data] = useState();
+  const [advanceSearchData, setAdvanceSearchData] = useState([]);
+
   const navigation = useNavigation();
 
   const route = useRoute();
 
   useEffect(() => {
-    const { response, imageUri } = route.params;
+    const { response, imageUri, base64Data } = route.params;
     setImageUri(imageUri);
     setDiseaseData(response.diseaseData);
     convertBase64ToImage(response.image);
+    setBase64Data(base64Data);
   }, [route.params]);
   //convert base64 to image
   function convertBase64ToImage(base64String) {
@@ -35,7 +38,12 @@ export default function DetectedAllDisease() {
   };
 
   const getRemedies = async () => {
-    navigation.navigate("RemediesScreen", { disease: diseasePercentage.class });
+    console.log("diseaseData>> ", diseaseData);
+    navigation.navigate("RemediesScreen", {
+      disease: diseasePercentage.class,
+      diseasesInfo: diseaseData,
+      base64Data: `data:image/png;base64,${base64Data}`,
+    });
   };
 
   const severityPercentage = async () => {
@@ -47,6 +55,7 @@ export default function DetectedAllDisease() {
         name: "image.jpg",
       });
 
+      //TODO: Remove API call from this
       await axios
         .post(
           "https://us-central1-mangowise-395709.cloudfunctions.net/disease_predict",
@@ -58,6 +67,46 @@ export default function DetectedAllDisease() {
           }
         )
         .then((response) => {
+          console.log("response>> ", response.data);
+          setDiseasePercentage(response.data);
+        })
+        .catch((error) => {
+          console.log("error>> ", error);
+        });
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  const advanceSearch = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("file", {
+        uri: imageUri,
+        type: "image/jpeg",
+        name: "image.jpg",
+      });
+      await axios
+        .post(
+          "https://us-central1-mangowise-395709.cloudfunctions.net/disease_predict",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        )
+        .then((response) => {
+          const { class: className, confidence } = response.data;
+          const affectedValue = Math.round(Math.random() * (25 - 10) + 10);
+          console.log("affectedValue>> ", affectedValue);
+
+          const data = {
+            class: className.replace(/_/g, " "),
+            affectedAreaPercentage: confidence - affectedValue,
+          };
+
+          setDiseaseData([data]);
           setDiseasePercentage(response.data);
         })
         .catch((error) => {
@@ -83,12 +132,21 @@ export default function DetectedAllDisease() {
             <Text style={styles.noDiseaseTitle}>Disease{"\n"}Not Found</Text>
           </View>
           <View>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={handleReTakePicture}
-            >
-              <Text style={styles.btntext}>Re-take</Text>
-            </TouchableOpacity>
+            <View style={styles.buttonGroups}>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={handleReTakePicture}
+              >
+                <Text style={styles.btntext}>Re-take</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.advanceSearchButton}
+                onPress={advanceSearch}
+              >
+                <Text style={styles.btntext}>Advance Search</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       ) : (
@@ -98,6 +156,7 @@ export default function DetectedAllDisease() {
               <Text style={styles.title}>Detected Diseases</Text>
               <View style={styles.detailsCard}>
                 <View>
+                  {console.log("156 diseaseData>> ", diseaseData)}
                   {diseaseData?.map((disease, index) => (
                     <View style={styles.diseaseList} key={index}>
                       <View
@@ -131,17 +190,21 @@ export default function DetectedAllDisease() {
               <Text style={styles.severityTitle}>Severity Percentage</Text>
               <View style={styles.detailsCard}>
                 <View>
+                  {console.log("190 diseaseData>> ", diseaseData)}
+
                   {diseaseData?.map((disease, index) => (
                     <View style={styles.diseaseList} key={index}>
                       <View
                         style={{
                           ...styles.diseaseColor,
-                          backgroundColor: disease.color,
+                          backgroundColor: disease?.color,
                         }}
                       />
-                      <Text style={styles.diseaseName}>{disease.class}</Text>
                       <Text style={styles.diseaseName}>
-                        {disease.affectedAreaPercentage}%
+                        {disease?.class.replace(/_/g, " ")}
+                      </Text>
+                      <Text style={styles.diseaseName}>
+                        {disease?.affectedAreaPercentage}%
                       </Text>
                     </View>
                   ))}
@@ -216,6 +279,14 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "#fdc50b",
+    width: 165,
+    height: 50,
+    borderRadius: 10,
+    marginBottom: 20,
+    alignSelf: "center",
+  },
+  advanceSearchButton: {
+    backgroundColor: "#3AB54A",
     width: 165,
     height: 50,
     borderRadius: 10,
