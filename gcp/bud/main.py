@@ -128,3 +128,4 @@ def bud_predict(request):
 
     return {"class": predicted_class, "confidence": confidence}
 
+# gcloud functions deploy v_select_predict --runtime python38 --trigger-http --memory 1024 --project mangowise-395709 --allow-unauthenticated
