@@ -15,7 +15,7 @@ export default function HomeScreen() {
   const navigation = useNavigation();
 
   const handleTakePicture = () => {
-    navigation.navigate("TakePicture");
+    navigation.navigate("VarietyScanScreen");
   };
 
   const handlePreviousPicture = () => {
