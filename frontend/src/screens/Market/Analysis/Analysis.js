@@ -11,8 +11,7 @@ import {
 } from "react-native";
 import Header from "../../../components/Common/Header";
 import Modal from "react-native-modal";
-
-import { Picker } from "@react-native-picker/picker";
+import { Dropdown } from "react-native-element-dropdown";
 
 const MarketAnalysisPlan = () => {
   const [cost, setCost] = useState("");
@@ -20,7 +19,8 @@ const MarketAnalysisPlan = () => {
   const [freshMangoes, setFreshMangoes] = useState("");
   const [damagedMangoes, setDamagedMangoes] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState();
+
+  const [stage, setStage] = useState(null);
 
   const navigation = useNavigation();
 
@@ -51,29 +51,33 @@ const MarketAnalysisPlan = () => {
     setIsProcessing(false);
     // const navigation = useNavigation();
     // navigation.navigate("MarketHomeScreen");
-
-    // Add your logic here to process the inputs
-    console.log("Cost:", cost);
-    console.log("Month:", selectedMonth);
-    console.log("Fresh Mangoes:", freshMangoes);
-    console.log("Damaged Mangoes:", damagedMangoes);
   };
 
-  const openDatePicker = async () => {
-    try {
-      const { action, year, month } = await DatePickerAndroid.open({
-        date: selectedMonth || new Date(),
-        mode: "spinner", // Change to "calendar" for a calendar-style picker
-      });
+  // set handleOk funtion to pass the data
 
-      if (action !== DatePickerAndroid.dismissedAction) {
-        setSelectedMonth(new Date(year, month));
-      }
-    } catch ({ code, message }) {
-      console.warn("Cannot open date picker", message);
-    }
+  const stagedata = [
+    { label: "January", value: "1" },
+    { label: "February", value: "2" },
+    { label: "March", value: "3" },
+    { label: "April", value: "4" },
+    { label: "May", value: "5" },
+    { label: "June", value: "6" },
+    { label: "July", value: "7" },
+    { label: "August", value: "8" },
+    { label: "September", value: "9" },
+    { label: "October", value: "10" },
+    { label: "November", value: "11" },
+    { label: "December", value: "12" },
+  ];
+
+  const renderItem = (item) => {
+    return (
+      <View style={styles.item}>
+        <Text style={styles.textItem}>{item.label}</Text>
+        {item.value === selectedMonth}
+      </View>
+    );
   };
-
   return (
     <View style={{ backgroundColor: "#ffff", height: "100%" }}>
       <Header />
@@ -88,20 +92,21 @@ const MarketAnalysisPlan = () => {
           onChangeText={(text) => setCost(text.replace(/[^0-9]/g, ""))}
         />
         <Text style={styles.inputLabel}>Enter Month</Text>
-        <TouchableOpacity
-          style={styles.datePickerButton}
-          onPress={openDatePicker}
-        >
-          <Picker
-            selectedValue={selectedLanguage}
-            onValueChange={(itemValue, itemIndex) =>
-              setSelectedLanguage(itemValue)
-            }
-          >
-            <Picker.Item label="Java" value="java" />
-            <Picker.Item label="JavaScript" value="js" />
-          </Picker>
-        </TouchableOpacity>
+        <Dropdown
+          style={styles.dropdown}
+          placeholderStyle={styles.placeholderStyle}
+          selectedTextStyle={styles.selectedTextStyle}
+          data={stagedata}
+          maxHeight={200}
+          labelField="label"
+          valueField="value"
+          placeholder="Select Growth Stage"
+          value={stage}
+          onChange={(item) => {
+            setSelectedMonth(parseInt(item.value));
+          }}
+          renderItem={renderItem}
+        />
         <Text style={styles.inputLabel}>Fresh Mangoes(Kgs)</Text>
         <TextInput
           style={styles.input}
@@ -145,7 +150,9 @@ const MarketAnalysisPlan = () => {
               // onPress={() => setIsProcessing(false)}
               onPress={handleGo}
             >
-              <Text style={styles.okButtonText}>Ok</Text>
+              <Text style={styles.okButtonText} onPress={handleOk}>
+                Ok
+              </Text>
             </TouchableOpacity>
           </View>
         </Modal>
@@ -229,6 +236,32 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  dropdown: {
+    margin: 16,
+    marginTop: 20,
+    height: 45,
+    width: 260,
+    backgroundColor: "white",
+    borderRadius: 12,
+    padding: 12,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
+    marginEnd: 5,
+  },
+  placeholderStyle: {
+    fontSize: 15,
+  },
+  selectedTextStyle: {
+    fontSize: 15,
+    borderRadius: 20,
+    marginLeft: 10,
   },
 });
 
