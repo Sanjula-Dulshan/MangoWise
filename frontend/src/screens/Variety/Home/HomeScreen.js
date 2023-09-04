@@ -1,10 +1,11 @@
-import { useNavigation } from "@react-navigation/native";
-import React from "react";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import React, { useState, useEffect } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Header from "../../../components/Common/Header";
 import vector from "../../../../assets/Vector.png";
 import focusLeaf from "../../../../assets/focus-leaf.png";
 import doc from "../../../../assets/Doc.png";
+import axios from "axios";
 import mango from "../../../../assets/Mango.png";
 import plant from "../../../../assets/plant.png";
 import Phone from "../../../../assets/Phone.png";
@@ -12,7 +13,9 @@ import report from "../../../../assets/report.png";
 import sampleMangoLaaf from "../../../../assets/sample-mango-leaf.jpg";
 
 export default function HomeScreen() {
+  const [varietyList, setVarietyList] = useState([]);
   const navigation = useNavigation();
+  const route = useRoute();
 
   const handleTakePicture = () => {
     navigation.navigate("VarietyScanScreen");
@@ -21,6 +24,17 @@ export default function HomeScreen() {
   const handlePreviousPicture = () => {
     navigation.navigate("PreviousVarieties");
   };
+
+  useEffect(() => {
+    try {
+      axios.get(constants.backend_url + "/variety").then((response) => {
+        console.log("variety ", response.data);
+        setVarietyList(response.data);
+      });
+    } catch (error) {
+      console.log("error ", error);
+    }
+  }, [route.params]);
 
   return (
     <View style={{ backgroundColor: "#fdfafa", height: "100%" }}>

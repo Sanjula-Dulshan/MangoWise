@@ -60,6 +60,7 @@ export default function ScanScreen() {
   };
 
   const checkImage = async () => {
+    console.log("checkImage");
     if (image) {
       try {
         //Save image to gallery
@@ -88,6 +89,7 @@ export default function ScanScreen() {
         })
           .then((response) => {
             setIsLoading(false);
+            console.log("scan>>>> ", response.data);
             navigation.navigate("DetectedAllVarieties", {
               response: response.data,
               imageUri: image,
@@ -138,7 +140,7 @@ export default function ScanScreen() {
                   icon="retweet"
                   onPress={() => setImage(null)}
                 />
-                <Button title={"Check"} icon="check" onPress={checkImage} />
+                <Button title={"Checks"} icon="check" onPress={checkImage} />
               </View>
             )}
           </>

@@ -3,23 +3,25 @@ import sampleMangoLeaf from "../../../../assets/sample-mango-leaf2.jpg";
 import Header from "../../../components/Common/Header";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useEffect, useState } from "react";
+import iconMango from "../../../../assets/M10.png";
+import noResult from "../../../../assets/cancel.png";
 import axios from "axios";
 import greenTick from "../../../../assets/green_tick.png";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
-export default function DetectedAllDisease() {
+export default function DetectedAllVarieties() {
   const [instantImage, setInstantImage] = useState();
-  const [imageUri, setImageUri] = useState(null);
-  const [diseaseData, setDiseaseData] = useState([]);
-  const [diseasePercentage, setDiseasePercentage] = useState();
+  const [varietyInfo, setVarietyInfo] = useState([]);
+
   const navigation = useNavigation();
 
   const route = useRoute();
 
   useEffect(() => {
-    const { response, imageUri } = route.params;
-    setImageUri(imageUri);
-    setDiseaseData(response.diseaseData);
+    const { response } = route.params;
+
+    setVarietyInfo(response.variety);
+
     convertBase64ToImage(response.image);
   }, [route.params]);
   //convert base64 to image
@@ -31,41 +33,14 @@ export default function DetectedAllDisease() {
   }
 
   const handleReTakePicture = async () => {
-    navigation.navigate("DiagnoseScanScreen");
+    navigation.navigate("VarietyScanScreen");
   };
 
-  const getRemedies = async () => {
-    navigation.navigate("RemediesScreen", { disease: diseasePercentage.class });
-  };
-
-  const severityPercentage = async () => {
-    try {
-      const formData = new FormData();
-      formData.append("file", {
-        uri: imageUri,
-        type: "image/jpeg",
-        name: "image.jpg",
-      });
-
-      await axios
-        .post(
-          "https://us-central1-mangowise-395709.cloudfunctions.net/disease_predict",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        )
-        .then((response) => {
-          setDiseasePercentage(response.data);
-        })
-        .catch((error) => {
-          console.log("error>> ", error);
-        });
-    } catch (error) {
-      console.error("Error:", error);
-    }
+  const marketAnalysis = async () => {
+    console.log("market analysis");
+    navigation.navigate("AnalysisScreen", {
+      variety: varietyInfo,
+    });
   };
 
   return (
@@ -76,13 +51,37 @@ export default function DetectedAllDisease() {
           <Image source={{ uri: instantImage }} style={styles.image} />
         )}
       </View>
-      {diseaseData.length === 0 ? (
-        <View style={styles.noDiseaseContainer}>
+
+      <View style={styles.detailsContainer}>
+        {varietyInfo ? (
+          <>
+            <Image source={iconMango} style={styles.greenTick} />
+            <View>
+              <Text style={styles.noDiseaseTitle}>{varietyInfo}</Text>
+            </View>
+
+            <View>
+              <View style={styles.buttonGroups}>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={handleReTakePicture}
+                >
+                  <Text style={styles.btntext}>Re-take</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.advanceSearchButton}
+                  onPress={marketAnalysis}
+                >
+                  <Text style={styles.btntext}>Market Analysis</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </>
+        ) : (
           <View>
-            <Image source={greenTick} style={styles.greenTick} />
-            <Text style={styles.noDiseaseTitle}>Disease{"\n"}Not Found</Text>
-          </View>
-          <View>
+            <Image source={noResult} style={styles.cancel} />
+            <Text style={styles.noVarietyTitle}>Variety Not Found</Text>
             <TouchableOpacity
               style={styles.button}
               onPress={handleReTakePicture}
@@ -90,71 +89,8 @@ export default function DetectedAllDisease() {
               <Text style={styles.btntext}>Re-take</Text>
             </TouchableOpacity>
           </View>
-        </View>
-      ) : (
-        <>
-          {!diseasePercentage ? (
-            <View style={styles.detailsContainer}>
-              <Text style={styles.title}>Detected Diseases</Text>
-              <View style={styles.detailsCard}>
-                <View>
-                  {diseaseData?.map((disease, index) => (
-                    <View style={styles.diseaseList} key={index}>
-                      <View
-                        style={{
-                          ...styles.diseaseColor,
-                          backgroundColor: disease.color,
-                        }}
-                      />
-                      <Text style={styles.diseaseName}>{disease.class}</Text>
-                    </View>
-                  ))}
-                </View>
-                <View style={styles.buttonGroups}>
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={handleReTakePicture}
-                  >
-                    <Text style={styles.btntext}>Re-take</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={severityPercentage}
-                  >
-                    <Text style={styles.btntext}>Check Percentage</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          ) : (
-            <View style={styles.percentageContainer}>
-              <Text style={styles.severityTitle}>Severity Percentage</Text>
-              <View style={styles.detailsCard}>
-                <View>
-                  {diseaseData?.map((disease, index) => (
-                    <View style={styles.diseaseList} key={index}>
-                      <View
-                        style={{
-                          ...styles.diseaseColor,
-                          backgroundColor: disease.color,
-                        }}
-                      />
-                      <Text style={styles.diseaseName}>{disease.class}</Text>
-                      <Text style={styles.diseaseName}>
-                        {disease.affectedAreaPercentage}%
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-
-                <TouchableOpacity style={styles.button} onPress={getRemedies}>
-                  <Text style={styles.btntext}>Get Remedies</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
-        </>
-      )}
+        )}
+      </View>
     </View>
   );
 }
@@ -173,7 +109,7 @@ const styles = StyleSheet.create({
   detailsContainer: {
     marginTop: 20,
     flex: 1,
-    height: 20,
+    height: 10,
     paddingHorizontal: 20,
     paddingTop: 15,
     borderTopRightRadius: 35,
@@ -213,6 +149,15 @@ const styles = StyleSheet.create({
   buttonGroups: {
     flexDirection: "row",
     justifyContent: "space-between",
+    paddingTop: 25,
+  },
+  advanceSearchButton: {
+    backgroundColor: "#3AB54A",
+    width: 165,
+    height: 50,
+    borderRadius: 10,
+    marginBottom: 20,
+    alignSelf: "center",
   },
   button: {
     backgroundColor: "#fdc50b",
@@ -242,8 +187,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   greenTick: {
-    width: 100,
-    height: 100,
+    width: 30,
+    height: 30,
+    alignSelf: "center",
+  },
+  cancel: {
+    width: 70,
+    height: 70,
     alignSelf: "center",
   },
   noDiseaseTitle: {
@@ -251,6 +201,16 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginHorizontal: 40,
     textAlign: "center",
+    paddingTop: 20,
+  },
+  noVarietyTitle: {
+    fontSize: 32,
+    fontWeight: "bold",
+    marginHorizontal: 40,
+    textAlign: "center",
+    paddingTop: 20,
+    color: "#C10303",
+    paddingBottom: 20,
   },
   percentageContainer: {
     marginTop: 20,

@@ -111,26 +111,6 @@ export const detectVariety = async (req, res) => {
       ctx.strokeStyle = classStyle.borderColor;
       ctx.lineWidth = 3;
       ctx.stroke();
-
-      // Label background rectangle with class-specific background color and width
-      const textWidth =
-        ctx.measureText(className).width + classStyle.labelWidth;
-      const textHeight = classStyle.labelHeight; // Increase the height for a larger label
-      const labelBgX = centerX - textWidth / 2;
-      const labelBgY = centerY - textHeight / 2; // Center the label on the identified object
-      ctx.fillStyle = classStyle.backgroundColor; // Use the specified background color
-      ctx.fillRect(labelBgX, labelBgY, textWidth, textHeight);
-
-      // Draw the class name label at the center of the identified object with class-specific label color and font size
-      ctx.fillStyle = classStyle.labelColor; // Use the specified label color
-      ctx.font = `${classStyle.fontSize}px Arial`; // Use the specified font size for the label
-      ctx.textAlign = "center"; // Center the label text horizontally
-      ctx.textBaseline = "middle"; // Center the label text vertically
-      ctx.fillText(
-        `${className}  ${confidence.toFixed(2) * 100}%`,
-        centerX,
-        centerY
-      ); // Display the class name and confidence at the center of the identified object
     }
 
     // Convert the canvas to a Buffer (PNG image data)
@@ -139,47 +119,15 @@ export const detectVariety = async (req, res) => {
     // Convert the buffer to a base64 string
     const base64Image = buffer.toString("base64");
 
-    //get the classes
-    const classes = imageData["predictions"].map((prediction) => {
-      return prediction["class"];
-    });
+    // Loop through each class and create a combined data object
 
-    // Initialize an empty object to store the combined data
-    const combinedData = {};
-
-    // Loop through the predictions in the API response
-    for (const prediction of imageData["predictions"]) {
-      const { class: className, confidence, points } = prediction;
-
-      // Check if the class name is already a key in the combinedData object
-      if (!combinedData[className]) {
-        // If not, initialize an empty array for that class
-        combinedData[className] = [];
-      }
-
-      // Create an object with information about the detected object
-      const objectData = {
-        confidence: confidence.toFixed(2) * 100,
-        points: points,
-      };
-
-      // Add the object data to the array for the respective class
-      combinedData[className].push(objectData);
-    }
-
-    console.log("combinedData", combinedData);
-
-    // Now, combinedData will contain an object where each key is a class name,
-    // and the corresponding value is an array of objects containing information
-    // about detected objects of that class.
-
-    // Send the base64 image, classes and the full response from the API in the response
+    // You can send this combinedData in the response:
     res.json({
       image: base64Image,
-      apiResponse: imageData,
-      classes: classes,
-      combinedData: combinedData,
+      variety: response.data.predictions[0]?.class,
     });
+
+    console.log("response ", response.data.predictions[0]?.class);
   } catch (error) {
     console.log("error ", error);
   }

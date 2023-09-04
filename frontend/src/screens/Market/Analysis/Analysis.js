@@ -12,17 +12,32 @@ import {
 import Header from "../../../components/Common/Header";
 import Modal from "react-native-modal";
 
+import { Picker } from "@react-native-picker/picker";
+
 const MarketAnalysisPlan = () => {
   const [cost, setCost] = useState("");
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [freshMangoes, setFreshMangoes] = useState("");
   const [damagedMangoes, setDamagedMangoes] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState();
 
   const navigation = useNavigation();
 
-  const handleGo = () => {
+  const handleGo = async () => {
     navigation.navigate("MarketHomeScreen");
+
+    const marketData = {
+      cost: cost,
+      selectedMonth: selectedMonth,
+      freshMangoes: freshMangoes,
+      damagedMangoes: damagedMangoes,
+    };
+    console.log(marketData);
+
+    await axios.post(constants.backend_url + "/market", data).then(() => {
+      navigation.navigate("DiagnoseHomeScreen");
+    });
   };
 
   const handleGoButtonPress = async () => {
@@ -77,9 +92,15 @@ const MarketAnalysisPlan = () => {
           style={styles.datePickerButton}
           onPress={openDatePicker}
         >
-          <Text style={styles.datePickerButtonText}>
-            {selectedMonth ? selectedMonth.toDateString() : "Select Month"}
-          </Text>
+          <Picker
+            selectedValue={selectedLanguage}
+            onValueChange={(itemValue, itemIndex) =>
+              setSelectedLanguage(itemValue)
+            }
+          >
+            <Picker.Item label="Java" value="java" />
+            <Picker.Item label="JavaScript" value="js" />
+          </Picker>
         </TouchableOpacity>
         <Text style={styles.inputLabel}>Fresh Mangoes(Kgs)</Text>
         <TextInput

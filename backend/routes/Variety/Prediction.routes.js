@@ -4,10 +4,16 @@ import {
   saveVarietyDetection,
   getDetections,
 } from "../../controllers/Variety/Variety.controller.js";
+import {
+  market,
+  getMarket,
+} from "../../controllers/Variety/Market.controller.js";
 const router = express.Router();
 
 router.post("/predict", detectVariety);
 router.post("/", saveVarietyDetection);
 router.get("/", getDetections);
+router.post("/market", market);
+router.get("/market", getMarket);
 
 export default router;
