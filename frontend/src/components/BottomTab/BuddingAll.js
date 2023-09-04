@@ -38,6 +38,12 @@ export default function BuddingAllScreens() {
             options={{ headerShown: false }}
         />
 
+        <Stack.Screen
+            name="VarietyResultScreen"
+            component={VarietyResultScreen}
+            options={{ headerShown: false }}
+        />
+
         </Stack.Navigator>
     );
     }
