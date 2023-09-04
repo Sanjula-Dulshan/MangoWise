@@ -6,7 +6,7 @@ import BuddingHomeScreen from "../../screens/Budding/BuddingHomeScreen/BuddingHo
 import BuddingScanScreen from "../../screens/Budding/Scan";
 import BuddingResultScreen from "../../screens/Budding/Result/Result";
 import VarietySelection from "../../screens/VarietySelection/FeatureSelect/VarietySelection";
-
+import VarietyResultScreen from "../../screens/VarietySelection/Result/Result";
 
 
 const Stack = createNativeStackNavigator();

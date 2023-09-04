@@ -254,6 +254,9 @@ export default function VarietySelection() {
       // Pass the payload as the second argument to axios.post
       const response = await axios.post(apiUrl, payload); // Use async/await to handle the promise
       console.log('Response : ', response.data);
+      navigation.navigate("VarietyResultScreen", {
+        response: response.data,
+      });
     } catch (error) {
       console.error('Error fetching or processing data:', error);
     }
