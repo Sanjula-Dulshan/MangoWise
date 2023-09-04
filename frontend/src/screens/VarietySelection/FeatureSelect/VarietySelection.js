@@ -70,6 +70,7 @@ export default function VarietySelection() {
   const [cropLocation, setCropLocation] = useState('');
   const [selectedFeatures, setSelectedFeatures] = useState([]);
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
+  const [zone, setZone] = useState('');
 
   useEffect(() => {
     setModalVisible(true)
@@ -106,6 +107,44 @@ export default function VarietySelection() {
     "Kilinochchi",
     "Mullaitivu"
   ];
+
+  const wetZones = [
+    "Colombo",
+    "Kandy",
+    "Gampaha",
+    "Negombo",
+    "Ratnapura",
+    "Kalutara",
+    "Avissawella",
+    "Nuwara Eliya",
+    "Hatton"
+  ]
+
+  const dryZones = [
+    "Jaffna",
+    "Mannar",
+    "Vavuniya",
+    "Trincomalee",
+    "Batticaloa",
+    "Ampara",
+    "Puttalam",
+    "Monaragala",
+    "Kilinochchi",
+    "Mullaitivu"
+  ]
+
+  const intermediateZones = [
+    "Kurunegala",
+    "Matale",
+    "Galle",
+    "Matara",
+    "Hambantota",
+    "Polonnaruwa",
+    "Anuradhapura",
+    "Dambulla",
+    "Badulla",
+    "Bandarawela"
+  ]
   
   const handleTextChange = (text) => {
     setCropLocation(text);
@@ -122,6 +161,106 @@ export default function VarietySelection() {
     handleTextChange(item);
     setFilteredSuggestions([]);
   }
+
+  const handleOnBlur = () => {
+    setFilteredSuggestions([]);  
+  }
+  
+  const getZoneByLocation = (location) => {
+    if (wetZones.includes(location)) {
+      return "wet";
+    } else if (dryZones.includes(location)) {
+      return "dry";
+    } else if (intermediateZones.includes(location)) {
+      return "intermediate";
+    }
+  }
+
+  const checkVariety = async () => { 
+    let harvest = "medium";
+    let taste = "good";
+    let size = "big";
+    let purpose = "personal";
+    let climate = "wet";
+  
+    switch (selectedHarvestIndex) { 
+      case 0:
+        harvest = "high";
+        break;
+      case 1:
+        harvest = "medium";
+        break;
+      case 2:
+        harvest = "low";
+        break;
+      default:
+        harvest = "medium";
+    }
+  
+    switch (selectedTasteIndex) {
+      case 0:
+        taste = "good";
+        break;
+      case 1:
+        taste = "average";
+        break;
+      default:
+        taste = "good";
+    }
+  
+    switch (selectedSizeIndex) {
+      case 0:
+        size = "big";
+        break;
+      case 1:
+        size = "medium";
+        break;
+      case 2:
+        size = "small";
+        break;
+      default:
+        size = "big";
+    }
+  
+    switch (selectedCropIndex) {
+      case 0:
+        purpose = "personal";
+        break;
+      case 1:
+        purpose = "commercial";
+        break;
+      case 2:
+        purpose = "export";
+        break;
+      default:
+        purpose = "personal";
+    }
+  
+    climate = getZoneByLocation(cropLocation);
+  
+    const payload = {
+      harvest: harvest,
+      climate: climate,
+      taste: taste,
+      purpose: purpose,
+      size: size
+    }
+  
+    try {
+      const apiUrl = `https://us-central1-mangowise-395709.cloudfunctions.net/v_select_predict`;
+      // Use Axios to make the API POST request
+      console.log('Calling API : ', apiUrl);
+  
+      // Pass the payload as the second argument to axios.post
+      const response = await axios.post(apiUrl, payload); // Use async/await to handle the promise
+      console.log('Response : ', response.data);
+    } catch (error) {
+      console.error('Error fetching or processing data:', error);
+    }
+  
+    console.log('payload : ', payload);
+  }
+  
 
   const handleRetakePicture = async () => {
     navigation.navigate("BuddingScanScreen");
@@ -332,7 +471,7 @@ export default function VarietySelection() {
 </View>
     
 
-      <TouchableOpacity style={styles.findSuitableVarierty} onPress={() => setModalVisible(false)} >
+      <TouchableOpacity style={styles.findSuitableVarierty} onPress={checkVariety} >
           <Text style={{ fontSize: 17, fontWeight: 'bold', padding: 5,  textAlign: 'center' }}> Find matching variety </Text>
       </TouchableOpacity>
 
