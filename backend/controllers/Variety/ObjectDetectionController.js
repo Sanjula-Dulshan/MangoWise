@@ -10,16 +10,16 @@ export const detectVariety = async (req, res) => {
   }
   try {
     //Call the Roboflow API
-    const response = await axios({ 
-        method: "POST",
-        url: "https://outline.roboflow.com/mangowise-ecg8e/3",
-        params: {
-            api_key: "rj601qLuIiiLAQ8eMKck"
-        },
-        data: image,
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
+    const response = await axios({
+      method: "POST",
+      url: "https://outline.roboflow.com/mangowise-ecg8e/3",
+      params: {
+        api_key: "rj601qLuIiiLAQ8eMKck",
+      },
+      data: image,
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
     });
 
     const imageData = response.data;
@@ -144,11 +144,41 @@ export const detectVariety = async (req, res) => {
       return prediction["class"];
     });
 
+    // Initialize an empty object to store the combined data
+    const combinedData = {};
+
+    // Loop through the predictions in the API response
+    for (const prediction of imageData["predictions"]) {
+      const { class: className, confidence, points } = prediction;
+
+      // Check if the class name is already a key in the combinedData object
+      if (!combinedData[className]) {
+        // If not, initialize an empty array for that class
+        combinedData[className] = [];
+      }
+
+      // Create an object with information about the detected object
+      const objectData = {
+        confidence: confidence.toFixed(2) * 100,
+        points: points,
+      };
+
+      // Add the object data to the array for the respective class
+      combinedData[className].push(objectData);
+    }
+
+    console.log("combinedData", combinedData);
+
+    // Now, combinedData will contain an object where each key is a class name,
+    // and the corresponding value is an array of objects containing information
+    // about detected objects of that class.
+
     // Send the base64 image, classes and the full response from the API in the response
     res.json({
       image: base64Image,
       apiResponse: imageData,
       classes: classes,
+      combinedData: combinedData,
     });
   } catch (error) {
     console.log("error ", error);

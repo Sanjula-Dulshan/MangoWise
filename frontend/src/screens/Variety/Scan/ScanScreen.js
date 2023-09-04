@@ -78,7 +78,7 @@ export default function ScanScreen() {
         setIsLoading(true);
         await axios({
           method: "POST",
-          url: constants.backend_url + "/disease/predict",
+          url: constants.backend_url + "/variety/predict",
           data: {
             image: base64Data,
           },
@@ -88,7 +88,7 @@ export default function ScanScreen() {
         })
           .then((response) => {
             setIsLoading(false);
-            navigation.navigate("DetectedAllDiseaseScreen", {
+            navigation.navigate("DetectedAllVarieties", {
               response: response.data,
               imageUri: image,
             });
