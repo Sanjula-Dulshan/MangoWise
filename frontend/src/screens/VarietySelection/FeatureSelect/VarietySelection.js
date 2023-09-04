@@ -20,7 +20,9 @@ import green_tick from '../../../../assets/green_tick.png';
 import Modal from 'react-native-modal';
 import backgroundImage from '../../../../assets/tmp-plant.png';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
-
+import Geolocation from '@react-native-community/geolocation';
+import constants from "../../../constants/constants";
+import axios from 'axios';
 
 
 
@@ -52,6 +54,8 @@ const styles2 = StyleSheet.create({
 });
 
 
+
+
 export default function VarietySelection() {
 
   const navigation = useNavigation();
@@ -65,12 +69,59 @@ export default function VarietySelection() {
   const [selectedSizeIndex, setselectedSizeIndex] = useState(0);
   const [cropLocation, setCropLocation] = useState('');
   const [selectedFeatures, setSelectedFeatures] = useState([]);
+  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
 
   useEffect(() => {
     setModalVisible(true)
   }, []);
 
+  const suggestions = [
+    "Colombo",
+    "Kandy",
+    "Gampaha",
+    "Negombo",
+    "Ratnapura",
+    "Kalutara",
+    "Avissawella",
+    "Nuwara Eliya",
+    "Hatton",
+    "Kurunegala",
+    "Matale",
+    "Galle",
+    "Matara",
+    "Hambantota",
+    "Polonnaruwa",
+    "Anuradhapura",
+    "Dambulla",
+    "Badulla",
+    "Bandarawela",
+    "Jaffna",
+    "Mannar",
+    "Vavuniya",
+    "Trincomalee",
+    "Batticaloa",
+    "Ampara",
+    "Puttalam",
+    "Monaragala",
+    "Kilinochchi",
+    "Mullaitivu"
+  ];
   
+  const handleTextChange = (text) => {
+    setCropLocation(text);
+
+    // Filter suggestions based on user input
+    const filtered = suggestions.filter((suggestion) =>
+      suggestion.toLowerCase().includes(text.toLowerCase())
+    );
+
+    setFilteredSuggestions(filtered);
+  };
+
+  const handleFlatListPress = (item) => {
+    handleTextChange(item);
+    setFilteredSuggestions([]);
+  }
 
   const handleRetakePicture = async () => {
     navigation.navigate("BuddingScanScreen");
@@ -79,6 +130,70 @@ export default function VarietySelection() {
   const isFeatureSelected = (feature) => selectedFeatures.includes(feature);
 
 
+  const getGPSPermission = async () => {
+
+    console.log('getting GPSPermission');
+
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'GPS Permission',
+            message: 'This app requires access to your GPS location.',
+            buttonNeutral: 'Ask Me Later',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          setPermissionGranted(true);
+        } else {
+          setPermissionGranted(false);
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+    }
+  }
+
+  const getGPRSLocation = async () => {
+    console.log('getGPRSLocation');
+  
+    if (!permissionGranted) {
+      console.log('getGPRSLocation permission not Granted');
+      getGPSPermission();
+    }
+  
+    if (permissionGranted) {
+      console.log('getGPRSLocation permission Granted');
+  
+      Geolocation.getCurrentPosition(
+        async (position) => {
+          try {
+            const { latitude, longitude } = position.coords;
+            const apiUrl = `${constants.backend_url}/suggest?lat=${latitude}&long=${longitude}`;
+  
+            // Use Axios to make the API GET request
+            console.log('Calling API : ', apiUrl);
+            await axios.get(apiUrl).then((response) => {
+              console.log('Response : ', response.data);
+              setCropLocation(response.data);
+            });
+  
+          } catch (error) {
+            console.error('Error fetching or processing data:', error);
+          }
+        },
+        (error) => {
+          console.log(error);
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+      );
+    }
+  };
+  
   
 
   const toggleFeatureSelection = (feature) => {
@@ -90,7 +205,7 @@ export default function VarietySelection() {
   }
 
   return (
-    
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
     <View style={{ backgroundColor: '#fdfafa', height: '100%' }}>
         <Header />
 
@@ -112,18 +227,52 @@ export default function VarietySelection() {
 
 <Text style={{ fontSize: 16, fontFamily: 'Roboto', fontWeight: 'bold', color: '#000000', paddingLeft: 20, marginTop: 10, marginBottom: 10 }}>Crop location :</Text>
 
-<View style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 20 }}>
-  <TextInput
-    style={{ width: '80%', height: 50, fontSize:16, borderWidth: 1, borderColor: '#F8F8F8', borderRadius: 8, padding: 10, backgroundColor: '#eeeeee', color: '#000000' }}
-    placeholder="Enter crop location"
-    value={cropLocation}
-    onChangeText={text => setCropLocation(text)}
-  />
-  <TouchableOpacity onPress={() => { /* Your button onPress logic */ }} style={{ marginLeft: 10 }}>
-    <MaterialIcons name="place" size={30} color="#FDC704" style={{ marginLeft: 10 }}/>
-  </TouchableOpacity>
-</View>
+<View style={{ flex: 1}}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 20 }}>
+        <TextInput
+          style={{
+            width: '80%',
+            height: 50,
+            fontSize: 16,
+            borderWidth: 1,
+            borderColor: '#F8F8F8',
+            borderRadius: 8,
+            padding: 10,
+            backgroundColor: '#eeeeee',
+            color: '#000000',
+          }}
+          placeholder="Enter crop location"
+          value={cropLocation}
+          onChangeText={handleTextChange}
+          onBlur={() => setFilteredSuggestions([])}
+        />
+        <TouchableOpacity onPress={getGPRSLocation} style={{ marginLeft: 10 }}>
+          <MaterialIcons name="place" size={30} color="#FDC704" style={{ marginLeft: 10 }} />
+        </TouchableOpacity>
+      </View>
 
+      {/* Display suggestions */}
+        <FlatList
+        data={filteredSuggestions}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={{
+              borderBottomWidth: 1,
+              borderColor: '#ccc',
+              paddingVertical: 10,
+              paddingHorizontal: 15,
+              backgroundColor: '#fff',
+            }}
+            onPress={() => handleFlatListPress(item)}
+          >
+              <Text style={{ fontSize: 16, color: '#333', marginLeft:20, fontWeight: 'bold' }}>{item}</Text>
+            </TouchableOpacity>
+          )}
+          keyExtractor={(item) => item}
+          style={{ maxHeight: 150 }} // Set a maximum height for the suggestion list
+        />
+
+    </View>
 <Text style={{ fontSize: 16, fontFamily: 'Roboto', fontWeight: 'bold', color: '#000000', paddingLeft: 20, marginTop: 10, marginBottom: 10 }}>Required features :</Text>
 
 {/* Checklist */}
@@ -190,6 +339,7 @@ export default function VarietySelection() {
 
       
     </View>
+    </ScrollView>
   )
 }
 

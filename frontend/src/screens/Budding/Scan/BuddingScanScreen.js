@@ -136,6 +136,7 @@ export default function ScanScreen() {
         .then((response) => {
           setIsLoading(false);
           console.log("response>> ", response.data);
+          console.log("image>> ", image);
 
           navigation.navigate("BuddingResultScreen", {
             response: response.data,

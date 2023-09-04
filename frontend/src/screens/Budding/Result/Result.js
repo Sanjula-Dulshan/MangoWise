@@ -16,6 +16,7 @@ import Header from "../../../components/Common/Header";
 import { useNavigation,useRoute } from "@react-navigation/native";
 import { Feather, AntDesign } from '@expo/vector-icons';
 import green_tick from '../../../../assets/green_tick.png';
+import red_warning from '../../../../assets/red_warning.png';
 import Modal from 'react-native-modal';
 import backgroundImage from '../../../../assets/tmp-plant.png';
 
@@ -58,10 +59,11 @@ export default function BuddingResultScreen() {
   const [permissionGranted, setPermissionGranted] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const [isError, setError] = useState(false);
-  const [imageUri, setImageUri] = useState(null);
+  const [imgeUri, setImgeUri] = useState(backgroundImage);
   const [Suitability,setSuitability] = useState("");
   const [className, setClassName] = useState("");
   const [color, setColor] = useState("");
+  const [icon, setIcon] = useState(green_tick);
 
   useEffect(() => {
     setModalVisible(true)
@@ -69,7 +71,9 @@ export default function BuddingResultScreen() {
 
   useEffect(() => {
     const { response, imageUri, base64Data } = route.params;
-    setImageUri(imageUri);
+    console.log("image uri :: ", imageUri);
+    setImgeUri(imageUri);
+    console.log("image uri 1:: ", imageUri);
     setSuitability(response.class);
     console.log("response", response.class);
   }, [route.params]);
@@ -78,12 +82,15 @@ export default function BuddingResultScreen() {
     if (Suitability == "suitable") {
       setClassName("Suitable");
       setColor("green");
+      setIcon(green_tick);
     }  else if (Suitability == "late") {
-      setClassName("Late");
+      setClassName("Too Much Matured");
       setColor("red");
+      setIcon(red_warning);
     } else  {
       setClassName("Early");
       setColor("orange");
+      setIcon(red_warning);
     }
       
   }, [Suitability]);
@@ -91,17 +98,24 @@ export default function BuddingResultScreen() {
   
 
   const handleRetakePicture = async () => {
+    setModalVisible(false);
     navigation.navigate("BuddingScanScreen");
   }
 
   const handleFindVariety = async () => {
+    setModalVisible(false);
     navigation.navigate("VarietySelection");
   }
 
   return (
     
     <View style={{ backgroundColor: '#FFFFFF', height: '100%' }}>
-      <Image source={backgroundImage} style={{ flex: 1, resizeMode: 'cover' }}></Image>
+      {imgeUri ? ( // Check if imgeUri is not null
+      <Image source={imgeUri} style={{ flex: 1, resizeMode: 'cover' }} />
+    ) : (
+      // Display a placeholder or loading image when imgeUri is null
+      <Image source={require('../../../../assets/tmp-plant.png')} style={{ flex: 1, resizeMode: 'cover' }} />
+    )}
       
 
       
@@ -110,7 +124,7 @@ export default function BuddingResultScreen() {
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             
-            <Image source={green_tick} style={{ marginTop: 45, width: 130, height: 130, marginVertical: 8 }} />
+            <Image source={icon} style={{ marginTop: 45, width: 130, height: 130, marginVertical: 8 }} />
 
             <Text style={{ fontSize: 25, padding: 5, margin: 8, textAlign: 'left', marginRight: 12 }}>Plant is  </Text>
             <Text style={{ fontSize: 35, marginTop: -15, textAlign: 'left', fontWeight: 'bold', color: color }}> {className} </Text>
