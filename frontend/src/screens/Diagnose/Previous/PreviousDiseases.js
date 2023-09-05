@@ -20,13 +20,14 @@ import loadingIcon from "../../../../assets/loadings/loading.gif";
 
 export default function PreviousDiseases() {
   const [diseasesList, setDiseasesList] = useState([]);
-  const [loading, setloading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
   const route = useRoute();
 
   useEffect(() => {
     axios.get(constants.backend_url + "/disease").then((response) => {
       setDiseasesList(response.data);
+      setLoading(false);
     });
   }, [route.params]);
 
@@ -59,7 +60,7 @@ export default function PreviousDiseases() {
             source={loadingIcon}
             style={{
               width: 200,
-              height: 250,
+              height: 150,
               alignSelf: "center",
               marginTop: 100,
             }}
@@ -258,7 +259,7 @@ const styles = StyleSheet.create({
     color: "#144100",
   },
   loadingContainer: {
-    height: "70%",
+    height: "60%",
     justifyContent: "center",
   },
 });
