@@ -1,4 +1,4 @@
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { Camera } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library";
@@ -18,6 +18,9 @@ export default function ScanScreen() {
   const type = Camera.Constants.back;
   const cameraRef = useRef(null);
   const navigation = useNavigation();
+  const route = useRoute();
+  const [recheck, setRecheck] = useState(false);
+  const [prevDisease, setPrevDisease] = useState();
 
   useEffect(() => {
     (async () => {
@@ -25,7 +28,12 @@ export default function ScanScreen() {
       const cameraStatus = await Camera.requestCameraPermissionsAsync();
       setHasCameraPermission(cameraStatus.status === "granted");
     })();
-  }, []);
+
+    if (route.params?.recheck) {
+      setRecheck(true);
+      setPrevDisease(route.params?.prevDisease);
+    }
+  }, [route.params]);
 
   if (hasCameraPermission === false) {
     return <Text>No access to camera</Text>;
@@ -88,11 +96,21 @@ export default function ScanScreen() {
         })
           .then((response) => {
             setIsLoading(false);
-            navigation.navigate("DetectedAllDiseaseScreen", {
-              response: response.data,
-              imageUri: image,
-              base64Data: base64Data,
-            });
+
+            if (recheck) {
+              navigation.navigate("DiseaseCompareScreen", {
+                response: response.data,
+                imageUri: image,
+                base64Data: base64Data,
+                prevDisease: prevDisease,
+              });
+            } else {
+              navigation.navigate("DetectedAllDiseaseScreen", {
+                response: response.data,
+                imageUri: image,
+                base64Data: base64Data,
+              });
+            }
           })
           .catch((error) => {
             console.log(error);
