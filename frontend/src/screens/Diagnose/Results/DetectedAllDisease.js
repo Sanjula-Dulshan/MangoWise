@@ -1,10 +1,18 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import sampleMangoLeaf from "../../../../assets/sample-mango-leaf2.jpg";
 import Header from "../../../components/Common/Header";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import greenTick from "../../../../assets/green_tick.png";
+import { Button } from "@rneui/base";
 
 export default function DetectedAllDisease() {
   const [instantImage, setInstantImage] = useState();
@@ -13,6 +21,7 @@ export default function DetectedAllDisease() {
   const [diseasePercentage, setDiseasePercentage] = useState();
   const [base64Data, setBase64Data] = useState();
   const [advanceSearchData, setAdvanceSearchData] = useState([]);
+  const [noDisease, setNoDisease] = useState(false);
 
   const navigation = useNavigation();
 
@@ -33,12 +42,15 @@ export default function DetectedAllDisease() {
     }
   }
 
+  const returnToHome = async () => {
+    navigation.navigate("DiagnoseHomeScreen");
+  };
+
   const handleReTakePicture = async () => {
     navigation.navigate("DiagnoseScanScreen");
   };
 
   const getRemedies = async () => {
-    console.log("diseaseData>> ", diseaseData);
     navigation.navigate("RemediesScreen", {
       disease: diseasePercentage.class,
       diseasesInfo: diseaseData,
@@ -76,6 +88,11 @@ export default function DetectedAllDisease() {
     } catch (error) {
       console.error("Error:", error);
     }
+  };
+
+  const handleSbtnPress = () => {
+    console.log("handleSbtnPress");
+    setNoDisease(true);
   };
 
   const advanceSearch = async () => {
@@ -125,11 +142,17 @@ export default function DetectedAllDisease() {
           <Image source={{ uri: instantImage }} style={styles.image} />
         )}
       </View>
-      {diseaseData.length === 0 ? (
+      {diseaseData.length === 0 && !noDisease && (
         <View style={styles.noDiseaseContainer}>
           <View>
             <Image source={greenTick} style={styles.greenTick} />
             <Text style={styles.noDiseaseTitle}>Disease{"\n"}Not Found</Text>
+            <View style={styles.sBtnContainer}>
+              <Pressable
+                style={styles.sBtn}
+                onPress={handleSbtnPress}
+              ></Pressable>
+            </View>
           </View>
           <View>
             <View style={styles.buttonGroups}>
@@ -149,9 +172,14 @@ export default function DetectedAllDisease() {
             </View>
           </View>
         </View>
-      ) : (
+      )}
+      {console.log("diseaseData.length>> ", diseaseData.length)}
+      {!(diseaseData.length === 0) && (
         <>
-          {!diseasePercentage ? (
+          {console.log("Inside diseaseData.length>> ", diseaseData.length)}
+          {console.log("Inside diseasePercentage>> ", diseasePercentage)}
+
+          {!diseasePercentage && (
             <View style={styles.detailsContainer}>
               <Text style={styles.title}>Detected Diseases</Text>
               <View style={styles.detailsCard}>
@@ -185,7 +213,8 @@ export default function DetectedAllDisease() {
                 </View>
               </View>
             </View>
-          ) : (
+          )}
+          {diseasePercentage && (
             <View style={styles.percentageContainer}>
               <Text style={styles.severityTitle}>Severity Percentage</Text>
               <View style={styles.detailsCard}>
@@ -217,6 +246,22 @@ export default function DetectedAllDisease() {
             </View>
           )}
         </>
+      )}
+
+      {noDisease && (
+        <View style={styles.noDiseaseContainer}>
+          <View>
+            <Image source={greenTick} style={styles.greenTick} />
+            <Text style={styles.noDiseaseTitle}>Disease{"\n"}Not Found</Text>
+          </View>
+          <View>
+            <View style={styles.noDiseaseButtonGroups}>
+              <TouchableOpacity style={styles.button} onPress={returnToHome}>
+                <Text style={styles.btntext}>Return To Home</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
       )}
     </View>
   );
@@ -277,6 +322,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
+  noDiseaseButtonGroups: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
   button: {
     backgroundColor: "#fdc50b",
     width: 165,
@@ -284,6 +333,18 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 20,
     alignSelf: "center",
+  },
+  sBtnContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    zIndex: 100,
+    marginTop: 1,
+    height: 50,
+  },
+
+  sBtn: {
+    height: 50,
+    width: 150,
   },
   advanceSearchButton: {
     backgroundColor: "#3AB54A",
