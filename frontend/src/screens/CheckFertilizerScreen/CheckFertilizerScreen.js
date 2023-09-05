@@ -414,7 +414,7 @@ export default function CheckFertilizerScreen() {
           />
           <Text
             style={{
-              fontSize: 24,
+              fontSize: 20,
               fontFamily: "Roboto",
               fontWeight: "bold",
               paddingTop: 2,
@@ -651,7 +651,7 @@ export default function CheckFertilizerScreen() {
             }}
           >
             {" "}
-            Nitrogen (N) :{" "}
+            Nitrogen (N)     : {" "}
           </Text>
           <Text style={styles.npk}>{nitrogen}</Text>
         </View>
@@ -666,7 +666,7 @@ export default function CheckFertilizerScreen() {
             }}
           >
             {" "}
-            Phosporus (P) :{" "}
+            Phosporus (P)  :{" "}
           </Text>
           <Text style={styles.npk}>{phosporus}</Text>
         </View>
@@ -681,7 +681,7 @@ export default function CheckFertilizerScreen() {
             }}
           >
             {" "}
-            Potassium (K) :{" "}
+            Potassium (K)  :{" "}
           </Text>
           <Text style={styles.npk}>{potassium}</Text>
         </View>
@@ -849,9 +849,9 @@ const styles = StyleSheet.create({
     width: 280,
     height: 65,
     borderRadius: 25,
-    marginTop: 20,
+    marginTop: -5,
     alignSelf: "center",
-    marginBottom: 10,
+    marginBottom: 0,
   },
   btntext: {
     textAlign: "center",
@@ -920,8 +920,8 @@ const styles = StyleSheet.create({
     width: 100,
     height: 110,
     marginTop: -15,
-    marginLeft: 10,
-    marginRight: -40,
+    marginLeft: 0,
+    marginRight: 0,
   },
   modalContent: {
     backgroundColor: "#ffffff",
