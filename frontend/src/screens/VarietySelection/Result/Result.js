@@ -19,6 +19,14 @@ import green_tick from '../../../../assets/green_tick.png';
 import red_warning from '../../../../assets/red_warning.png';
 import Modal from 'react-native-modal';
 import backgroundImage from '../../../../assets/tmp-plant.png';
+import horanahiruImage from '../../../../assets/horanahiru.jpg';
+import tomImage from '../../../../assets/Tom.jpeg';
+import karthaImage from '../../../../assets/karthacolo.jpg';
+import villardImage from '../../../../assets/villard.jpg';
+import velleiImage from '../../../../assets/vellei.jpeg';
+import malwanaImage from '../../../../assets/malwana.jpg';
+import damparaImage from '../../../../assets/dampara.jpg';
+import giraImage from '../../../../assets/giraaba.png';
 
 
 
@@ -59,23 +67,56 @@ export default function BuddingResultScreen() {
   const [permissionGranted, setPermissionGranted] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const [isError, setError] = useState(false);
-  const [imgeUri, setImgeUri] = useState(backgroundImage);
+  const [imgeUri, setImgeUri] = useState(horanahiruImage);
   const [Suitability,setSuitability] = useState("");
   const [className, setClassName] = useState("");
   const [color, setColor] = useState("");
   const [icon, setIcon] = useState(green_tick);
+  const [mangoVarietyName, setMangoVarietyName] = useState("TOM EJC");
+  const [mangoDescription, setMangoDescription] = useState("The Alphonso mango, also known as the 'King of Mangoes,' is renowned for its rich, sweet, and distinct flavor. It has a smooth, buttery texture and a pleasant aroma.");
+
+  
+
+const mangoOrigin = "Originated in India"; // Origin of the mango variety
 
   useEffect(() => {
     setModalVisible(true)
   }, []);
 
+  const handleModalClose = () => {
+    setModalVisible(false);
+    // Add navigation logic to return to the home screen here
+  };
+
+  const getVarietyImage = (varietyName) => {
+    const varietyImageMapping = {
+      "Horanahiru": horanahiruImage,
+      "TOM EJC": tomImage,
+      "Karthacolomban": karthaImage,
+      "Villard": villardImage,
+      "Velleicollomban": velleiImage,
+      "Malwana": malwanaImage,
+      "Dampara": damparaImage,
+      "Giraaba": giraImage,
+    };
+
+    if (varietyName in varietyImageMapping) {
+      return varietyImageMapping[varietyName];
+    } else {
+      return horanahiruImage;
+    }
+  };
+
+
+
   useEffect(() => {
-    const { response, imageUri, base64Data } = route.params;
-    console.log("image uri :: ", imageUri);
-    setImgeUri(imageUri);
-    console.log("image uri 1:: ", imageUri);
-    setSuitability(response.class);
-    console.log("response", response.class);
+    const { response} = route.params;
+    console.log("Response Got :: ", response.variety);
+    setImgeUri(getVarietyImage(response.variety));
+    // setImgeUri(imageUri);
+    // console.log("image uri 1:: ", imageUri);
+    // setSuitability(response.class);
+    // console.log("response", response.class);
   }, [route.params]);
   
   useEffect(() => {
@@ -97,49 +138,60 @@ export default function BuddingResultScreen() {
 
   
 
-  const handleRetakePicture = async () => {
-    setModalVisible(false);
-    navigation.navigate("BuddingScanScreen");
-  }
+  const setVarietyData = (varietyName) => {
 
-  const handleFindVariety = async () => {
-    setModalVisible(false);
-    navigation.navigate("VarietySelection");
-  }
+    if(varietyName == "Horanahiru"){
+      setMangoVarietyName("Horanahiru");
+      setMangoDescription("Horanahiru is a Sri Lankan mango cultivar. It is a hybrid variety of Karthakolomban and Villard. It is a large mango, with a greenish-yellow skin colour when ripe. It is a juicy mango with a sweet taste. It is a popular mango variety in Sri Lanka.");
+    }else if(varietyName == "TOM EJC"){
+      setMangoVarietyName("TOM EJC");
+      setMangoDescription("The Alphonso mango, also known as the 'King of Mangoes,' is renowned for its rich, sweet, and distinct flavor. It has a smooth, buttery texture and a pleasant aroma.");
+    }
+  };
 
   return (
     
     <View style={{ backgroundColor: '#FFFFFF', height: '100%' }}>
-      {imgeUri ? ( // Check if imgeUri is not null
-      <Image source={imgeUri} style={{ flex: 1, resizeMode: 'cover' }} />
-    ) : (
-      // Display a placeholder or loading image when imgeUri is null
-      <Image source={require('../../../../assets/tmp-plant.png')} style={{ flex: 1, resizeMode: 'cover' }} />
-    )}
+      {imgeUri ? (
+        <Image source={imgeUri} style={styles.varietyImage} />
+      ) : (
+        <Image source={horanahiruImage} style={styles.varietyImage} />
+      )}
       
 
       
 
-      <Modal isVisible={isModalVisible} style={styles.infoModal} >
+      <Modal isVisible={isModalVisible} style={styles.infoModal}>
         <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            
-            <Image source={icon} style={{ marginTop: 45, width: 130, height: 130, marginVertical: 8 }} />
-
-            <Text style={{ fontSize: 25, padding: 5, margin: 8, textAlign: 'left', marginRight: 12 }}>Plant is  </Text>
-            <Text style={{ fontSize: 35, marginTop: -15, textAlign: 'left', fontWeight: 'bold', color: color }}> {className} </Text>
-
-            
-            <TouchableOpacity style={styles.findVarierty} onPress={() => handleFindVariety()} >
-              <Text style={{ fontSize: 17, fontWeight: 'bold', padding: 5, color: 'white', textAlign: 'center' }}> Find matching variety </Text>
+          <View style={styles.modalContent}>
+            <TouchableOpacity style={styles.closeButton} onPress={handleModalClose}>
+              <Text style={styles.closeButtonText}>X</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.retakePhoto} onPress={() => handleRetakePicture()} >
-              <Text style={{ fontSize: 17, fontWeight: 'bold', padding: 5,  textAlign: 'center' }}> Retake photo </Text>
-            </TouchableOpacity>
+            <Text style={styles.titleName}>
+              Matching Variety
+            </Text>
+
+            <Image
+              source={imgeUri}
+              style={styles.mangoImage}
+            />
+
+            <Text style={styles.mangoVarietyName}>
+              {mangoVarietyName}
+            </Text>
+
+            <Text style={styles.description}>
+              {mangoDescription}
+            </Text>
+
+            <Text style={styles.origin}>
+              Origin: {mangoOrigin}
+            </Text>
           </View>
         </ScrollView>
       </Modal>
+
 
       <Text style={{ fontSize: 14, fontWeight: 'bold', marginLeft: 20, marginTop: 15 }}>Need Help?</Text>
 
@@ -212,6 +264,71 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     marginTop: 10
   },
+  modal: {
+    flex: 1,
+    margin: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 1,
+    backgroundColor: 'gray',
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  closeButtonText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  mangoImage: {
+    width: 130,
+    height: 130,
+    marginVertical: 8,
+    borderRadius: 10,
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  mangoVarietyName: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: 'orange',
+    marginTop: 10,
+    textAlign: 'center',
+  },
+  titleName: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'green',
+    marginTop: 10,
+    textAlign: 'center',
+  },
+  description: {
+    fontSize: 16,
+    marginTop: 10,
+    textAlign: 'left',
+    lineHeight: 22,
+  },
+  origin: {
+    fontSize: 18,
+    marginTop: 20,
+    textAlign: 'left',
+    fontWeight: 'bold',
+  },
   infoModal: {
     position: 'absolute',
     bottom: 0,
@@ -220,8 +337,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#ffffff',
     width: '100%',
-    maxHeight: '90%',
-    minHeight: '60%',
+    maxHeight: '100%',
+    minHeight: '80%',
     marginBottom: 20,
     marginLeft: 0,
     borderRadius: 20,
