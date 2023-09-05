@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+import React, { useState, useEffect } from "react";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import {
   View,
   Text,
@@ -19,25 +19,40 @@ const MarketAnalysisPlan = () => {
   const [freshMangoes, setFreshMangoes] = useState("");
   const [damagedMangoes, setDamagedMangoes] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [variety, setVariety] = useState("");
+
+  const route = useRoute();
+
+  // get marketData passed by previous analysis screen
+  useEffect(() => {
+    console.log("route.params.variety>> ", route.params.variety);
+    const { variety } = route.params;
+    setVariety(variety);
+  }, [route.params]);
 
   const [stage, setStage] = useState(null);
 
   const navigation = useNavigation();
 
   const handleGo = async () => {
-    navigation.navigate("MarketHomeScreen");
+    // Add "Item_" prefix and uppercase the variety
+    const formattedVariety = "Item_" + variety.toUpperCase();
 
     const marketData = {
       cost: cost,
       selectedMonth: selectedMonth,
       freshMangoes: freshMangoes,
       damagedMangoes: damagedMangoes,
+      variety: formattedVariety,
     };
+
+    navigation.navigate("MarketHomeScreen", {
+      marketData: marketData,
+    });
+
     console.log(marketData);
 
-    await axios.post(constants.backend_url + "/market", data).then(() => {
-      navigation.navigate("DiagnoseHomeScreen");
-    });
+    await axios.post(constants.backend_url + "/market", data).then(() => {});
   };
 
   const handleGoButtonPress = async () => {
@@ -52,8 +67,6 @@ const MarketAnalysisPlan = () => {
     // const navigation = useNavigation();
     // navigation.navigate("MarketHomeScreen");
   };
-
-  // set handleOk funtion to pass the data
 
   const stagedata = [
     { label: "January", value: "1" },
@@ -83,6 +96,8 @@ const MarketAnalysisPlan = () => {
       <Header />
       <View style={styles.container}>
         <Text style={styles.title}>Market Analysis Plan</Text>
+        <Text style={styles.inputLabel}>Variety</Text>
+        <TextInput style={styles.input} value={variety} editable={false} />
         <Text style={styles.inputLabel}>Enter Cost</Text>
         <TextInput
           style={styles.input}
@@ -150,9 +165,7 @@ const MarketAnalysisPlan = () => {
               // onPress={() => setIsProcessing(false)}
               onPress={handleGo}
             >
-              <Text style={styles.okButtonText} onPress={handleOk}>
-                Ok
-              </Text>
+              <Text style={styles.okButtonText}>Ok</Text>
             </TouchableOpacity>
           </View>
         </Modal>
@@ -176,6 +189,13 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 15,
+  },
+  inputvariety: {
+    borderWidth: 1,
+    borderColor: "#000",
     borderRadius: 5,
     padding: 10,
     marginBottom: 15,
@@ -240,6 +260,7 @@ const styles = StyleSheet.create({
   dropdown: {
     margin: 16,
     marginTop: 20,
+    width: 300, // Increase the width as needed
     height: 45,
     width: 260,
     backgroundColor: "white",
@@ -248,13 +269,14 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 1,
+      height: 2,
     },
     shadowOpacity: 0.2,
     shadowRadius: 1.41,
     elevation: 2,
     marginEnd: 5,
   },
+
   placeholderStyle: {
     fontSize: 15,
   },

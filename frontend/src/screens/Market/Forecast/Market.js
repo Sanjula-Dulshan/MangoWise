@@ -1,5 +1,6 @@
 import React from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -13,6 +14,41 @@ import Header from "../../../components/Common/Header";
 
 const Analysis = () => {
   const navigation = useNavigation();
+  const [market, setMarket] = useState([]);
+  const [forecastedValue, setForecastedValue] = useState(0);
+  const [month, setMonth] = useState("");
+  const route = useRoute();
+
+  // get marketData passed by previous analysis screen
+  useEffect(() => {
+    console.log("route.params>> ", route.params);
+    const { response, marketData } = route.params;
+
+    // Define an array of month names
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+
+    // Convert the numeric marketData value to the corresponding month name
+    const monthName = monthNames[marketData - 1]; // Subtract 1 because arrays are zero-indexed
+
+    setMonth(monthName);
+
+    const forecastedValue = response.forecasted_values[0];
+    setForecastedValue(forecastedValue);
+    setMarket(response);
+  }, [route.params]);
 
   const handleAnalysis = () => {
     navigation.navigate("TimeSeriesForecastScreen");
@@ -50,11 +86,11 @@ const Analysis = () => {
             <View style={styles.tableContainer}>
               <View style={styles.row}>
                 <Text style={styles.label}>Month</Text>
-                <Text style={styles.label}>Price(Rs)</Text>
+                <Text style={styles.label}>Price</Text>
               </View>
               <View style={styles.row}>
-                <Text style={styles.monthText}>January</Text>
-                <Text style={styles.priceText}>$100</Text>
+                <Text style={styles.monthText}>{month}</Text>
+                <Text style={styles.priceText}>Rs.{forecastedValue}</Text>
               </View>
             </View>
           </View>

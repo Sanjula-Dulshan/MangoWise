@@ -1,5 +1,6 @@
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import React from "react";
+import { useEffect, useState } from "react";
 import {
   Image,
   StyleSheet,
@@ -9,18 +10,59 @@ import {
   ScrollView,
 } from "react-native";
 import Header from "../../../components/Common/Header";
-import sampleMangoLaaf from "../../../../assets/sample-mango-leaf.jpg";
 import mangoFruit from "../../../../assets/M2.jpg";
 import sampleMango from "../../../../assets/M6.jpg";
 import mangoMarket from "../../../../assets/M3.jpg";
 import mangoAnalysis from "../../../../assets/M4.jpg";
 import mangoForecast from "../../../../assets/M5.jpg";
+import axios from "axios";
 
 export default function HomeScreen() {
+  const [forecast, setForecast] = useState([]);
+  const route = useRoute();
+
+  // get marketData passed by previous analysis screen
+  useEffect(() => {
+    console.log("route.params>> ", route.params.marketData);
+    const { marketData } = route.params;
+    setForecast(marketData);
+  }, [route.params]);
+
   const navigation = useNavigation();
 
-  const handleForecast = () => {
-    navigation.navigate("ForecastScreen");
+  // const handleForecast = () => {
+  //   navigation.navigate("ForecastScreen");
+  // };
+
+  const handleForecast = async () => {
+    const requestData = {
+      Location: "Location_Colombo",
+      Variety: forecast.variety,
+      Month: forecast.selectedMonth,
+      Steps: 1, //
+    };
+
+    console.log("Sending data to the model:", requestData);
+
+    try {
+      const response = await axios.post(
+        "https://us-central1-mangowise-395709.cloudfunctions.net/market_predict",
+        requestData
+      );
+
+      navigation.navigate("ForecastScreen", {
+        response: response.data,
+        marketData: forecast.selectedMonth,
+      });
+
+      // Handle the response from the model here
+      console.log("Model response:", response.data);
+
+      // You can update your state or perform any other actions based on the response
+    } catch (error) {
+      // Handle errors here
+      console.error("Error sending data to the model:", error);
+    }
   };
 
   return (

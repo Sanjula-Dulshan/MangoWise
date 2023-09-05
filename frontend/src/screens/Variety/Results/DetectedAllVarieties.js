@@ -38,6 +38,7 @@ export default function DetectedAllVarieties() {
 
   const marketAnalysis = async () => {
     console.log("market analysis");
+    console.log("dddd", varietyInfo);
     navigation.navigate("AnalysisScreen", {
       variety: varietyInfo,
     });
