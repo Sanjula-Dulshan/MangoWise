@@ -19,6 +19,7 @@ import axios from "axios";
 
 export default function HomeScreen() {
   const [forecast, setForecast] = useState([]);
+
   const route = useRoute();
 
   // get marketData passed by previous analysis screen

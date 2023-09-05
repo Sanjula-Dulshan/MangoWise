@@ -10,14 +10,29 @@ import {
   ScrollView,
 } from "react-native";
 import mangoAnalysis from "../../../../assets/M4.jpg";
+import juice from "../../../../assets/juice.png";
+import Mjuice from "../../../../assets/juiceM.jpeg";
+import chutney from "../../../../assets/chutney.jpeg";
+import pickle from "../../../../assets/pickle.jpeg";
+import jam from "../../../../assets/jam.jpeg";
 import Header from "../../../components/Common/Header";
+import Modal from "react-native-modal";
 
 const Analysis = () => {
   const navigation = useNavigation();
   const [market, setMarket] = useState([]);
   const [forecastedValue, setForecastedValue] = useState(0);
   const [month, setMonth] = useState("");
+  const [isModalVisible, setModalVisible] = useState(false);
   const route = useRoute();
+
+  const totalIncome = 5000; // Replace with your actual total income value
+  const totalPrice = 3000; // Replace with your actual total price value
+  const totalProfit = totalIncome - totalPrice;
+
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
 
   // get marketData passed by previous analysis screen
   useEffect(() => {
@@ -50,9 +65,9 @@ const Analysis = () => {
     setMarket(response);
   }, [route.params]);
 
-  const handleAnalysis = () => {
-    navigation.navigate("TimeSeriesForecastScreen");
-  };
+  // const handleAnalysis = () => {
+  //   navigation.navigate("TimeSeriesForecastScreen");
+  // };
   return (
     <View style={{ backgroundColor: "#ffff", height: "100%" }}>
       <Header />
@@ -98,10 +113,118 @@ const Analysis = () => {
           {/* Button */}
           <TouchableOpacity
             style={styles.buttonContainer}
-            onPress={handleAnalysis}
+            onPress={toggleModal}
           >
             <Text style={styles.buttonText}>Show the Analysis</Text>
           </TouchableOpacity>
+
+          <Modal isVisible={isModalVisible} style={styles.modal}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Optimal Outcome</Text>
+
+              {/* Card with Total Income */}
+              <View style={styles.card}>
+                <View style={styles.cardRow}>
+                  <Text style={styles.cardTitle}>Total Income</Text>
+                  <Text style={styles.cardValue}>$5000</Text>
+                </View>
+              </View>
+
+              <View style={styles.card}>
+                <View style={styles.cardRow}>
+                  <Text style={styles.cardTitle}>Total Profit</Text>
+                  <Text
+                    style={[
+                      styles.cardValue,
+                      { color: totalProfit >= 0 ? "#0a0" : "red" },
+                    ]}
+                  >
+                    ${totalProfit >= 0 ? totalProfit : -totalProfit}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Success Message */}
+              {totalProfit >= 0 ? (
+                <View style={styles.successMessage}>
+                  <Text style={styles.successText}>Success!</Text>
+                  <Text style={styles.successDescription}>It's a profit.</Text>
+                </View>
+              ) : (
+                <View style={styles.successMessage}>
+                  <Text style={[styles.successText, { color: "red" }]}>
+                    Oh, it's a loss.
+                  </Text>
+                  <Text style={styles.successDescription}>
+                    Try to reduce losses.
+                  </Text>
+                </View>
+              )}
+
+              {/* Description and Damaged Mango Count */}
+              <View style={styles.description}>
+                <Text style={styles.descriptionText1}>
+                  Amount of Damaged Mango: 500
+                </Text>
+                <Text style={styles.descriptionText2}>
+                  You can try these products also for damaged mangoes.
+                </Text>
+              </View>
+
+              <View style={styles.processedProducts}>
+                {/* Processed Product Cards */}
+                <ScrollView
+                  horizontal={true}
+                  showsHorizontalScrollIndicator={false}
+                >
+                  <View style={styles.processedCard}>
+                    <Image
+                      source={Mjuice}
+                      style={styles.processedImage}
+                      resizeMode="cover"
+                    />
+                    <Text style={styles.processedName}>Mango Juice</Text>
+                    <Text style={styles.processedPrice}>Rs.320</Text>
+                  </View>
+                  <View style={styles.processedCard}>
+                    <Image
+                      source={jam}
+                      style={styles.processedImage}
+                      resizeMode="cover"
+                    />
+                    <Text style={styles.processedName}>Jam</Text>
+                    <Text style={styles.processedPrice}>Rs.450</Text>
+                  </View>
+                  <View style={styles.processedCard}>
+                    <Image
+                      source={pickle}
+                      style={styles.processedImage}
+                      resizeMode="cover"
+                    />
+                    <Text style={styles.processedName}>Mango Pickle</Text>
+                    <Text style={styles.processedPrice}>Rs.150</Text>
+                  </View>
+                  <View style={styles.processedCard}>
+                    <Image
+                      source={chutney}
+                      style={styles.processedImage}
+                      resizeMode="cover"
+                    />
+                    <Text style={styles.processedName}>Mango Chutney</Text>
+                    <Text style={styles.processedPrice}>Rs.380</Text>
+                  </View>
+                </ScrollView>
+              </View>
+
+              {/* Close Button */}
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={toggleModal}
+              >
+                <Text style={styles.closeButtonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </Modal>
         </View>
       </ScrollView>
     </View>
@@ -159,6 +282,110 @@ const styles = StyleSheet.create({
     color: "#000",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  modal: {
+    margin: 0,
+    justifyContent: "flex-end",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  card: {
+    backgroundColor: "#f3f3f3",
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 10,
+  },
+  cardTitle: {
+    fontSize: 18,
+    marginBottom: 10,
+  },
+  cardValue: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  successMessage: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  successText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "green",
+    marginRight: 10,
+  },
+  successDescription: {
+    fontSize: 16,
+  },
+  description: {
+    marginBottom: 20,
+  },
+  descriptionText1: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  descriptionText2: {
+    fontSize: 16,
+    marginBottom: 10,
+    fontStyle: "italic",
+  },
+  processedProducts: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  processedCard: {
+    flex: 1,
+    backgroundColor: "#3C9616",
+    borderRadius: 12,
+    padding: 10,
+    margin: 5,
+    alignItems: "center",
+    height: 180,
+  },
+  processedTitle: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  processedPrice: {
+    fontSize: 18,
+    fontWeight: "normal",
+    fontStyle: "italic",
+  },
+  processedName: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  closeButton: {
+    backgroundColor: "#fdc50b",
+    borderRadius: 12,
+    padding: 10,
+    alignItems: "center",
+    marginTop: 20,
+    alignSelf: "center",
+  },
+  closeButtonText: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  cardRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  processedImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+    marginBottom: 10,
   },
 });
 

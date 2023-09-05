@@ -10,6 +10,7 @@ import TimeSeriesForecastScreen from "../screens/Market/Visualize/TimeSeriesFore
 import PreviousVarieties from "../screens/Variety/Previous";
 import VarietyScanScreen from "../screens/Variety/Scan/ScanScreen";
 import DetectedAllVarieties from "../screens/Variety/Results/DetectedAllVarieties";
+import MarketAnalysisPlan from "../screens/Market/Analysis/Analysis";
 
 const Stack = createNativeStackNavigator();
 
@@ -57,6 +58,11 @@ export default function VarietyAllScreens() {
       <Stack.Screen
         name="ForecastScreen"
         component={ForecastScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="MarketAnalysisPlan"
+        component={MarketAnalysisPlan}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
