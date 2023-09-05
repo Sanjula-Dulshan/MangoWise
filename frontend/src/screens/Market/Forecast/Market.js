@@ -24,11 +24,15 @@ const Analysis = () => {
   const [forecastedValue, setForecastedValue] = useState(0);
   const [month, setMonth] = useState("");
   const [isModalVisible, setModalVisible] = useState(false);
+  const [cost, setCost] = useState("");
+  const [freshMangoes, setFreshMangoes] = useState("");
+  const [damagedMangoes, setDamagedMangoes] = useState("");
+
   const route = useRoute();
 
   const totalIncome = 5000; // Replace with your actual total income value
-  const totalPrice = 3000; // Replace with your actual total price value
-  const totalProfit = totalIncome - totalPrice;
+  const totalCost = cost; // Replace with your actual total price value
+  const totalProfit = totalIncome - totalCost;
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
@@ -56,9 +60,12 @@ const Analysis = () => {
     ];
 
     // Convert the numeric marketData value to the corresponding month name
-    const monthName = monthNames[marketData - 1]; // Subtract 1 because arrays are zero-indexed
+    const monthName = monthNames[marketData.selectedMonth - 1]; // Subtract 1 because arrays are zero-indexed
 
     setMonth(monthName);
+    setCost(marketData.cost);
+    setFreshMangoes(marketData.freshMangoes);
+    setDamagedMangoes(marketData.damagedMangoes);
 
     const forecastedValue = response.forecasted_values[0];
     setForecastedValue(forecastedValue);

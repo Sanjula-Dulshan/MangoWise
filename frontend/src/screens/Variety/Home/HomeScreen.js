@@ -11,6 +11,7 @@ import plant from "../../../../assets/plant.png";
 import Phone from "../../../../assets/Phone.png";
 import report from "../../../../assets/report.png";
 import sampleMangoLaaf from "../../../../assets/sample-mango-leaf.jpg";
+import constants from "../../../constants/constants";
 
 export default function HomeScreen() {
   const [varietyList, setVarietyList] = useState([]);

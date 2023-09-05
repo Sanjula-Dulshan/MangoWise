@@ -40,6 +40,10 @@ export default function HomeScreen() {
       Location: "Location_Colombo",
       Variety: forecast.variety,
       Month: forecast.selectedMonth,
+      Cost: parseInt(forecast.cost),
+      FreshMangoes: parseInt(forecast.freshMangoes),
+      DamagedMangoes: parseInt(forecast.damagedMangoes),
+
       Steps: 1, //
     };
 
@@ -53,7 +57,7 @@ export default function HomeScreen() {
 
       navigation.navigate("ForecastScreen", {
         response: response.data,
-        marketData: forecast.selectedMonth,
+        marketData: forecast,
       });
 
       // Handle the response from the model here
