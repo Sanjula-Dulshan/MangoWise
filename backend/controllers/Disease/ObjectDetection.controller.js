@@ -173,12 +173,19 @@ export const detectDiseases = async (req, res) => {
     const classes = Array.from(classesSet);
 
     // Loop through each class and create a combined data object
+    console.log("classes>> ", classes);
     classes.forEach((className) => {
-      const normalizedClassName = className.toLowerCase().replace(" ", "_"); // Convert class name to lowercase and replace spaces with underscores
+      console.log("className>> ", className);
+      const normalizedClassName = className
+        .toLowerCase()
+        .split(" ")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
       const combinedObject = {
-        class: className,
+        class: normalizedClassName,
         affectedAreaPercentage:
-          affectedAreaPercentage[normalizedClassName] || 0,
+          affectedAreaPercentage[className.toLowerCase().replace(" ", "_")] ||
+          0,
         color: colorMapping[className] || "#000000",
       };
       diseaseData.push(combinedObject);
