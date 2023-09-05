@@ -20,6 +20,7 @@ export default function ScanScreen() {
   const cameraRef = useRef(null);
   const navigation = useNavigation();
   const [imageUri, setImageUri] = useState(null);
+  const [classType, setClassType] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -113,9 +114,50 @@ export default function ScanScreen() {
     }
   };
 
+  const saveImage = async () => {
+    if (image) {
+      try {
+        // Save image to gallery
+        if (!gallery) {
+          await MediaLibrary.createAssetAsync(image);
+        }
+  
+        // Resize image
+        const manipulatedResult = await manipulateAsync(
+          image,
+          [{ resize: { width: 256, height: 256 } }],
+          { base64: true }
+        );
+
+        const base64Data = "data:image/png;base64,"+manipulatedResult.base64;
+
+        console.log("base64Data: ", base64Data);
+  
+        setIsLoading(true);
+  
+        await axios({
+          method: "POST",
+          url: constants.backend_url + "/bud/save",
+          data: {
+            image: base64Data,
+            class: classType,
+          },
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+  
+        console.log(response.data);
+      } catch (error) {
+        console.log("error ", error);
+      }
+    }
+  };
+
   const advanceBudSearch = async () => {
 
     setIsLoading(true);
+    
     try {
       const formData = new FormData();
       formData.append("file", {
@@ -137,11 +179,14 @@ export default function ScanScreen() {
           setIsLoading(false);
           console.log("response>> ", response.data);
           console.log("image>> ", image);
+          setClassType(response.data.class);
 
           navigation.navigate("BuddingResultScreen", {
             response: response.data,
             imageUri: image,
           });
+
+          saveImage();
         })
         .catch((error) => {
           console.log("error>> ", error);

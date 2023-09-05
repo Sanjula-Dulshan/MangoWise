@@ -1,5 +1,5 @@
 import axios from "axios";
-import { createCanvas, loadImage } from "canvas";
+import Detection from "../../models/Bud/SaveBudDetections.model.js";
 
 export const detectSuitability = async (req, res) => {
     console.log("Detecting Suitability");
@@ -44,4 +44,33 @@ export const detectSuitability = async (req, res) => {
       res.status(500).json({ error: "Internal server error" });
     }
   };
+
+  export const saveImage = async (req, res) => {
+    console.log("Saving Image");
+    try {
+      const newDetection = new Detection(req.body);
+      const savedDetection = await newDetection.save();
+
+      console.log("Saved: ",savedDetection);
+      res.status(201).json(savedDetection);
+    } catch (error) {
+      console.log(error.message);
+      res.status(500).json({ error: error.message });
+    }
+  };
+
+  export const getDetections = async (req, res) => {
+    console.log("Getting Detections");
+    try {
+      const detections = await Detection.find({}, { __v: 0, createdAt: 0 }).sort({
+        createdAt: -1,
+      });
+      res.status(200).json(detections);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
+    }
+  }
+  
+    
   

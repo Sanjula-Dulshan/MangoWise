@@ -13,7 +13,7 @@ import {
   Image
 } from 'react-native';
 import Header from "../../../components/Common/Header";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation,useRoute } from "@react-navigation/native";
 import { Feather, AntDesign } from '@expo/vector-icons';
 import BluetoothSerial from 'react-native-bluetooth-serial-2';
 import plant from '../../../../assets/plant.png'
@@ -22,6 +22,8 @@ import bud from '../../../../assets/bud.png';
 import vector from '../../../../assets/Vector.png';
 import Modal from 'react-native-modal';
 import sampleImage from "../../../../assets/tmp-plant.png";
+import axios from "axios";
+import constants from "../../../constants/constants";
 
 import {
   PERMISSIONS,
@@ -145,6 +147,9 @@ export default function BuddingHomeScreen() {
   const [permissionGranted, setPermissionGranted] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const [isError, setError] = useState(false);
+  const [budList, setBudList] = useState([]);
+
+  const route = useRoute();
 
   useEffect(() => {
     (async () => {
@@ -166,6 +171,21 @@ export default function BuddingHomeScreen() {
       }    
     })();
   }, []);
+
+  const handlePreviousBuds = async () => {
+    navigation.navigate("PreviousBudScreen");
+  };
+
+  useEffect(() => {
+    try {
+      axios.get(constants.backend_url + "/bud/get").then((response) => {
+        setBudList(response.data);
+        console.log("data", response.data);
+      });
+    } catch (error) {
+      console.log("error ", error);
+    }
+  }, [route.params]);
 
   
   const handleTakePicture = async () => {
@@ -259,12 +279,40 @@ export default function BuddingHomeScreen() {
         <Text style={styles.btntext}>Take a Picture</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={{ ...styles.button, marginTop: 10 }}onPress={handleTakePicture}>
-        <Text style={styles.btntext}>Choose a photo</Text>
-      </TouchableOpacity>
-
-      <Text style={{ fontSize: 14, fontWeight: 'bold', marginLeft: 20, marginTop: 15 }}>Previous Images</Text>
-
+      <View
+        style={{
+          flexDirection: "row",
+          marginTop: 40,
+          justifyContent: "space-between",
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 20,
+            textAlign: "left",
+            paddingRight: 13,
+            marginLeft: 21,
+            marginTop: 0,
+            fontWeight: 500,
+          }}
+        >
+          Previous Detections
+        </Text>
+        <TouchableOpacity onPress={handlePreviousBuds}>
+          <Text
+            style={{
+              fontSize: 20,
+              textAlign: "left",
+              paddingRight: 15,
+              marginTop: 0,
+              fontWeight: 500,
+              color: "#fdc50b",
+            }}
+          >
+            View All
+          </Text>
+        </TouchableOpacity>
+      </View>
 
       <View
         style={{
@@ -273,33 +321,20 @@ export default function BuddingHomeScreen() {
           justifyContent: "space-between",
         }}
       >
-        <TouchableOpacity>
-          <View style={styles.image}>
-            <Image
-              source={sampleImage}
-              style={styles.sampleMangoLeaf}
-              resizeMode="contain"
-            />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <View style={styles.image}>
-            <Image
-              source={sampleImage}
-              style={styles.sampleMangoLeaf}
-              resizeMode="contain"
-            />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <View style={styles.image}>
-            <Image
-              source={sampleImage}
-              style={styles.sampleMangoLeaf}
-              resizeMode="contain"
-            />
-          </View>
-        </TouchableOpacity>
+        {budList.slice(0, 3).map((bud, key) => {
+          // Limiting to 3 iterations
+          return (
+            <TouchableOpacity key={key}>
+              <View style={styles.image}>
+                <Image
+                  source={{ uri: bud?.image }}
+                  style={styles.sampleMangoLeaf}
+                  resizeMode="contain"
+                />
+              </View>
+            </TouchableOpacity>
+          );
+        })}
       </View>
     </View>
     </ScrollView>
@@ -400,6 +435,23 @@ const styles = StyleSheet.create({
     marginTop: 50,
     alignSelf: 'center',
     marginBottom: 20,
+  },
+  image: {
+    marginBottom: 5,
+    marginTop: 10,
+    width: "80%",
+    height: "37%",
+    marginLeft: 10,
+
+    backgroundColor: "#f3fdee",
+    borderRadius: 20,
+    shadowOffset: {
+      width: 0.5,
+      height: 1,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 1.21,
+    elevation: 2,
   },
   sensorimage: {
     width: 100,
