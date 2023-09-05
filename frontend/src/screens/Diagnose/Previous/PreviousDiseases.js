@@ -16,9 +16,11 @@ import axios from "axios";
 import moment from "moment";
 import constants from "../../../constants/constants";
 import Modal from "react-native-modal";
+import loadingIcon from "../../../../assets/loadings/loading.gif";
 
 export default function PreviousDiseases() {
   const [diseasesList, setDiseasesList] = useState([]);
+  const [loading, setloading] = useState(true);
   const navigation = useNavigation();
   const route = useRoute();
 
@@ -51,108 +53,126 @@ export default function PreviousDiseases() {
     <View style={{ backgroundColor: "#fdfafa", height: "100%" }}>
       <Header />
 
-      <ScrollView>
-        <View style={styles.container}>
-          <Text style={[styles.previousPictures]}>Previous Pictures</Text>
-          {diseasesList?.map((disease, key) => {
-            return (
-              <View key={key}>
-                <Card containerStyle={styles.card}>
-                  <View style={styles.cardContainer}>
-                    <Image
-                      style={styles.image}
-                      resizeMode="cover"
-                      source={{ uri: disease?.image }}
-                    />
-                    <View style={styles.description}>
-                      <Text style={styles.name}>{disease?.mainDisease}</Text>
-                      <Text style={styles.date}>
-                        {moment(disease.updatedAt).format("DD/MM/YYYY")}
-                      </Text>
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <Image
+            source={loadingIcon}
+            style={{
+              width: 200,
+              height: 250,
+              alignSelf: "center",
+              marginTop: 100,
+            }}
+          />
+        </View>
+      ) : (
+        <ScrollView>
+          <View style={styles.container}>
+            <Text style={[styles.previousPictures]}>Previous Pictures</Text>
+            {diseasesList?.map((disease, key) => {
+              return (
+                <View key={key}>
+                  <Card containerStyle={styles.card}>
+                    <View style={styles.cardContainer}>
+                      <Image
+                        style={styles.image}
+                        resizeMode="cover"
+                        source={{ uri: disease?.image }}
+                      />
+                      <View style={styles.description}>
+                        <Text style={styles.name}>{disease?.mainDisease}</Text>
+                        <Text style={styles.date}>
+                          {moment(disease.updatedAt).format("DD/MM/YYYY")}
+                        </Text>
+                        <TouchableOpacity
+                          style={styles.button}
+                          onPress={() => recheck(disease)}
+                        >
+                          <Text style={styles.btntext}>Recheck</Text>
+                        </TouchableOpacity>
+                      </View>
                       <TouchableOpacity
-                        style={styles.button}
-                        onPress={() => recheck(disease)}
+                        style={styles.arrowIcon}
+                        onPress={() => viewDetails(disease)}
                       >
-                        <Text style={styles.btntext}>Recheck</Text>
+                        <Entypo
+                          name="chevron-right"
+                          size={40}
+                          color="#fdc50b"
+                        />
                       </TouchableOpacity>
                     </View>
-                    <TouchableOpacity
-                      style={styles.arrowIcon}
-                      onPress={() => viewDetails(disease)}
-                    >
-                      <Entypo name="chevron-right" size={40} color="#fdc50b" />
-                    </TouchableOpacity>
-                  </View>
-                </Card>
-              </View>
-            );
-          })}
-        </View>
+                  </Card>
+                </View>
+              );
+            })}
+          </View>
 
-        {selectedDisease && (
-          <Modal
-            isVisible={popupVisible}
-            backdropOpacity={0.75}
-            animationIn="zoomInDown"
-            animationOut="zoomOutUp"
-            animationInTiming={600}
-            animationOutTiming={700}
-            backdropTransitionInTiming={600}
-            backdropTransitionOutTiming={700}
-          >
-            <View
-              style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
+          {selectedDisease && (
+            <Modal
+              isVisible={popupVisible}
+              backdropOpacity={0.75}
+              animationIn="zoomInDown"
+              animationOut="zoomOutUp"
+              animationInTiming={600}
+              animationOutTiming={700}
+              backdropTransitionInTiming={600}
+              backdropTransitionOutTiming={700}
             >
               <View
                 style={{
-                  backgroundColor: "white",
-                  padding: 20,
-                  borderRadius: 10,
-                  width: "80%",
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
               >
-                <Image
-                  source={{ uri: selectedDisease.image }}
-                  style={{ width: "100%", height: 200, borderRadius: 10 }}
-                />
-                <Text
-                  style={{ fontSize: 18, fontWeight: "bold", marginTop: 10 }}
-                >
-                  {selectedDisease.mainDisease}
-                </Text>
-                <Text style={{ fontSize: 14, color: "gray" }}>
-                  {moment(selectedDisease.updatedAt).format("DD/MM/YYYY")}
-                </Text>
-                <Text style={{ marginTop: 10, marginBottom: 10 }}>
-                  Disease Treated:{" "}
-                  <Text style={{ color: "red" }}>
-                    {selectedDisease.mainDisease}
-                  </Text>
-                </Text>
-                <Text>All Diseases percentage:</Text>
-                {selectedDisease.diseasesInfo?.map((disease, index) => (
-                  <Text key={index}>
-                    {"   "}
-                    {disease.class}: {disease.affectedAreaPercentage}%
-                  </Text>
-                ))}
-                <TouchableOpacity
-                  style={styles.modelButton}
-                  onPress={() => {
-                    closePopup();
+                <View
+                  style={{
+                    backgroundColor: "white",
+                    padding: 20,
+                    borderRadius: 10,
+                    width: "80%",
                   }}
                 >
-                  <Text style={styles.modelBtnText}>Close</Text>
-                </TouchableOpacity>
+                  <Image
+                    source={{ uri: selectedDisease.image }}
+                    style={{ width: "100%", height: 200, borderRadius: 10 }}
+                  />
+                  <Text
+                    style={{ fontSize: 18, fontWeight: "bold", marginTop: 10 }}
+                  >
+                    {selectedDisease.mainDisease}
+                  </Text>
+                  <Text style={{ fontSize: 14, color: "gray" }}>
+                    {moment(selectedDisease.updatedAt).format("DD/MM/YYYY")}
+                  </Text>
+                  <Text style={{ marginTop: 10, marginBottom: 10 }}>
+                    Disease Treated:{" "}
+                    <Text style={{ color: "red" }}>
+                      {selectedDisease.mainDisease}
+                    </Text>
+                  </Text>
+                  <Text>All Diseases percentage:</Text>
+                  {selectedDisease.diseasesInfo?.map((disease, index) => (
+                    <Text key={index}>
+                      {"   "}
+                      {disease.class}: {disease.affectedAreaPercentage}%
+                    </Text>
+                  ))}
+                  <TouchableOpacity
+                    style={styles.modelButton}
+                    onPress={() => {
+                      closePopup();
+                    }}
+                  >
+                    <Text style={styles.modelBtnText}>Close</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          </Modal>
-        )}
-      </ScrollView>
+            </Modal>
+          )}
+        </ScrollView>
+      )}
     </View>
   );
 }
@@ -236,5 +256,9 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     fontWeight: "bold",
     color: "#144100",
+  },
+  loadingContainer: {
+    height: "70%",
+    justifyContent: "center",
   },
 });

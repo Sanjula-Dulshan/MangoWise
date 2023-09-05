@@ -27,6 +27,7 @@ export default function HomeScreen() {
     try {
       axios.get(constants.backend_url + "/disease").then((response) => {
         setDiseasesList(response.data);
+        console.log("data", response.data);
       });
     } catch (error) {
       console.log("error ", error);
