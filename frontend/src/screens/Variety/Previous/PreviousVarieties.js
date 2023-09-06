@@ -16,16 +16,19 @@ import axios from "axios";
 import moment from "moment";
 import constants from "../../../constants/constants";
 import Modal from "react-native-modal";
+import loadingIcon from "../../../../assets/loadings/loading.gif";
 
 export default function PreviousDiseases() {
   const [varietyList, setVarietyList] = useState([]);
   const route = useRoute();
   const [popupVisible, setPopupVisible] = useState(false);
   const [selectedVariety, setSelectedVariety] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axios.get(constants.backend_url + "/variety").then((response) => {
       setVarietyList(response.data);
+      setLoading(false);
     });
   }, [route.params]);
 
@@ -51,122 +54,140 @@ export default function PreviousDiseases() {
     <View style={{ backgroundColor: "#fdfafa", height: "100%" }}>
       <Header />
 
-      <ScrollView>
-        <View style={styles.container}>
-          <Text style={[styles.previousPictures]}>Previous Pictures</Text>
-          {varietyList?.map((variety, key) => {
-            return (
-              <View key={key}>
-                <Card containerStyle={styles.card}>
-                  <View style={styles.cardContainer}>
-                    <Image
-                      style={styles.image}
-                      resizeMode="cover"
-                      source={{ uri: variety?.image }}
-                    />
-                    <View style={styles.description}>
-                      <Text style={styles.name}>
-                        {" "}
-                        {(variety?.variety).toLowerCase()}
-                      </Text>
-                      <Text style={styles.date}>
-                        {moment(variety.updatedAt).format("DD/MM/YYYY")}
-                      </Text>
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <Image
+            source={loadingIcon}
+            style={{
+              width: 200,
+              height: 150,
+              alignSelf: "center",
+              marginTop: 100,
+            }}
+          />
+        </View>
+      ) : (
+        <ScrollView>
+          <View style={styles.container}>
+            <Text style={[styles.previousPictures]}>Previous Pictures</Text>
+            {varietyList?.map((variety, key) => {
+              return (
+                <View key={key}>
+                  <Card containerStyle={styles.card}>
+                    <View style={styles.cardContainer}>
+                      <Image
+                        style={styles.image}
+                        resizeMode="cover"
+                        source={{ uri: variety?.image }}
+                      />
+                      <View style={styles.description}>
+                        <Text style={styles.name}>
+                          {" "}
+                          {(variety?.variety).toLowerCase()}
+                        </Text>
+                        <Text style={styles.date}>
+                          {moment(variety.updatedAt).format("DD/MM/YYYY")}
+                        </Text>
+                        <TouchableOpacity
+                          style={styles.button}
+                          onPress={() => recheck(variety)}
+                        >
+                          <Text style={styles.btntext}>Recheck</Text>
+                        </TouchableOpacity>
+                      </View>
                       <TouchableOpacity
-                        style={styles.button}
-                        onPress={() => recheck(variety)}
+                        style={styles.arrowIcon}
+                        onPress={() => viewDetails(variety)}
                       >
-                        <Text style={styles.btntext}>Recheck</Text>
+                        <Entypo
+                          name="chevron-right"
+                          size={40}
+                          color="#fdc50b"
+                        />
                       </TouchableOpacity>
                     </View>
-                    <TouchableOpacity
-                      style={styles.arrowIcon}
-                      onPress={() => viewDetails(variety)}
-                    >
-                      <Entypo name="chevron-right" size={40} color="#fdc50b" />
-                    </TouchableOpacity>
-                  </View>
-                </Card>
-              </View>
-            );
-          })}
-        </View>
+                  </Card>
+                </View>
+              );
+            })}
+          </View>
 
-        {selectedVariety && (
-          <Modal
-            isVisible={popupVisible}
-            backdropOpacity={0.75}
-            animationIn="zoomInDown"
-            animationOut="zoomOutUp"
-            animationInTiming={600}
-            animationOutTiming={700}
-            backdropTransitionInTiming={600}
-            backdropTransitionOutTiming={700}
-          >
-            <View
-              style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
+          {selectedVariety && (
+            <Modal
+              isVisible={popupVisible}
+              backdropOpacity={0.75}
+              animationIn="zoomInDown"
+              animationOut="zoomOutUp"
+              animationInTiming={600}
+              animationOutTiming={700}
+              backdropTransitionInTiming={600}
+              backdropTransitionOutTiming={700}
             >
               <View
                 style={{
-                  backgroundColor: "white",
-                  padding: 20,
-                  borderRadius: 10,
-                  width: "80%",
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
               >
-                <Image
-                  source={{ uri: selectedVariety.image }}
-                  style={{ width: "100%", height: 200, borderRadius: 10 }}
-                />
-                <Text
-                  style={{ fontSize: 18, fontWeight: "bold", marginTop: 10 }}
-                >
-                  {selectedVariety.variety}
-                </Text>
-                <Text
+                <View
                   style={{
-                    fontSize: 18,
-                    fontWeight: "bold",
-                    marginTop: 10,
-                    fontStyle: "italic",
+                    backgroundColor: "white",
+                    padding: 20,
+                    borderRadius: 10,
+                    width: "80%",
                   }}
                 >
-                  {selectedVariety.month}
-                </Text>
-                <Text style={{ fontSize: 14, color: "gray" }}>
-                  {moment(selectedVariety.updatedAt).format("DD/MM/YYYY")}
-                </Text>
-                <Text
-                  style={{
-                    marginTop: 10,
-                    marginBottom: 10,
-                    fontSize: 17,
-                    fontWeight: "bold",
-                  }}
-                >
-                  Current Price :{" "}
-                  <Text style={{ color: "red" }}>
-                    Rs.{selectedVariety.price}
+                  <Image
+                    source={{ uri: selectedVariety.image }}
+                    style={{ width: "100%", height: 200, borderRadius: 10 }}
+                  />
+                  <Text
+                    style={{ fontSize: 18, fontWeight: "bold", marginTop: 10 }}
+                  >
+                    {selectedVariety.variety}
                   </Text>
-                </Text>
+                  <Text
+                    style={{
+                      fontSize: 18,
+                      fontWeight: "bold",
+                      marginTop: 10,
+                      fontStyle: "italic",
+                    }}
+                  >
+                    {selectedVariety.month}
+                  </Text>
+                  <Text style={{ fontSize: 14, color: "gray" }}>
+                    {moment(selectedVariety.updatedAt).format("DD/MM/YYYY")}
+                  </Text>
+                  <Text
+                    style={{
+                      marginTop: 10,
+                      marginBottom: 10,
+                      fontSize: 17,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Current Price :{" "}
+                    <Text style={{ color: "red" }}>
+                      Rs.{selectedVariety.price}
+                    </Text>
+                  </Text>
 
-                <TouchableOpacity
-                  style={styles.modelButton}
-                  onPress={() => {
-                    closePopup();
-                  }}
-                >
-                  <Text style={styles.modelBtnText}>Close</Text>
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.modelButton}
+                    onPress={() => {
+                      closePopup();
+                    }}
+                  >
+                    <Text style={styles.modelBtnText}>Close</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          </Modal>
-        )}
-      </ScrollView>
+            </Modal>
+          )}
+        </ScrollView>
+      )}
     </View>
   );
 }
@@ -245,5 +266,9 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     fontWeight: "bold",
     color: "#144100",
+  },
+  loadingContainer: {
+    height: "60%",
+    justifyContent: "center",
   },
 });
