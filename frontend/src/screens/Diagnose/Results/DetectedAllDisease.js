@@ -13,6 +13,7 @@ import axios from "axios";
 import greenTick from "../../../../assets/green_tick.png";
 import Modal from "react-native-modal";
 import searching from "../../../../assets/loadings/searching.gif";
+import constants from "../../../constants/constants";
 
 export default function DetectedAllDisease() {
   const [instantImage, setInstantImage] = useState();
@@ -70,15 +71,11 @@ export default function DetectedAllDisease() {
       });
 
       await axios
-        .post(
-          "https://us-central1-mangowise-395709.cloudfunctions.net/disease_predict",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        )
+        .post(constants.disease_cnn_url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
         .then((response) => {
           setIsProcessing(false);
           setDiseasePercentage(response.data);
@@ -110,27 +107,31 @@ export default function DetectedAllDisease() {
         name: "image.jpg",
       });
       await axios
-        .post(
-          "https://us-central1-mangowise-395709.cloudfunctions.net/disease_predict",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        )
+        .post(constants.disease_cnn_url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
         .then((response) => {
-          const { class: className, confidence } = response.data;
+          const { class: className, confidence, message } = response.data;
           const affectedValue = Math.round(Math.random() * (25 - 10) + 10);
 
+          console.log("response.data>> ", response.data);
+
           const data = {
-            class: className.replace(/_/g, " "),
-            affectedAreaPercentage: confidence - affectedValue,
+            class: className,
+            affectedAreaPercentage: (confidence - affectedValue).toFixed(2),
+            message,
           };
 
-          setDiseaseData([data]);
-          setDiseasePercentage(response.data);
-          setIsProcessing(false);
+          if (className) {
+            setDiseaseData([data]);
+            setDiseasePercentage(response.data);
+            setIsProcessing(false);
+          } else {
+            setNoDisease(true);
+            setIsProcessing(false);
+          }
         })
         .catch((error) => {
           console.log("error>> ", error);
@@ -194,7 +195,7 @@ export default function DetectedAllDisease() {
                           backgroundColor: disease.color,
                         }}
                       />
-                      <Text style={styles.diseaseName}>{disease.class}</Text>
+                      <Text style={styles.diseaseName}>{disease?.class}</Text>
                     </View>
                   ))}
                 </View>
@@ -224,10 +225,10 @@ export default function DetectedAllDisease() {
                     <View style={styles.diseaseList} key={index}>
                       <View />
                       <Text style={styles.diseaseName}>
-                        {disease?.class.replace(/_/g, " ")}
+                        {disease?.class?.replace(/_/g, " ")}
                       </Text>
                       <Text style={styles.diseaseName}>
-                        {disease?.affectedAreaPercentage}%
+                        {disease.affectedAreaPercentage}%
                       </Text>
                     </View>
                   ))}

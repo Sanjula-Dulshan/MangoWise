@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import Swiper from "react-native-swiper";
 import axios from "axios";
+import constants from "../../constants/constants";
 import Header from "../Common/HomeHeader";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
@@ -16,8 +17,6 @@ const images = [
   // Add more image URLs here
 ];
 
-
-
 export default function Home() {
   useEffect(() => {
     warmUpAPICall();
@@ -29,21 +28,17 @@ export default function Home() {
     try {
       const formData = new FormData();
       formData.append("file", {
-         // Use the first image for the API call
+        // Use the first image for the API call
         type: "image/jpeg",
         name: "image.jpg",
       });
 
       await axios
-        .post(
-          "https://us-central1-mangowise-395709.cloudfunctions.net/disease_predict",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        )
+        .post(constants.disease_cnn_url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
         .then(() => console.log("warmed up disease_predict"));
     } catch (error) {
       console.error("Error:", error);
@@ -52,28 +47,28 @@ export default function Home() {
 
   const goToBuddingTimer = () => {
     navigation.navigate("Budding");
-  }
+  };
 
   const goToVarietyIdentification = () => {
     navigation.navigate("VarietyIdentification");
-  }
+  };
 
   const goToDiseaseIdentification = () => {
-    navigation.navigate("DiseaseIdentification");
-  }
+    navigation.navigate("DiagnoseHomeScreen");
+  };
 
   const goToVarietySelector = () => {
     //navigate to VSelectAllScreens
     navigation.navigate("VSelectAllScreens");
-  }
+  };
 
   const goToFertilizerRecommender = () => {
     navigation.navigate("FertilizerRecommender");
-  }
+  };
 
   const goToMarketAnalysis = () => {
-    navigation.navigate("MarketAnalysis");
-  }
+    navigation.navigate("VarietyHomeScreen");
+  };
 
   return (
     <View style={styles.container}>
@@ -100,30 +95,48 @@ export default function Home() {
         <View style={styles.buttonContainer}>
           {/* First Row */}
           <View style={styles.buttonRow}>
-            <TouchableOpacity style={styles.menuButton} onPress={goToBuddingTimer}>
+            <TouchableOpacity
+              style={styles.menuButton}
+              onPress={goToBuddingTimer}
+            >
               <Icon name="search" size={30} color="white" />
               <Text style={styles.buttonText}>Buddinig Timmer</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuButton} onPress={goToVarietyIdentification}>
+            <TouchableOpacity
+              style={styles.menuButton}
+              onPress={goToVarietyIdentification}
+            >
               <Icon name="camera" size={30} color="white" />
               <Text style={styles.buttonText}>Variety Identification</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuButton} onPress={goToDiseaseIdentification}>
+            <TouchableOpacity
+              style={styles.menuButton}
+              onPress={goToDiseaseIdentification}
+            >
               <Icon name="home" size={30} color="white" />
               <Text style={styles.buttonText}>Disease Identification</Text>
             </TouchableOpacity>
           </View>
           {/* Second Row */}
           <View style={styles.buttonRow}>
-            <TouchableOpacity style={styles.menuButton} onPress={goToVarietySelector}>
+            <TouchableOpacity
+              style={styles.menuButton}
+              onPress={goToVarietySelector}
+            >
               <Icon name="user" size={30} color="white" />
               <Text style={styles.buttonText}>Variety Selector</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuButton} onPress={goToFertilizerRecommender}>
+            <TouchableOpacity
+              style={styles.menuButton}
+              onPress={goToFertilizerRecommender}
+            >
               <Icon name="cog" size={30} color="white" />
               <Text style={styles.buttonText}>Fertilizer recommender</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuButton} onPress={goToMarketAnalysis}>
+            <TouchableOpacity
+              style={styles.menuButton}
+              onPress={goToMarketAnalysis}
+            >
               <Icon name="info-circle" size={30} color="white" />
               <Text style={styles.buttonText}>Market Analysis</Text>
             </TouchableOpacity>
