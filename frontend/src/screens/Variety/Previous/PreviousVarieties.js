@@ -125,14 +125,33 @@ export default function PreviousDiseases() {
                 <Text
                   style={{ fontSize: 18, fontWeight: "bold", marginTop: 10 }}
                 >
+                  {selectedVariety.variety}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 18,
+                    fontWeight: "bold",
+                    marginTop: 10,
+                    fontStyle: "italic",
+                  }}
+                >
                   {selectedVariety.month}
                 </Text>
                 <Text style={{ fontSize: 14, color: "gray" }}>
                   {moment(selectedVariety.updatedAt).format("DD/MM/YYYY")}
                 </Text>
-                <Text style={{ marginTop: 10, marginBottom: 10 }}>
-                  Current Price:{" "}
-                  <Text style={{ color: "red" }}>{selectedVariety.price}</Text>
+                <Text
+                  style={{
+                    marginTop: 10,
+                    marginBottom: 10,
+                    fontSize: 17,
+                    fontWeight: "bold",
+                  }}
+                >
+                  Current Price :{" "}
+                  <Text style={{ color: "red" }}>
+                    Rs.{selectedVariety.price}
+                  </Text>
                 </Text>
 
                 <TouchableOpacity
@@ -176,8 +195,9 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   name: {
-    fontSize: 16,
+    fontSize: 18,
     marginTop: 5,
+    fontWeight: "bold",
   },
   date: {
     fontSize: 16,
@@ -201,7 +221,7 @@ const styles = StyleSheet.create({
     color: "#144100",
   },
   arrowIcon: {
-    marginLeft: 90,
+    marginLeft: 50,
     marginTop: 50,
     transform: [{ rotate: "45deg" }],
   },
@@ -210,5 +230,20 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginBottom: 10,
     fontWeight: "bold",
+  },
+  modelButton: {
+    backgroundColor: "#fdc50b",
+    width: 90,
+    height: 35,
+    borderRadius: 25,
+    padding: 4,
+    alignSelf: "flex-end",
+    marginTop: 30,
+    justifyContent: "center",
+  },
+  modelBtnText: {
+    alignSelf: "center",
+    fontWeight: "bold",
+    color: "#144100",
   },
 });
