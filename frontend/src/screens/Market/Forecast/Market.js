@@ -17,6 +17,8 @@ import pickle from "../../../../assets/pickle.jpeg";
 import jam from "../../../../assets/jam.jpeg";
 import Header from "../../../components/Common/Header";
 import Modal from "react-native-modal";
+import constants from "../../../constants/constants";
+import axios from "axios";
 
 const Analysis = () => {
   const navigation = useNavigation();
@@ -27,6 +29,8 @@ const Analysis = () => {
   const [cost, setCost] = useState("");
   const [freshMangoes, setFreshMangoes] = useState("");
   const [damagedMangoes, setDamagedMangoes] = useState("");
+  const [variety, setVariety] = useState("");
+  const [image, setImage] = useState("");
 
   const route = useRoute();
 
@@ -34,8 +38,19 @@ const Analysis = () => {
   const totalCost = cost; // Replace with your actual total price value
   const totalProfit = totalIncome - totalCost;
 
-  const toggleModal = () => {
+  const toggleModal = async () => {
     setModalVisible(!isModalVisible);
+  };
+
+  const handleClose = async () => {
+    setModalVisible(false);
+    await axios
+      .post(constants.backend_url + "/variety/save", data)
+      .then(() => {})
+      .catch((err) => {
+        console.log(err);
+        console.log("ip", constants);
+      });
   };
 
   // get marketData passed by previous analysis screen
@@ -66,15 +81,21 @@ const Analysis = () => {
     setCost(marketData.cost);
     setFreshMangoes(marketData.freshMangoes);
     setDamagedMangoes(marketData.damagedMangoes);
+    setVariety(marketData.variety);
+    setImage(marketData.image);
 
     const forecastedValue = response.forecasted_values[0];
     setForecastedValue(forecastedValue);
     setMarket(response);
   }, [route.params]);
 
-  // const handleAnalysis = () => {
-  //   navigation.navigate("TimeSeriesForecastScreen");
-  // };
+  const data = {
+    variety: variety.replace(/^Item_/, ""),
+    month: month,
+    price: forecastedValue,
+    image: image,
+  };
+
   return (
     <View style={{ backgroundColor: "#ffff", height: "100%" }}>
       <Header />
@@ -234,7 +255,7 @@ const Analysis = () => {
               {/* Close Button */}
               <TouchableOpacity
                 style={styles.closeButton}
-                onPress={toggleModal}
+                onPress={handleClose}
               >
                 <Text style={styles.closeButtonText}>Close</Text>
               </TouchableOpacity>

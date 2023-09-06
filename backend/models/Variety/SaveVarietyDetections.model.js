@@ -16,12 +16,15 @@ const SaveDetectionsSchema = new Schema(
       type: String,
       required: true,
     },
-    varietyInfo: {
-      type: [varietyDetails],
-      required: true,
-    },
     image: {
       type: String,
+      // required: true,
+    },
+    month: {
+      type: String,
+    },
+    price: {
+      type: Number,
       required: true,
     },
   },

@@ -11,7 +11,7 @@ import {
 const router = express.Router();
 
 router.post("/predict", detectVariety);
-router.post("/", saveVarietyDetection);
+router.post("/save", saveVarietyDetection);
 router.get("/", getDetections);
 router.post("/market", market);
 router.get("/market", getMarket);

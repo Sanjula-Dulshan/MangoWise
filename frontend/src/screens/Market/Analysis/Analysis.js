@@ -21,14 +21,16 @@ const MarketAnalysisPlan = () => {
   const [damagedMangoes, setDamagedMangoes] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [variety, setVariety] = useState("");
+  const [image, setImage] = useState("");
 
   const route = useRoute();
 
   // get marketData passed by previous analysis screen
   useEffect(() => {
     console.log("route.params.variety>> ", route.params.variety);
-    const { variety } = route.params;
+    const { variety, image } = route.params;
     setVariety(variety);
+    setImage(image);
   }, [route.params]);
 
   const [stage, setStage] = useState(null);
@@ -47,6 +49,7 @@ const MarketAnalysisPlan = () => {
       damagedMangoes: damagedMangoes,
       variety: formattedVariety,
       location: selectLocation,
+      image: image,
     };
 
     navigation.navigate("MarketHomeScreen", {

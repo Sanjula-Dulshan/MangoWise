@@ -41,8 +41,13 @@ export default function HomeScreen() {
 
   const oneForecast = async () => {
     step = 1;
-
     handleForecast();
+
+    // const data = {
+    //   variety: forecast.variety,
+    //   month: forecast.selectedMonth,
+    //   price: forecast.forecasted_values[0],
+    // };
   };
 
   const nextThreeForecast = async () => {
@@ -74,6 +79,7 @@ export default function HomeScreen() {
       Cost: parseInt(forecast.cost),
       FreshMangoes: parseInt(forecast.freshMangoes),
       DamagedMangoes: parseInt(forecast.damagedMangoes),
+      image: forecast.image,
 
       Steps: step, //
     };
@@ -100,7 +106,7 @@ export default function HomeScreen() {
               newPredictedData.push({
                 quantity: parseInt(forecast.freshMangoes),
                 pricePerKg: data,
-                income: parseInt(forecast.freshMangoes) * data,
+                income: (parseInt(forecast.freshMangoes) * data).toFixed(2),
               });
             });
             setPredictedData(newPredictedData);
@@ -220,11 +226,11 @@ export default function HomeScreen() {
               {predictedData?.map((data, index) => (
                 <View key={index} style={styles.priceCard}>
                   <View style={styles.cardHeader}>
-                    <Text style={styles.cardTitle}>Quantity:</Text>
+                    <Text style={styles.cardTitle}>Quantity(Kg):</Text>
                     <Text text>{data.quantity}</Text>
                   </View>
                   <View style={styles.cardHeader}>
-                    <Text style={styles.cardTitle}>Price per KG:</Text>
+                    <Text style={styles.cardTitle}>Price per Kg:</Text>
                     <Text>Rs.{data.pricePerKg}</Text>
                   </View>
                   <View style={styles.cardHeader}>
@@ -522,10 +528,11 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   priceCard: {
-    backgroundColor: "#E5C50B", // Background color of each card
+    backgroundColor: "#fdfafa", // Background color of each card
     borderRadius: 10,
     padding: 15,
     marginBottom: 25,
+    elevation: 3,
   },
   cardHeader: {
     flexDirection: "row",

@@ -41,6 +41,7 @@ export default function DetectedAllVarieties() {
     console.log("dddd", varietyInfo);
     navigation.navigate("AnalysisScreen", {
       variety: varietyInfo,
+      image: instantImage,
     });
   };
 
