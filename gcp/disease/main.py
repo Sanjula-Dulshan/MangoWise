@@ -52,3 +52,57 @@ def disease_predict(request):
     confidence = round(100 * (np.max(predictions[0])), 2)
 
     return {"class": predicted_class, "confidence": confidence}
+
+import numpy as np
+from PIL import Image
+import tensorflow as tf
+
+
+GREEN_THRESHOLD = 0.5
+CONFIDENCE_THRESHOLD = 50.0
+
+def is_leaf(rgb_image):
+    # Split the RGB image into its color channels
+    red_channel, green_channel, blue_channel = rgb_image[:, :, 0], rgb_image[:, :, 1], rgb_image[:, :, 2]
+
+    # Calculate the proportion of green pixels
+    total_pixels = rgb_image.shape[0] * rgb_image.shape[1]
+    green_proportion = np.sum(green_channel > red_channel) / total_pixels
+
+    # Check if the green proportion is above the threshold
+    return green_proportion >= GREEN_THRESHOLD
+
+def disease_predict_filterRGB(request):
+    global model
+    if model is None:
+        download_blob(
+            BUCKET_NAME,
+            "models/disease/mango_Xception.h5",
+            "/tmp/mango_Xception.h5",
+        )
+        print("Model downloaded")
+        model = tf.keras.models.load_model("/tmp/mango_Xception.h5")
+        print("Model loaded")
+        
+    image = request.files["file"]
+
+    image_array = np.array(
+        Image.open(image).convert("RGB").resize((240, 240))
+    )
+
+    if is_leaf(image_array):
+        img_batch = np.expand_dims(image_array, 0)
+        predictions = model.predict(img_batch)
+
+        predicted_class = class_names[np.argmax(predictions[0])]
+        confidence = round(100 * (np.max(predictions[0])), 2)
+
+        if confidence >= CONFIDENCE_THRESHOLD:
+            return {"class": predicted_class, "confidence": confidence}
+        else:
+            return {"message": "Disease not identified"}
+        
+    else:
+        return {"message": "Not found a leaf"}
+
+# Define your BUCKET_NAME, class_names, and download_blob function as needed

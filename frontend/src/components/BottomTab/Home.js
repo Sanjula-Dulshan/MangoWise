@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import Swiper from "react-native-swiper";
 import axios from "axios";
+import constants from "../../constants/constants";
 import Header from "../Common/HomeHeader";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
@@ -33,15 +34,11 @@ export default function Home() {
       });
 
       await axios
-        .post(
-          "https://us-central1-mangowise-395709.cloudfunctions.net/disease_predict",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        )
+        .post(constants.disease_cnn_url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
         .then(() => console.log("warmed up disease_predict"));
     } catch (error) {
       console.error("Error:", error);
@@ -57,7 +54,7 @@ export default function Home() {
   };
 
   const goToDiseaseIdentification = () => {
-    navigation.navigate("DiseaseIdentification");
+    navigation.navigate("DiagnoseHomeScreen");
   };
 
   const goToVarietySelector = () => {
@@ -70,7 +67,7 @@ export default function Home() {
   };
 
   const goToMarketAnalysis = () => {
-    navigation.navigate("MarketAnalysis");
+    navigation.navigate("VarietyHomeScreen");
   };
 
   return (
