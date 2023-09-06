@@ -11,6 +11,7 @@ import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 export default function DetectedAllVarieties() {
   const [instantImage, setInstantImage] = useState();
+  const [capturedImg, setCapturedImg] = useState();
   const [varietyInfo, setVarietyInfo] = useState([]);
 
   const navigation = useNavigation();
@@ -21,14 +22,17 @@ export default function DetectedAllVarieties() {
     const { response } = route.params;
 
     setVarietyInfo(response.variety);
+    const instanceImage = convertBase64ToImage(response.image);
+    setInstantImage(instanceImage);
 
-    convertBase64ToImage(response.image);
+    const captureImage = convertBase64ToImage(response.captured);
+    setCapturedImg(captureImage);
   }, [route.params]);
   //convert base64 to image
   function convertBase64ToImage(base64String) {
     if (base64String) {
       const imageBase64Uri = `data:image/png;base64,${base64String}`;
-      setInstantImage(imageBase64Uri);
+      return imageBase64Uri;
     }
   }
 
@@ -41,7 +45,7 @@ export default function DetectedAllVarieties() {
     console.log("dddd", varietyInfo);
     navigation.navigate("AnalysisScreen", {
       variety: varietyInfo,
-      image: instantImage,
+      image: capturedImg,
     });
   };
 

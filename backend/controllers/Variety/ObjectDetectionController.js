@@ -125,6 +125,7 @@ export const detectVariety = async (req, res) => {
     res.json({
       image: base64Image,
       variety: response.data.predictions[0]?.class,
+      captured: image,
     });
 
     console.log("response ", response.data.predictions[0]?.class);

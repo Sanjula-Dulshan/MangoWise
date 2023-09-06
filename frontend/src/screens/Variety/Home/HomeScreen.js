@@ -234,33 +234,21 @@ export default function HomeScreen() {
           justifyContent: "space-between",
         }}
       >
-        <TouchableOpacity>
-          <View style={styles.image}>
-            <Image
-              source={sampleMangoLaaf}
-              style={styles.sampleMangoLeaf}
-              resizeMode="contain"
-            />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <View style={styles.image}>
-            <Image
-              source={sampleMangoLaaf}
-              style={styles.sampleMangoLeaf}
-              resizeMode="contain"
-            />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <View style={styles.image}>
-            <Image
-              source={sampleMangoLaaf}
-              style={styles.sampleMangoLeaf}
-              resizeMode="contain"
-            />
-          </View>
-        </TouchableOpacity>
+        {console.log("varietyList ", varietyList)}
+        {varietyList.slice(0, 3).map((variety, key) => {
+          return (
+            <TouchableOpacity key={key}>
+              {console.log("dbddx ", variety)}
+              <View style={styles.image}>
+                <Image
+                  source={{ uri: variety?.image }}
+                  style={styles.sampleMangoLeaf}
+                  resizeMode="contain"
+                />
+              </View>
+            </TouchableOpacity>
+          );
+        })}
       </View>
     </View>
   );
