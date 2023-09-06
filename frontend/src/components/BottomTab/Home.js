@@ -54,7 +54,7 @@ export default function Home() {
   };
 
   const goToDiseaseIdentification = () => {
-    navigation.navigate("DiseaseIdentification");
+    navigation.navigate("DiagnoseHomeScreen");
   };
 
   const goToVarietySelector = () => {
@@ -67,7 +67,7 @@ export default function Home() {
   };
 
   const goToMarketAnalysis = () => {
-    navigation.navigate("MarketAnalysis");
+    navigation.navigate("VarietyHomeScreen");
   };
 
   return (
