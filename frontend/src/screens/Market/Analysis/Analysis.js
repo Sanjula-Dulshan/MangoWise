@@ -56,22 +56,13 @@ const MarketAnalysisPlan = () => {
       marketData: marketData,
     });
 
-    console.log(marketData);
+    console.log("Analyze", marketData);
 
     await axios.post(constants.backend_url + "/market", data).then(() => {});
   };
 
   const handleGoButtonPress = async () => {
-    // Show the processing modal
     setIsProcessing(true);
-
-    // Simulate some asynchronous task (replace with your logic)
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-
-    // Hide the processing modal
-    setIsProcessing(false);
-    // const navigation = useNavigation();
-    // navigation.navigate("MarketHomeScreen");
   };
 
   const stagedata = [
@@ -177,9 +168,10 @@ const MarketAnalysisPlan = () => {
             labelField="label"
             valueField="value"
             placeholder="Select Month"
-            value={stage}
+            value={selectedMonth}
             onChange={(item) => {
-              setSelectedMonth(parseInt(item.value));
+              console.log("item.value>> ", item);
+              setSelectedMonth(item.value);
             }}
             renderItem={renderItem}
           />
@@ -193,8 +185,9 @@ const MarketAnalysisPlan = () => {
             labelField="label"
             valueField="value"
             placeholder="Select Location"
-            value={location}
+            value={selectLocation}
             onChange={(item) => {
+              console.log("item.value>> ", item.value);
               setSelectLocation(item.value);
             }}
             renderItem={renderLocationItem}

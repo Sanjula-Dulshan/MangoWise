@@ -75,7 +75,7 @@ export default function HomeScreen() {
     const requestData = {
       Location: forecast.location,
       Variety: forecast.variety,
-      Month: forecast.selectedMonth,
+      Month: parseInt(forecast.selectedMonth),
       Cost: parseInt(forecast.cost),
       FreshMangoes: parseInt(forecast.freshMangoes),
       DamagedMangoes: parseInt(forecast.damagedMangoes),
