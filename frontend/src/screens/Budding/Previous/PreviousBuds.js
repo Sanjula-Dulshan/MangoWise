@@ -18,15 +18,14 @@ import constants from "../../../constants/constants";
 import Modal from "react-native-modal";
 import loadingIcon from "../../../../assets/loadings/loading.gif";
 
-export default function PreviousDiseases() {
+export default function PreviousBuds() {
   const [diseasesList, setDiseasesList] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
   const route = useRoute();
 
   useEffect(() => {
-    console.log("constants.backend_url>> ", constants.backend_url);
-    axios.get(constants.backend_url + "/disease").then((response) => {
+    axios.get(constants.backend_url + "/bud/get").then((response) => {
       setDiseasesList(response.data);
       setLoading(false);
     });
@@ -45,7 +44,7 @@ export default function PreviousDiseases() {
   };
 
   const [popupVisible, setPopupVisible] = useState(false);
-  const [selectedDisease, setSelectedDisease] = useState(null);
+  const [selectedRecord, setSelectedDisease] = useState(null);
 
   const closePopup = () => {
     setPopupVisible(false);
@@ -82,15 +81,15 @@ export default function PreviousDiseases() {
                         source={{ uri: disease?.image }}
                       />
                       <View style={styles.description}>
-                        <Text style={styles.name}>{disease?.mainDisease}</Text>
+                        <Text style={styles.name}>{disease?.class}</Text>
                         <Text style={styles.date}>
                           {moment(disease.updatedAt).format("DD/MM/YYYY")}
                         </Text>
                         <TouchableOpacity
                           style={styles.button}
-                          onPress={() => recheck(disease)}
+                          onPress={() => viewDetails(disease)}
                         >
-                          <Text style={styles.btntext}>Recheck</Text>
+                          <Text style={styles.btntext}>View</Text>
                         </TouchableOpacity>
                       </View>
                       <TouchableOpacity
@@ -110,7 +109,7 @@ export default function PreviousDiseases() {
             })}
           </View>
 
-          {selectedDisease && (
+          {selectedRecord && (
             <Modal
               isVisible={popupVisible}
               backdropOpacity={0.75}
@@ -137,30 +136,24 @@ export default function PreviousDiseases() {
                   }}
                 >
                   <Image
-                    source={{ uri: selectedDisease.image }}
+                    source={{ uri: selectedRecord.image }}
                     style={{ width: "100%", height: 200, borderRadius: 10 }}
                   />
                   <Text
                     style={{ fontSize: 18, fontWeight: "bold", marginTop: 10 }}
                   >
-                    {selectedDisease.mainDisease}
+                    {selectedRecord.mainDisease}
                   </Text>
                   <Text style={{ fontSize: 14, color: "gray" }}>
-                    {moment(selectedDisease.updatedAt).format("DD/MM/YYYY")}
+                    {moment(selectedRecord.updatedAt).format("DD/MM/YYYY")}
                   </Text>
                   <Text style={{ marginTop: 10, marginBottom: 10 }}>
-                    Disease Treated:{" "}
+                    Result Detected:{" "}
                     <Text style={{ color: "red" }}>
-                      {selectedDisease.mainDisease}
+                      {selectedRecord.class}
                     </Text>
                   </Text>
-                  <Text>All Diseases percentage:</Text>
-                  {selectedDisease.diseasesInfo?.map((disease, index) => (
-                    <Text key={index}>
-                      {"   "}
-                      {disease.class}: {disease.affectedAreaPercentage}%
-                    </Text>
-                  ))}
+                  
                   <TouchableOpacity
                     style={styles.modelButton}
                     onPress={() => {

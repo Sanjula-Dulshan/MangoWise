@@ -23,6 +23,8 @@ import SegmentedControl from '@react-native-segmented-control/segmented-control'
 import Geolocation from '@react-native-community/geolocation';
 import constants from "../../../constants/constants";
 import axios from 'axios';
+import searching from "../../../../assets/loadings/searching.gif";
+import { set } from 'react-hook-form';
 
 
 
@@ -71,6 +73,8 @@ export default function VarietySelection() {
   const [selectedFeatures, setSelectedFeatures] = useState([]);
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
   const [zone, setZone] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [modalTxt, setModalTxt] = useState('Scanning...');
 
   useEffect(() => {
     setModalVisible(true)
@@ -177,6 +181,10 @@ export default function VarietySelection() {
   }
 
   const checkVariety = async () => { 
+
+    setModalTxt('Finding suitable variety....');
+    setIsLoading(true);
+
     let harvest = "medium";
     let taste = "good";
     let size = "big";
@@ -254,6 +262,7 @@ export default function VarietySelection() {
       // Pass the payload as the second argument to axios.post
       const response = await axios.post(apiUrl, payload); // Use async/await to handle the promise
       console.log('Response : ', response.data);
+      setIsLoading(false);
       navigation.navigate("VarietyResultScreen", {
         response: response.data,
       });
@@ -310,7 +319,8 @@ export default function VarietySelection() {
   
     if (permissionGranted) {
       console.log('getGPRSLocation permission Granted');
-  
+      setModalTxt('Fetching Location....');
+      setIsLoading(true);
       Geolocation.getCurrentPosition(
         async (position) => {
           try {
@@ -322,6 +332,7 @@ export default function VarietySelection() {
             await axios.get(apiUrl).then((response) => {
               console.log('Response : ', response.data);
               setCropLocation(response.data);
+              setIsLoading(false);
             });
   
           } catch (error) {
@@ -335,8 +346,7 @@ export default function VarietySelection() {
       );
     }
   };
-  
-  
+    
 
   const toggleFeatureSelection = (feature) => {
     if (isFeatureSelected(feature)) {
@@ -348,6 +358,21 @@ export default function VarietySelection() {
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+
+          <Modal
+            isVisible={isLoading}
+            animationIn="fadeIn"
+            animationOut="fadeOut"
+          >
+            <View style={styles.modalContent}>
+              <Image source={searching} style={styles.mangoImage} />
+              <Text style={styles.modalText2}>{modalTxt}</Text>
+              <Text style={styles.modalText2}>
+                Please wait, this may take some time.
+              </Text>
+            </View>
+          </Modal>
+
     <View style={{ backgroundColor: '#fdfafa', height: '100%' }}>
         <Header />
 
@@ -364,7 +389,10 @@ export default function VarietySelection() {
         onChange={(event) => {
           setSelectedCropIndex(event.nativeEvent.selectedSegmentIndex);
         }}
-        fontStyle={{ fontSize: 16 }}
+        fontStyle={{ fontSize: 16, color: '#000000', fontWeight: 'bold' }}
+            tintColor='#FFFFFF'
+            backgroundColor='#eeeeee'
+            fontColor='#000000'
       />
 
 <Text style={{ fontSize: 16, fontFamily: 'Roboto', fontWeight: 'bold', color: '#000000', paddingLeft: 20, marginTop: 10, marginBottom: 10 }}>Crop location :</Text>
@@ -431,7 +459,10 @@ export default function VarietySelection() {
             onChange={(event) => {
               setselectedHarvestIndex(event.nativeEvent.selectedSegmentIndex);
             }}
-            fontStyle={{ fontSize: 16 }}
+            fontStyle={{ fontSize: 16, color: '#000000', fontWeight: 'bold' }}
+            tintColor='#FFFFFF'
+            backgroundColor='#eeeeee'
+            fontColor='#000000'
           />
         )}
 
@@ -447,7 +478,10 @@ export default function VarietySelection() {
             onChange={(event) => {
               setselectedTasteIndex(event.nativeEvent.selectedSegmentIndex);
             }}
-            fontStyle={{ fontSize: 16 }}
+            fontStyle={{ fontSize: 16, color: '#000000', fontWeight: 'bold' }}
+            tintColor='#FFFFFF'
+            backgroundColor='#eeeeee'
+            fontColor='#000000'
           />
         )}
 
@@ -463,7 +497,10 @@ export default function VarietySelection() {
             onChange={(event) => {
               setselectedSizeIndex(event.nativeEvent.selectedSegmentIndex);
             }}
-            fontStyle={{ fontSize: 16 }}
+            fontStyle={{ fontSize: 16, color: '#000000', fontWeight: 'bold' }}
+            tintColor='#FFFFFF'
+            backgroundColor='#eeeeee'
+            fontColor='#000000'
           />
         )}
 
@@ -666,5 +703,11 @@ const styles = StyleSheet.create({
     marginTop:25,
     marginBottom:-20
   },
+  modalText2: {
+    fontSize: 16,
+    marginBottom: 10,
+    fontWeight: "bold",
+  },
+
 
 });

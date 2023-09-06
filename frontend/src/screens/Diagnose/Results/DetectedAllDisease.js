@@ -6,13 +6,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import sampleMangoLeaf from "../../../../assets/sample-mango-leaf2.jpg";
 import Header from "../../../components/Common/Header";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import greenTick from "../../../../assets/green_tick.png";
-import { Button } from "@rneui/base";
+import Modal from "react-native-modal";
+import searching from "../../../../assets/loadings/searching.gif";
 
 export default function DetectedAllDisease() {
   const [instantImage, setInstantImage] = useState();
@@ -22,6 +22,7 @@ export default function DetectedAllDisease() {
   const [base64Data, setBase64Data] = useState();
   const [advanceSearchData, setAdvanceSearchData] = useState([]);
   const [noDisease, setNoDisease] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const navigation = useNavigation();
 
@@ -59,6 +60,7 @@ export default function DetectedAllDisease() {
   };
 
   const severityPercentage = async () => {
+    setIsProcessing(true);
     try {
       const formData = new FormData();
       formData.append("file", {
@@ -67,7 +69,6 @@ export default function DetectedAllDisease() {
         name: "image.jpg",
       });
 
-      //TODO: Remove API call from this
       await axios
         .post(
           "https://us-central1-mangowise-395709.cloudfunctions.net/disease_predict",
@@ -79,7 +80,7 @@ export default function DetectedAllDisease() {
           }
         )
         .then((response) => {
-          console.log("response>> ", response.data);
+          setIsProcessing(false);
           setDiseasePercentage(response.data);
         })
         .catch((error) => {
@@ -91,11 +92,16 @@ export default function DetectedAllDisease() {
   };
 
   const handleSbtnPress = () => {
-    console.log("handleSbtnPress");
+    setIsProcessing(true);
     setNoDisease(true);
+
+    setTimeout(() => {
+      setIsProcessing(false);
+    }, 5000);
   };
 
   const advanceSearch = async () => {
+    setIsProcessing(true);
     try {
       const formData = new FormData();
       formData.append("file", {
@@ -116,7 +122,6 @@ export default function DetectedAllDisease() {
         .then((response) => {
           const { class: className, confidence } = response.data;
           const affectedValue = Math.round(Math.random() * (25 - 10) + 10);
-          console.log("affectedValue>> ", affectedValue);
 
           const data = {
             class: className.replace(/_/g, " "),
@@ -125,6 +130,7 @@ export default function DetectedAllDisease() {
 
           setDiseaseData([data]);
           setDiseasePercentage(response.data);
+          setIsProcessing(false);
         })
         .catch((error) => {
           console.log("error>> ", error);
@@ -173,18 +179,13 @@ export default function DetectedAllDisease() {
           </View>
         </View>
       )}
-      {console.log("diseaseData.length>> ", diseaseData.length)}
       {!(diseaseData.length === 0) && (
         <>
-          {console.log("Inside diseaseData.length>> ", diseaseData.length)}
-          {console.log("Inside diseasePercentage>> ", diseasePercentage)}
-
           {!diseasePercentage && (
             <View style={styles.detailsContainer}>
               <Text style={styles.title}>Detected Diseases</Text>
               <View style={styles.detailsCard}>
                 <View>
-                  {console.log("156 diseaseData>> ", diseaseData)}
                   {diseaseData?.map((disease, index) => (
                     <View style={styles.diseaseList} key={index}>
                       <View
@@ -219,16 +220,9 @@ export default function DetectedAllDisease() {
               <Text style={styles.severityTitle}>Severity Percentage</Text>
               <View style={styles.detailsCard}>
                 <View>
-                  {console.log("190 diseaseData>> ", diseaseData)}
-
                   {diseaseData?.map((disease, index) => (
                     <View style={styles.diseaseList} key={index}>
-                      <View
-                        style={{
-                          ...styles.diseaseColor,
-                          backgroundColor: disease?.color,
-                        }}
-                      />
+                      <View />
                       <Text style={styles.diseaseName}>
                         {disease?.class.replace(/_/g, " ")}
                       </Text>
@@ -263,6 +257,20 @@ export default function DetectedAllDisease() {
           </View>
         </View>
       )}
+
+      <Modal
+        isVisible={isProcessing}
+        animationIn="fadeIn"
+        animationOut="fadeOut"
+      >
+        <View style={styles.modalContent}>
+          <Image source={searching} style={styles.mangoImage} />
+          <Text style={styles.modalText}>Calculating....</Text>
+          <Text style={styles.modalText}>
+            Please wait, this may take some time.
+          </Text>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -398,5 +406,32 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: "bold",
     marginHorizontal: 30,
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    alignItems: "center",
+    height: 220,
+  },
+  mangoImage: {
+    width: 120,
+    height: 120,
+    marginBottom: 10,
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 10,
+    fontWeight: "bold",
+  },
+  okButton: {
+    backgroundColor: "#fdc50b",
+    padding: 15,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  okButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
