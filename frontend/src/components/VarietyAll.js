@@ -4,7 +4,6 @@ import React from "react";
 //import screens
 import MarketHomeScreen from "../screens/Market/Home";
 import VarietyHomeScreen from "../screens/Variety/Home";
-import ForecastScreen from "../screens/Market/Forecast/Market";
 import AnalysisScreen from "../screens/Market/Analysis/Analysis";
 import TimeSeriesForecastScreen from "../screens/Market/Visualize/TimeSeriesForecastScreen";
 import PreviousVarieties from "../screens/Variety/Previous";
@@ -55,11 +54,6 @@ export default function VarietyAllScreens() {
         options={{ headerShown: false }}
       />
 
-      <Stack.Screen
-        name="ForecastScreen"
-        component={ForecastScreen}
-        options={{ headerShown: false }}
-      />
       <Stack.Screen
         name="MarketAnalysisPlan"
         component={MarketAnalysisPlan}

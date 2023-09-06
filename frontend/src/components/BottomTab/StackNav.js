@@ -3,6 +3,7 @@ import React from "react";
 import { StyleSheet } from "react-native";
 import DiagnoseScanScreen from "../../screens/Diagnose/Scan";
 import BottomTabs from "./BottomTabs";
+import ForecastScreen from "../../screens/Market/Forecast/Market";
 
 const Stack = createNativeStackNavigator();
 const StackNav = () => {
@@ -16,6 +17,12 @@ const StackNav = () => {
       <Stack.Screen
         name="DiagnoseScanScreen"
         component={DiagnoseScanScreen}
+        options={{ headerShown: false }}
+      />
+
+      <Stack.Screen
+        name="ForecastScreen"
+        component={ForecastScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
