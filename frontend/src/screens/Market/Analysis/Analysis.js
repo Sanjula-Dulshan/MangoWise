@@ -52,7 +52,7 @@ const MarketAnalysisPlan = () => {
 
     console.log(marketData);
 
-    await axios.post(constants.backend_url + "/market", data).then(() => {});
+    await axios.post(constants.backend_url + "/market", data).then(() => { });
   };
 
   const handleGoButtonPress = async () => {
@@ -96,7 +96,7 @@ const MarketAnalysisPlan = () => {
       <Header />
       <View style={styles.container}>
         <Text style={styles.title}>Market Analysis Plan</Text>
-        <Text style={styles.inputLabel}>Variety</Text>
+        <Text style={styles.inputLabel}>Market</Text>
         <TextInput style={styles.input} value={variety} editable={false} />
         <Text style={styles.inputLabel}>Enter Cost</Text>
         <TextInput

@@ -44,7 +44,7 @@ export default function BottomTabs() {
             iconSource = focused ? DiagnoseIcon : DiagnoseIcon;
           } else if (route.name === "Home") {
             iconSource = focused ? HomeIcon : HomeIcon;
-          } else if (route.name === "Variety") {
+          } else if (route.name === "Market") {
             iconSource = focused ? VarietyIcon : VarietyIcon;
           } else if (route.name === "Fertilization") {
             iconSource = focused ? FertilizerIcon : FertilizerIcon;
@@ -67,9 +67,9 @@ export default function BottomTabs() {
       <Tab.Screen name="Budding" component={BuddingAllScreens} />
       <Tab.Screen name="Diagnose" component={DiagnoseAllScreens} />
       <Tab.Screen name="Home" component={Home} />
-      <Tab.Screen name="Variety" component={VarietyAllScreens} />
+      <Tab.Screen name="Market" component={VarietyAllScreens} />
       <Tab.Screen name="Fertilization" component={FertilizationAll} />
-      <Tab.Screen name="VSelectAllScreens" component={VSelectAllScreens} options={{tabBarButton:()=>null}}/>
+      <Tab.Screen name="VSelectAllScreens" component={VSelectAllScreens} options={{ tabBarButton: () => null }} />
     </Tab.Navigator>
   );
 }

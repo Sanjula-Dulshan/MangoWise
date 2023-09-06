@@ -1,23 +1,23 @@
-import { View, Text ,StyleSheet} from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
 import React from 'react'
 
 export default function Variety() {
   return (
     <View style={styles.container}>
-      <Text>Variety</Text>
+      <Text>Market</Text>
     </View>
   )
 }
-const styles= StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  heading:{
-      fontSize: 20,
-      fontWeight: 'bold',
-      color: '#edde30',
+  heading: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#edde30',
   }
 })
