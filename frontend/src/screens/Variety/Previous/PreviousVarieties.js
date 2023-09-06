@@ -15,16 +15,35 @@ import Header from "../../../components/Common/Header";
 import axios from "axios";
 import moment from "moment";
 import constants from "../../../constants/constants";
+import Modal from "react-native-modal";
 
 export default function PreviousDiseases() {
-  const [diseasesList, setDiseasesList] = useState([]);
+  const [varietyList, setVarietyList] = useState([]);
   const route = useRoute();
+  const [popupVisible, setPopupVisible] = useState(false);
+  const [selectedVariety, setSelectedVariety] = useState(null);
 
   useEffect(() => {
     axios.get(constants.backend_url + "/variety").then((response) => {
-      setDiseasesList(response.data);
+      setVarietyList(response.data);
     });
   }, [route.params]);
+
+  const recheck = (variety) => {
+    navigation.navigate("VarietyScanScreen", {
+      recheck: true,
+      preVariety: variety,
+    });
+  };
+
+  const viewDetails = (variety) => {
+    setSelectedVariety(variety);
+    setPopupVisible(true);
+  };
+
+  const closePopup = () => {
+    setPopupVisible(false);
+  };
 
   const navigation = useNavigation();
 
@@ -35,7 +54,7 @@ export default function PreviousDiseases() {
       <ScrollView>
         <View style={styles.container}>
           <Text style={[styles.previousPictures]}>Previous Pictures</Text>
-          {diseasesList?.map((disease, key) => {
+          {varietyList?.map((variety, key) => {
             return (
               <View key={key}>
                 <Card containerStyle={styles.card}>
@@ -43,18 +62,27 @@ export default function PreviousDiseases() {
                     <Image
                       style={styles.image}
                       resizeMode="cover"
-                      source={{ uri: disease?.image }}
+                      source={{ uri: variety?.image }}
                     />
                     <View style={styles.description}>
-                      <Text style={styles.name}>{disease?.mainDisease}</Text>
-                      <Text style={styles.date}>
-                        {moment(disease.createdAt).format("DD/MM/YYYY")}
+                      <Text style={styles.name}>
+                        {" "}
+                        {(variety?.variety).toLowerCase()}
                       </Text>
-                      <TouchableOpacity style={styles.button}>
+                      <Text style={styles.date}>
+                        {moment(variety.updatedAt).format("DD/MM/YYYY")}
+                      </Text>
+                      <TouchableOpacity
+                        style={styles.button}
+                        onPress={() => recheck(variety)}
+                      >
                         <Text style={styles.btntext}>Recheck</Text>
                       </TouchableOpacity>
                     </View>
-                    <TouchableOpacity style={styles.arrowIcon}>
+                    <TouchableOpacity
+                      style={styles.arrowIcon}
+                      onPress={() => viewDetails(variety)}
+                    >
                       <Entypo name="chevron-right" size={40} color="#fdc50b" />
                     </TouchableOpacity>
                   </View>
@@ -63,6 +91,62 @@ export default function PreviousDiseases() {
             );
           })}
         </View>
+
+        {selectedVariety && (
+          <Modal
+            isVisible={popupVisible}
+            backdropOpacity={0.75}
+            animationIn="zoomInDown"
+            animationOut="zoomOutUp"
+            animationInTiming={600}
+            animationOutTiming={700}
+            backdropTransitionInTiming={600}
+            backdropTransitionOutTiming={700}
+          >
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <View
+                style={{
+                  backgroundColor: "white",
+                  padding: 20,
+                  borderRadius: 10,
+                  width: "80%",
+                }}
+              >
+                <Image
+                  source={{ uri: selectedVariety.image }}
+                  style={{ width: "100%", height: 200, borderRadius: 10 }}
+                />
+                <Text
+                  style={{ fontSize: 18, fontWeight: "bold", marginTop: 10 }}
+                >
+                  {selectedVariety.month}
+                </Text>
+                <Text style={{ fontSize: 14, color: "gray" }}>
+                  {moment(selectedVariety.updatedAt).format("DD/MM/YYYY")}
+                </Text>
+                <Text style={{ marginTop: 10, marginBottom: 10 }}>
+                  Current Price:{" "}
+                  <Text style={{ color: "red" }}>{selectedVariety.price}</Text>
+                </Text>
+
+                <TouchableOpacity
+                  style={styles.modelButton}
+                  onPress={() => {
+                    closePopup();
+                  }}
+                >
+                  <Text style={styles.modelBtnText}>Close</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+        )}
       </ScrollView>
     </View>
   );
