@@ -189,12 +189,12 @@ export default function BuddingHomeScreen() {
 
   
   const handleTakePicture = async () => {
-    navigation.navigate("BuddingScanScreen");
+    navigation.navigate("BuddingScanScreenNoNav");
   };
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-    <View style={{ backgroundColor: '#fdfafa', height: '90%' }}>
+    <View style={{ backgroundColor: '#fdfafa', height: '100%' }}>
         <Header />
       
 
@@ -317,7 +317,7 @@ export default function BuddingHomeScreen() {
       <View
         style={{
           flexDirection: "row",
-          marginTop: 30,
+          marginTop: 10,
           justifyContent: "space-between",
         }}
       >

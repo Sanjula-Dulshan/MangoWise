@@ -21,6 +21,7 @@ export default function ScanScreen() {
   const navigation = useNavigation();
   const [imageUri, setImageUri] = useState(null);
   const [classType, setClassType] = useState(null);
+  const [flag, setFlag] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -41,6 +42,7 @@ export default function ScanScreen() {
         setBase64Data(data.base64);
         setImage(data.uri);
         setGallery(false);
+        setFlag(true);
       } catch (error) {
         console.log("error ", error);
       }
@@ -48,6 +50,7 @@ export default function ScanScreen() {
   };
 
   const getGalleryImage = async () => {
+    setFlag(true);
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -102,11 +105,14 @@ export default function ScanScreen() {
   
         console.log(response.data);
         setIsLoading(false);
+
+        console.log("flag :: ", flag);
   
         navigation.navigate("BuddingResultScreen", {
           response: response.data,
           imageUri: image,
           base64Data: manipulatedResult.uri, // Change this if needed
+          flagA: flag,
         });
       } catch (error) {
         console.log("error ", error);
@@ -141,6 +147,7 @@ export default function ScanScreen() {
           data: {
             image: base64Data,
             class: classType,
+            
           },
           headers: {
             "Content-Type": "application/json",
@@ -184,6 +191,7 @@ export default function ScanScreen() {
           navigation.navigate("BuddingResultScreen", {
             response: response.data,
             imageUri: image,
+            flagA: flag,
           });
 
           saveImage();
@@ -208,14 +216,14 @@ export default function ScanScreen() {
       ) : (
         <>
         {isLoading ? (
-          <ActivityIndicator
-            size="large"
-            style={styles.camera}
-            color="#fdc50b"
-          />
-        ) : (
-          <Image source={{ uri: image }} style={styles.camera} />
-        )}
+            <ActivityIndicator
+              size="large"
+              style={styles.camera}
+              color="#fdc50b"
+            />
+          ) : (
+            <Image source={{ uri: image }} style={styles.camera} />
+          )}
       </>
       )}
       <View>

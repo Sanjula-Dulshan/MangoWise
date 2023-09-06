@@ -19,6 +19,7 @@ import green_tick from '../../../../assets/green_tick.png';
 import red_warning from '../../../../assets/red_warning.png';
 import Modal from 'react-native-modal';
 import backgroundImage from '../../../../assets/tmp-plant.png';
+import { set } from 'react-hook-form';
 
 
 
@@ -64,18 +65,24 @@ export default function BuddingResultScreen() {
   const [className, setClassName] = useState("");
   const [color, setColor] = useState("");
   const [icon, setIcon] = useState(green_tick);
+  const [flagVal, setFlagVal] = useState(false);
 
   useEffect(() => {
     setModalVisible(true)
   }, []);
 
   useEffect(() => {
-    const { response, imageUri, base64Data } = route.params;
+    const { response, imageUri, base64Data, flagA } = route.params;
     console.log("image uri :: ", imageUri);
     setImgeUri(imageUri);
     console.log("image uri 1:: ", imageUri);
     setSuitability(response.class);
     console.log("response", response.class);
+    setFlagVal(flagA);
+    console.log("flag", flagA);
+
+    console.log("Param ::::: ", route.params);
+
   }, [route.params]);
   
   useEffect(() => {
@@ -90,6 +97,12 @@ export default function BuddingResultScreen() {
     } else  {
       setClassName("Early");
       setColor("orange");
+      setIcon(red_warning);
+    }
+
+    if (flagVal==true){
+      setClassName("Not Found!");
+      setColor("red");
       setIcon(red_warning);
     }
       
