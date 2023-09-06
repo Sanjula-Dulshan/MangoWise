@@ -9,6 +9,8 @@ import Button from "./Button";
 import axios from "axios";
 import constants from "../../../constants/constants";
 import { manipulateAsync } from "expo-image-manipulator";
+import searching from "../../../../assets/loadings/searching.gif";
+import Modal from "react-native-modal";
 
 export default function ScanScreen() {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
@@ -113,15 +115,20 @@ export default function ScanScreen() {
         </Camera>
       ) : (
         <>
-          {isLoading ? (
-            <ActivityIndicator
-              size="large"
-              style={styles.camera}
-              color="#fdc50b"
-            />
-          ) : (
-            <Image source={{ uri: image }} style={styles.camera} />
-          )}
+          <Modal
+            isVisible={isLoading}
+            animationIn="fadeIn"
+            animationOut="fadeOut"
+          >
+            <View style={styles.LoadModalContent}>
+              <Image source={searching} style={styles.mangoImage} />
+              <Text style={styles.LoadModalText}>Scanning....</Text>
+              <Text style={styles.LoadModalText}>
+                Please wait, this may take some time.
+              </Text>
+            </View>
+          </Modal>
+          <Image source={{ uri: image }} style={styles.camera} />
         </>
       )}
       <View>
@@ -133,16 +140,14 @@ export default function ScanScreen() {
           </View>
         ) : (
           <>
-            {!isLoading && (
-              <View style={styles.buttons}>
-                <Button
-                  title={"Re-take"}
-                  icon="retweet"
-                  onPress={() => setImage(null)}
-                />
-                <Button title={"Checks"} icon="check" onPress={checkImage} />
-              </View>
-            )}
+            <View style={styles.buttons}>
+              <Button
+                title={"Re-take"}
+                icon="retweet"
+                onPress={() => setImage(null)}
+              />
+              <Button title={"Checks"} icon="check" onPress={checkImage} />
+            </View>
           </>
         )}
       </View>
@@ -165,5 +170,21 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 30,
     paddingTop: 20,
+  },
+  LoadModalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    alignItems: "center",
+    height: 220,
+  },
+  mangoImage: {
+    width: 120,
+    height: 120,
+    marginBottom: 10,
+  },
+  LoadModalText: {
+    fontSize: 16,
+    marginBottom: 10,
+    fontWeight: "bold",
   },
 });

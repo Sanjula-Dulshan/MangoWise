@@ -38,7 +38,9 @@ const MarketAnalysisPlan = () => {
 
   const navigation = useNavigation();
 
-  const handleGo = async () => {
+  const handleGoButtonPress = async () => {
+    setIsProcessing(true);
+
     // Add "Item_" prefix and uppercase the variety
     const formattedVariety = "Item_" + variety.toUpperCase();
 
@@ -52,17 +54,20 @@ const MarketAnalysisPlan = () => {
       image: image,
     };
 
-    navigation.navigate("MarketHomeScreen", {
-      marketData: marketData,
-    });
+    try {
+      console.log("Analyze", marketData);
+      await axios.post(constants.backend_url + "/market", data);
+    } catch (error) {
+      console.log("error ", error);
+    }
 
-    console.log("Analyze", marketData);
+    setTimeout(() => {
+      navigation.navigate("MarketHomeScreen", {
+        marketData: marketData,
+      });
 
-    await axios.post(constants.backend_url + "/market", data).then(() => {});
-  };
-
-  const handleGoButtonPress = async () => {
-    setIsProcessing(true);
+      setIsProcessing(false);
+    }, 9000);
   };
 
   const stagedata = [
@@ -231,14 +236,6 @@ const MarketAnalysisPlan = () => {
               <Text style={styles.modalText}>
                 Please wait, this may take some time.
               </Text>
-              {/* Ok button to dismiss the modal */}
-              <TouchableOpacity
-                style={styles.okButton}
-                // onPress={() => setIsProcessing(false)}
-                onPress={handleGo}
-              >
-                <Text style={styles.okButtonText}>Ok</Text>
-              </TouchableOpacity>
             </View>
           </Modal>
         </View>
@@ -307,7 +304,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     alignItems: "center",
-    height: 300,
+    height: 220,
   },
   mangoImage: {
     width: 100,

@@ -34,16 +34,15 @@ const Analysis = () => {
 
   const route = useRoute();
 
-  const totalIncome = freshMangoes * forecastedValue; // Replace with your actual total income value
+  const totalIncome = (freshMangoes * forecastedValue).toFixed(2); // Replace with your actual total income value
   const totalCost = cost; // Replace with your actual total price value
-  const totalProfit = totalIncome - totalCost;
+  const totalProfit = (totalIncome - totalCost).toFixed(2);
 
   const toggleModal = async () => {
     setModalVisible(!isModalVisible);
   };
 
   const handleClose = async () => {
-    setModalVisible(false);
     await axios
       .post(constants.backend_url + "/variety/save", data)
       .then(() => {})
@@ -51,6 +50,7 @@ const Analysis = () => {
         console.log(err);
         console.log("ip", constants);
       });
+    navigation.navigate("VarietyHomeScreen");
   };
 
   // get marketData passed by previous analysis screen
