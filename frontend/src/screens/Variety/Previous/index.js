@@ -1,1 +1,1 @@
-export {default} from './PreviousPicture';
+export { default } from "./PreviousVarieties.js";

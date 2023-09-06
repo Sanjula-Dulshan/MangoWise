@@ -99,21 +99,21 @@ export default function Home() {
               style={styles.menuButton}
               onPress={goToBuddingTimer}
             >
-              <Icon name="search" size={30} color="white" />
+              <Icon name="search" size={30} color="#446714" />
               <Text style={styles.buttonText}>Buddinig Timmer</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.menuButton}
               onPress={goToVarietyIdentification}
             >
-              <Icon name="camera" size={30} color="white" />
+              <Icon name="camera" size={30} color="#446714" />
               <Text style={styles.buttonText}>Variety Identification</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.menuButton}
               onPress={goToDiseaseIdentification}
             >
-              <Icon name="home" size={30} color="white" />
+              <Icon name="bug" size={30} color="#446714" />
               <Text style={styles.buttonText}>Disease Identification</Text>
             </TouchableOpacity>
           </View>
@@ -123,21 +123,21 @@ export default function Home() {
               style={styles.menuButton}
               onPress={goToVarietySelector}
             >
-              <Icon name="user" size={30} color="white" />
+              <Icon name="pagelines" size={30} color="#446714" />
               <Text style={styles.buttonText}>Variety Selector</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.menuButton}
               onPress={goToFertilizerRecommender}
             >
-              <Icon name="cog" size={30} color="white" />
-              <Text style={styles.buttonText}>Fertilizer recommender</Text>
+              <Icon name="cog" size={30} color="#446714" />
+              <Text style={styles.buttonTextF}>Fertilizer Recommender</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.menuButton}
               onPress={goToMarketAnalysis}
             >
-              <Icon name="info-circle" size={30} color="white" />
+              <Icon name="line-chart" size={30} color="#446714" />
               <Text style={styles.buttonText}>Market Analysis</Text>
             </TouchableOpacity>
           </View>
@@ -200,9 +200,18 @@ const styles = StyleSheet.create({
   },
 
   buttonText: {
-    color: "white",
+    color: "#446714",
     marginTop: 10,
     fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  buttonTextF: {
+    color: "#446714",
+    marginTop: 10,
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
   },
   wrapper: {},
   slide: {
