@@ -9,6 +9,8 @@ import Button from "./Button";
 import { manipulateAsync } from "expo-image-manipulator";
 import axios from "axios";
 import constants from "../../../constants/constants";
+import Modal from "react-native-modal";
+import searching from "../../../../assets/loadings/searching.gif";
 
 export default function ScanScreen() {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
@@ -20,8 +22,9 @@ export default function ScanScreen() {
   const cameraRef = useRef(null);
   const navigation = useNavigation();
   const [imageUri, setImageUri] = useState(null);
-  const [classType, setClassType] = useState(null);
+  const [classType, setClassType] = useState("eairly");
   const [flag, setFlag] = useState(false);
+  const [loadingText, setLoadingText] = useState("Scanning....");
 
   useEffect(() => {
     (async () => {
@@ -50,7 +53,7 @@ export default function ScanScreen() {
   };
 
   const getGalleryImage = async () => {
-    setFlag(true);
+    setFlag(false);
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -138,6 +141,7 @@ export default function ScanScreen() {
         const base64Data = "data:image/png;base64,"+manipulatedResult.base64;
 
         console.log("base64Data: ", base64Data);
+        console.log("\n\nclassType: ", classType);
   
         setIsLoading(true);
   
@@ -146,8 +150,7 @@ export default function ScanScreen() {
           url: constants.backend_url + "/bud/save",
           data: {
             image: base64Data,
-            class: classType,
-            
+            class: classType
           },
           headers: {
             "Content-Type": "application/json",
@@ -172,7 +175,7 @@ export default function ScanScreen() {
         type: "image/jpeg",
         name: "image.jpg",
       });
-      await axios
+      response = await axios
         .post(
           "https://us-central1-mangowise-395709.cloudfunctions.net/bud_predict",
           formData,
@@ -188,13 +191,13 @@ export default function ScanScreen() {
           console.log("image>> ", image);
           setClassType(response.data.class);
 
+          saveImage();
+
           navigation.navigate("BuddingResultScreen", {
             response: response.data,
             imageUri: image,
             flagA: flag,
           });
-
-          saveImage();
         })
         .catch((error) => {
           console.log("error>> ", error);
@@ -215,16 +218,21 @@ export default function ScanScreen() {
         </Camera>
       ) : (
         <>
-        {isLoading ? (
-            <ActivityIndicator
-              size="large"
-              style={styles.camera}
-              color="#fdc50b"
-            />
-          ) : (
-            <Image source={{ uri: image }} style={styles.camera} />
-          )}
-      </>
+          <Modal
+            isVisible={isLoading}
+            animationIn="fadeIn"
+            animationOut="fadeOut"
+          >
+            <View style={styles.modalContent}>
+              <Image source={searching} style={styles.mangoImage} />
+              <Text style={styles.modalText}>Scanning....</Text>
+              <Text style={styles.modalText}>
+                Please wait, this may take some time.
+              </Text>
+            </View>
+          </Modal>
+          <Image source={{ uri: image }} style={styles.camera} />
+        </>
       )}
       <View>
         {!image ? (
@@ -263,5 +271,32 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 30,
     paddingTop: 20,
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    alignItems: "center",
+    height: 220,
+  },
+  mangoImage: {
+    width: 120,
+    height: 120,
+    marginBottom: 10,
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 10,
+    fontWeight: "bold",
+  },
+  okButton: {
+    backgroundColor: "#fdc50b",
+    padding: 15,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  okButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });

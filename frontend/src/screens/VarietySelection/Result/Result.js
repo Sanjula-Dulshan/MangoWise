@@ -86,6 +86,7 @@ const mangoOrigin = "Originated in India"; // Origin of the mango variety
   const handleModalClose = () => {
     setModalVisible(false);
     // Add navigation logic to return to the home screen here
+    navigation.navigate("Home");
   };
 
   const getVarietyImage = (varietyName) => {
@@ -117,7 +118,9 @@ const mangoOrigin = "Originated in India"; // Origin of the mango variety
   }, [route.params]);
   
 
-
+  const handleChangeFeature = () => {
+    navigation.navigate("VSelectAllScreens");
+  };
   
 
   const setVarietyData = (varietyName) => {
@@ -185,7 +188,7 @@ const mangoOrigin = "Originated in India"; // Origin of the mango variety
               {mangoDescription}
             </Text>
 
-            <TouchableOpacity style={styles.findSuitableVarierty}  >
+            <TouchableOpacity style={styles.findSuitableVarierty} onPress={handleChangeFeature} >
                 <Text style={{ fontSize: 17, fontWeight: 'bold', padding: 5,  textAlign: 'center' }}> Change features </Text>
             </TouchableOpacity>
 
