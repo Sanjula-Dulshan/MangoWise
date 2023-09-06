@@ -69,7 +69,11 @@ export default function BottomTabs() {
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="Variety" component={VarietyAllScreens} />
       <Tab.Screen name="Fertilization" component={FertilizationAll} />
-      <Tab.Screen name="VSelectAllScreens" component={VSelectAllScreens} options={{tabBarButton:()=>null}}/>
+      <Tab.Screen
+        name="VSelectAllScreens"
+        component={VSelectAllScreens}
+        options={{ tabBarButton: () => null }}
+      />
     </Tab.Navigator>
   );
 }
