@@ -23,7 +23,6 @@ export default function DiseaseCompare() {
   const route = useRoute();
 
   useEffect(() => {
-    console.log(route.params);
     setNewImage(convertBase64ToImage(route.params?.response?.image));
     setOldImage(route.params?.prevDisease?.image);
 

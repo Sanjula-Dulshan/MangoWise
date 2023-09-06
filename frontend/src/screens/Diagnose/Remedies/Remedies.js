@@ -23,7 +23,6 @@ export default function Remedies() {
   const navigation = useNavigation();
 
   useEffect(() => {
-    console.log("route.params>> ", route.params);
     const { disease, diseasesInfo, base64Data } = route.params;
     setDisease(disease);
     setDiseasesInfo(diseasesInfo);
