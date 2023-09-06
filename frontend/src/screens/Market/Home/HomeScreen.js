@@ -24,6 +24,7 @@ export default function HomeScreen() {
   const [forecast, setForecast] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [predictedData, setPredictedData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   let step;
 
   const route = useRoute();
@@ -74,6 +75,7 @@ export default function HomeScreen() {
   };
 
   const handleForecast = async () => {
+    setIsLoading(true);
     const requestData = {
       Location: forecast.location,
       Variety: forecast.variety,
@@ -115,12 +117,14 @@ export default function HomeScreen() {
             setIsModalVisible(true);
             console.log("predictedData>> ", predictedData);
           }
+          setIsLoading(false);
         });
 
       // You can update your state or perform any other actions based on the response
     } catch (error) {
       // Handle errors here
       console.error("Error sending data to the model:", error);
+      setIsLoading(false);
     }
   };
 
@@ -251,10 +255,10 @@ export default function HomeScreen() {
       </ScrollView>
 
       <Modal isVisible={isLoading} animationIn="fadeIn" animationOut="fadeOut">
-        <View style={styles.modalContent}>
+        <View style={styles.LoadModalContent}>
           <Image source={searching} style={styles.mangoImage} />
-          <Text style={styles.modalText}>Scanning....</Text>
-          <Text style={styles.modalText}>
+          <Text style={styles.LoadModalText}>Analyzing....</Text>
+          <Text style={styles.LoadModalText}>
             Please wait, this may take some time.
           </Text>
         </View>
@@ -556,5 +560,22 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#000",
     fontSize: 16,
+  },
+
+  LoadModalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    alignItems: "center",
+    height: 220,
+  },
+  mangoImage: {
+    width: 120,
+    height: 120,
+    marginBottom: 10,
+  },
+  LoadModalText: {
+    fontSize: 16,
+    marginBottom: 10,
+    fontWeight: "bold",
   },
 });
