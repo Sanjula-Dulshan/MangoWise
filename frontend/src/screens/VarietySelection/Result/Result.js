@@ -86,6 +86,7 @@ const mangoOrigin = "Originated in India"; // Origin of the mango variety
   const handleModalClose = () => {
     setModalVisible(false);
     // Add navigation logic to return to the home screen here
+    navigation.navigate("Home");
   };
 
   const getVarietyImage = (varietyName) => {
@@ -113,29 +114,13 @@ const mangoOrigin = "Originated in India"; // Origin of the mango variety
     const { response} = route.params;
     console.log("Response Got :: ", response.variety);
     setImgeUri(getVarietyImage(response.variety));
-    // setImgeUri(imageUri);
-    // console.log("image uri 1:: ", imageUri);
-    // setSuitability(response.class);
-    // console.log("response", response.class);
+    setVarietyData(response.variety);
   }, [route.params]);
   
-  useEffect(() => {
-    if (Suitability == "suitable") {
-      setClassName("Suitable");
-      setColor("green");
-      setIcon(green_tick);
-    }  else if (Suitability == "late") {
-      setClassName("Too Much Matured");
-      setColor("red");
-      setIcon(red_warning);
-    } else  {
-      setClassName("Early");
-      setColor("orange");
-      setIcon(red_warning);
-    }
-      
-  }, [Suitability]);
 
+  const handleChangeFeature = () => {
+    navigation.navigate("VSelectAllScreens");
+  };
   
 
   const setVarietyData = (varietyName) => {
@@ -146,6 +131,24 @@ const mangoOrigin = "Originated in India"; // Origin of the mango variety
     }else if(varietyName == "TOM EJC"){
       setMangoVarietyName("TOM EJC");
       setMangoDescription("The Alphonso mango, also known as the 'King of Mangoes,' is renowned for its rich, sweet, and distinct flavor. It has a smooth, buttery texture and a pleasant aroma.");
+    } else if(varietyName == "Karthacolomban"){
+      setMangoVarietyName("Karthacolomban");
+      setMangoDescription("Karthacolomban is a Sri Lankan mango cultivar. It is a hybrid variety of Karthakolomban and Villard. It is a large mango, with a greenish-yellow skin colour when ripe. It is a juicy mango with a sweet taste. It is a popular mango variety in Sri Lanka.");
+    } else if(varietyName == "Villard"){
+      setMangoVarietyName("Villard");
+      setMangoDescription("Villard is a Sri Lankan mango cultivar. It is a hybrid variety of Karthakolomban and Villard. It is a large mango, with a greenish-yellow skin colour when ripe. It is a juicy mango with a sweet taste. It is a popular mango variety in Sri Lanka.");
+    } else if(varietyName == "Velleicollomban"){
+      setMangoVarietyName("Velleicollomban");
+      setMangoDescription("Velleicollomban is a Sri Lankan mango cultivar. It is a hybrid variety of Karthakolomban and Villard. It is a large mango, with a greenish-yellow skin colour when ripe. It is a juicy mango with a sweet taste. It is a popular mango variety in Sri Lanka.");
+    } else if(varietyName == "Malwana"){
+      setMangoVarietyName("Malwana");
+      setMangoDescription("Malwana is a Sri Lankan mango cultivar. It is a hybrid variety of Karthakolomban and Villard. It is a large mango, with a greenish-yellow skin colour when ripe. It is a juicy mango with a sweet taste. It is a popular mango variety in Sri Lanka.");
+    } else if(varietyName == "Dampara"){
+      setMangoVarietyName("Dampara");
+      setMangoDescription("Dampara is a Sri Lankan mango cultivar. It is a hybrid variety of Karthakolomban and Villard. It is a large mango, with a greenish-yellow skin colour when ripe. It is a juicy mango with a sweet taste. It is a popular mango variety in Sri Lanka.");
+    } else if(varietyName == "Giraaba"){
+      setMangoVarietyName("Giraaba");
+      setMangoDescription("Giraaba is a Sri Lankan mango cultivar. It is a hybrid variety of Karthakolomban and Villard. It is a large mango, with a greenish-yellow skin colour when ripe. It is a juicy mango with a sweet taste. It is a popular mango variety in Sri Lanka.");
     }
   };
 
@@ -185,23 +188,16 @@ const mangoOrigin = "Originated in India"; // Origin of the mango variety
               {mangoDescription}
             </Text>
 
-            <Text style={styles.origin}>
-              Origin: {mangoOrigin}
-            </Text>
+            <TouchableOpacity style={styles.findSuitableVarierty} onPress={handleChangeFeature} >
+                <Text style={{ fontSize: 17, fontWeight: 'bold', padding: 5,  textAlign: 'center' }}> Change features </Text>
+            </TouchableOpacity>
+
           </View>
         </ScrollView>
       </Modal>
 
 
-      <Text style={{ fontSize: 14, fontWeight: 'bold', marginLeft: 20, marginTop: 15 }}>Need Help?</Text>
-
-
-      <TouchableOpacity onPress={() => setModalVisible(true)}>
-        <View style={{ flexDirection: 'row' }}>
-          <AntDesign name="infocirlceo" size={24} color="black" style={{ marginTop: 10, marginLeft: 20 }} />
-          <Text style={{ fontSize: 14, fontFamily: 'Roboto', textAlign: 'left', paddingRight: 13, marginLeft: 10, marginTop: 10, textDecorationLine: 'underline', fontStyle: 'italic' }}>Snap Tips </Text>
-        </View>
-      </TouchableOpacity>
+      
 
 
       
@@ -226,6 +222,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 1.21,
     elevation: 2
+  },
+  findSuitableVarierty: {
+    backgroundColor: '#FDC704',
+    padding: 10,
+    width: 280,
+    height: 50,
+    textAlign: 'center',
+    color: '#000000',
+    borderRadius: 15,
+    marginTop: 20,
+    alignSelf: 'center',
+    marginBottom: 10,
   },
   topic: {
     flexDirection: 'row',

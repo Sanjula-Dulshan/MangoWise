@@ -19,6 +19,7 @@ import green_tick from '../../../../assets/green_tick.png';
 import red_warning from '../../../../assets/red_warning.png';
 import Modal from 'react-native-modal';
 import backgroundImage from '../../../../assets/tmp-plant.png';
+import { set } from 'react-hook-form';
 
 
 
@@ -64,19 +65,31 @@ export default function BuddingResultScreen() {
   const [className, setClassName] = useState("");
   const [color, setColor] = useState("");
   const [icon, setIcon] = useState(green_tick);
+  const [flagVal, setFlagVal] = useState(false);
 
   useEffect(() => {
     setModalVisible(true)
   }, []);
 
   useEffect(() => {
-    const { response, imageUri, base64Data } = route.params;
+    const { response, imageUri, base64Data, flagA } = route.params;
     console.log("image uri :: ", imageUri);
     setImgeUri(imageUri);
     console.log("image uri 1:: ", imageUri);
     setSuitability(response.class);
     console.log("response", response.class);
+    setFlagVal(flagA);
+    console.log("flag", flagA);
+
+    console.log("Param ::::: ", route.params);
+
   }, [route.params]);
+
+  const handleModalClose = () => {
+    setModalVisible(false);
+    // Add navigation logic to return to the home screen here
+    navigation.navigate("Home");
+  };
   
   useEffect(() => {
     if (Suitability == "suitable") {
@@ -90,6 +103,12 @@ export default function BuddingResultScreen() {
     } else  {
       setClassName("Early");
       setColor("orange");
+      setIcon(red_warning);
+    }
+
+    if (flagVal==true){
+      setClassName("Not Found!");
+      setColor("red");
       setIcon(red_warning);
     }
       
@@ -111,10 +130,10 @@ export default function BuddingResultScreen() {
     
     <View style={{ backgroundColor: '#FFFFFF', height: '100%' }}>
       {imgeUri ? ( // Check if imgeUri is not null
-      <Image source={imgeUri} style={{ flex: 1, resizeMode: 'cover' }} />
+      <Image source={backgroundImage} style={{ flex: 1, resizeMode: 'cover' }} />
     ) : (
       // Display a placeholder or loading image when imgeUri is null
-      <Image source={require('../../../../assets/tmp-plant.png')} style={{ flex: 1, resizeMode: 'cover' }} />
+      <Image source={backgroundImage} style={{ flex: 1, resizeMode: 'cover' }} />
     )}
       
 
@@ -123,7 +142,9 @@ export default function BuddingResultScreen() {
       <Modal isVisible={isModalVisible} style={styles.infoModal} >
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            
+          <TouchableOpacity style={styles.closeButton} onPress={handleModalClose}>
+              <Text style={styles.closeButtonText}>X</Text>
+            </TouchableOpacity>
             <Image source={icon} style={{ marginTop: 45, width: 130, height: 130, marginVertical: 8 }} />
 
             <Text style={{ fontSize: 25, padding: 5, margin: 8, textAlign: 'left', marginRight: 12 }}>Plant is  </Text>
@@ -233,6 +254,23 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 1.21,
     elevation: 2
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 1,
+    backgroundColor: 'gray',
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  closeButtonText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'white',
   },
   okButton: {
     backgroundColor: '#fdc50b',
