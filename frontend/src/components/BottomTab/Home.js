@@ -5,6 +5,7 @@ import axios from "axios";
 import Header from "../Common/HomeHeader";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
+import VSelectAllScreens from "./VSelectAll";
 
 const images = [
   "https://res.cloudinary.com/sliit-yasantha/image/upload/v1693979486/villard_kpqitd.jpg",
@@ -62,7 +63,8 @@ export default function Home() {
   }
 
   const goToVarietySelector = () => {
-    navigation.navigate("VSelect");
+    //navigate to VSelectAllScreens
+    navigation.navigate("VSelectAllScreens");
   }
 
   const goToFertilizerRecommender = () => {

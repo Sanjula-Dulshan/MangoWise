@@ -3,6 +3,7 @@ import React from "react";
 import { StyleSheet } from "react-native";
 import DiagnoseScanScreen from "../../screens/Diagnose/Scan";
 import BottomTabs from "./BottomTabs";
+import VSelectAllScreens from "./VSelectAll";
 
 const Stack = createNativeStackNavigator();
 const StackNav = () => {
@@ -18,6 +19,13 @@ const StackNav = () => {
         component={DiagnoseScanScreen}
         options={{ headerShown: false }}
       />
+
+      <Stack.Screen
+        name="VSelectAllScreens"
+        component={VSelectAllScreens}
+        options={{ headerShown: false }}
+      />
+
     </Stack.Navigator>
   );
 };
