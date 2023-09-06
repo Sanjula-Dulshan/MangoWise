@@ -12,6 +12,7 @@ import VarietyAllScreens from "../VarietyAll";
 import Budding from "./Budding";
 import Home from "./Home";
 import Variety from "./Variety";
+import BuddingAllScreens from "./BuddingAll";
 
 const Tab = createBottomTabNavigator();
 
@@ -62,7 +63,7 @@ export default function BottomTabs() {
         },
       })}
     >
-      <Tab.Screen name="Budding" component={Budding} />
+      <Tab.Screen name="Budding" component={BuddingAllScreens} />
       <Tab.Screen name="Diagnose" component={DiagnoseAllScreens} />
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="Variety" component={VarietyAllScreens} />
