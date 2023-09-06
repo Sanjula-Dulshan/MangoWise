@@ -13,6 +13,7 @@ import Budding from "./Budding";
 import Home from "./Home";
 import Variety from "./Variety";
 import BuddingAllScreens from "./BuddingAll";
+import VSelectAllScreens from "./VSelectAll";
 
 const Tab = createBottomTabNavigator();
 
@@ -68,6 +69,7 @@ export default function BottomTabs() {
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="Variety" component={VarietyAllScreens} />
       <Tab.Screen name="Fertilization" component={FertilizationAll} />
+      <Tab.Screen name="VSelect" component={VSelectAllScreens} />
     </Tab.Navigator>
   );
 }
