@@ -44,7 +44,7 @@ export default function PreviousBuds() {
   };
 
   const [popupVisible, setPopupVisible] = useState(false);
-  const [selectedDisease, setSelectedDisease] = useState(null);
+  const [selectedRecord, setSelectedDisease] = useState(null);
 
   const closePopup = () => {
     setPopupVisible(false);
@@ -87,9 +87,9 @@ export default function PreviousBuds() {
                         </Text>
                         <TouchableOpacity
                           style={styles.button}
-                          onPress={() => recheck(disease)}
+                          onPress={() => viewDetails(disease)}
                         >
-                          <Text style={styles.btntext}>Recheck</Text>
+                          <Text style={styles.btntext}>View</Text>
                         </TouchableOpacity>
                       </View>
                       <TouchableOpacity
@@ -109,7 +109,7 @@ export default function PreviousBuds() {
             })}
           </View>
 
-          {selectedDisease && (
+          {selectedRecord && (
             <Modal
               isVisible={popupVisible}
               backdropOpacity={0.75}
@@ -136,30 +136,24 @@ export default function PreviousBuds() {
                   }}
                 >
                   <Image
-                    source={{ uri: selectedDisease.image }}
+                    source={{ uri: selectedRecord.image }}
                     style={{ width: "100%", height: 200, borderRadius: 10 }}
                   />
                   <Text
                     style={{ fontSize: 18, fontWeight: "bold", marginTop: 10 }}
                   >
-                    {selectedDisease.mainDisease}
+                    {selectedRecord.mainDisease}
                   </Text>
                   <Text style={{ fontSize: 14, color: "gray" }}>
-                    {moment(selectedDisease.updatedAt).format("DD/MM/YYYY")}
+                    {moment(selectedRecord.updatedAt).format("DD/MM/YYYY")}
                   </Text>
                   <Text style={{ marginTop: 10, marginBottom: 10 }}>
-                    Disease Treated:{" "}
+                    Result Detected:{" "}
                     <Text style={{ color: "red" }}>
-                      {selectedDisease.mainDisease}
+                      {selectedRecord.class}
                     </Text>
                   </Text>
-                  <Text>All Diseases percentage:</Text>
-                  {selectedDisease.diseasesInfo?.map((disease, index) => (
-                    <Text key={index}>
-                      {"   "}
-                      {disease.class}: {disease.affectedAreaPercentage}%
-                    </Text>
-                  ))}
+                  
                   <TouchableOpacity
                     style={styles.modelButton}
                     onPress={() => {
