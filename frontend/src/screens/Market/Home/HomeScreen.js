@@ -18,6 +18,8 @@ import mangoForecast from "../../../../assets/M5.jpg";
 import axios from "axios";
 import Modal from "react-native-modal";
 
+import searching from "../../../../assets/loadings/searching.gif";
+
 export default function HomeScreen() {
   const [forecast, setForecast] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -247,6 +249,16 @@ export default function HomeScreen() {
           <Text style={styles.buttonText}>Show the Forecast</Text>
         </TouchableOpacity>
       </ScrollView>
+
+      <Modal isVisible={isLoading} animationIn="fadeIn" animationOut="fadeOut">
+        <View style={styles.modalContent}>
+          <Image source={searching} style={styles.mangoImage} />
+          <Text style={styles.modalText}>Scanning....</Text>
+          <Text style={styles.modalText}>
+            Please wait, this may take some time.
+          </Text>
+        </View>
+      </Modal>
     </View>
   );
 }
