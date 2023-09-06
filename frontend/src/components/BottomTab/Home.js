@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet } from "react-native";
 import React, { useEffect } from "react";
 import axios from "axios";
+import constants from "../../constants/constants";
 
 export default function Home() {
   useEffect(() => {
@@ -17,15 +18,11 @@ export default function Home() {
       });
 
       await axios
-        .post(
-          "https://us-central1-mangowise-395709.cloudfunctions.net/disease_predict",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        )
+        .post(constants.disease_cnn_url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
         .then(() => console.log("warmed up disease_predict"));
     } catch (error) {
       console.error("Error:", error);

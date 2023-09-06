@@ -38,6 +38,7 @@ export default function ScanScreen() {
   }, [route.params]);
 
   if (hasCameraPermission === false) {
+    console.log("No access to camera");
     return <Text>No access to camera</Text>;
   }
 
@@ -65,7 +66,7 @@ export default function ScanScreen() {
         setGallery(true);
       }
     } catch (error) {
-      console.log("error ", error);
+      console.log("Storage permission error ", error);
     }
   };
 
