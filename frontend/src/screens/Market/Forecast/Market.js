@@ -220,7 +220,6 @@ const Analysis = () => {
                       resizeMode="cover"
                     />
                     <Text style={styles.processedName}>Mango Juice</Text>
-                    <Text style={styles.processedPrice}>Rs.320</Text>
                   </View>
                   <View style={styles.processedCard}>
                     <Image
@@ -229,7 +228,6 @@ const Analysis = () => {
                       resizeMode="cover"
                     />
                     <Text style={styles.processedName}>Jam</Text>
-                    <Text style={styles.processedPrice}>Rs.450</Text>
                   </View>
                   <View style={styles.processedCard}>
                     <Image
@@ -238,7 +236,6 @@ const Analysis = () => {
                       resizeMode="cover"
                     />
                     <Text style={styles.processedName}>Mango Pickle</Text>
-                    <Text style={styles.processedPrice}>Rs.150</Text>
                   </View>
                   <View style={styles.processedCard}>
                     <Image
@@ -247,7 +244,6 @@ const Analysis = () => {
                       resizeMode="cover"
                     />
                     <Text style={styles.processedName}>Mango Chutney</Text>
-                    <Text style={styles.processedPrice}>Rs.380</Text>
                   </View>
                 </ScrollView>
               </View>

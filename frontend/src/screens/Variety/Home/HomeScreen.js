@@ -238,7 +238,6 @@ export default function HomeScreen() {
         {varietyList.slice(0, 3).map((variety, key) => {
           return (
             <TouchableOpacity key={key}>
-              {console.log("dbddx ", variety)}
               <View style={styles.image}>
                 <Image
                   source={{ uri: variety?.image }}
