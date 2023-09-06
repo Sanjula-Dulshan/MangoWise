@@ -21,8 +21,8 @@ import Modal from "react-native-modal";
 export default function HomeScreen() {
   const [forecast, setForecast] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [predictedData, setPredictedData] = useState([]);
   let step;
-  const predictedData = [];
 
   const route = useRoute();
 
@@ -68,7 +68,7 @@ export default function HomeScreen() {
 
   const handleForecast = async () => {
     const requestData = {
-      Location: "Location_Colombo",
+      Location: forecast.location,
       Variety: forecast.variety,
       Month: forecast.selectedMonth,
       Cost: parseInt(forecast.cost),
@@ -95,13 +95,15 @@ export default function HomeScreen() {
               marketData: forecast,
             });
           } else {
+            const newPredictedData = [];
             response.data.forecasted_values.forEach((data, index) => {
-              predictedData.push({
+              newPredictedData.push({
                 quantity: parseInt(forecast.freshMangoes),
                 pricePerKg: data,
                 income: parseInt(forecast.freshMangoes) * data,
               });
             });
+            setPredictedData(newPredictedData);
             setIsModalVisible(true);
             console.log("predictedData>> ", predictedData);
           }
@@ -200,7 +202,6 @@ export default function HomeScreen() {
             </View>
           </View>
         </ScrollView>
-
         <Modal
           isVisible={isModalVisible}
           animationIn="slideInUp"
@@ -209,20 +210,29 @@ export default function HomeScreen() {
           <ScrollView>
             <View style={styles.modalContent}>
               {/* Close button */}
-              <TouchableOpacity onPress={toggleModal}>
-                <Text>Close</Text>
+              <TouchableOpacity
+                onPress={toggleModal}
+                style={styles.closeButton}
+              >
+                <Text style={styles.closeButtonText}>Close</Text>
               </TouchableOpacity>
-
               {/* Predicted prices */}
-              {predictedData?.map((data, index) => {
-                return (
-                  <View key={index} style={styles.priceCard}>
-                    <Text>Quantity: {data.quantity}</Text>
-                    <Text>Price per KG: {data.pricePerKg}</Text>
-                    <Text>Income: {data.income}</Text>
+              {predictedData?.map((data, index) => (
+                <View key={index} style={styles.priceCard}>
+                  <View style={styles.cardHeader}>
+                    <Text style={styles.cardTitle}>Quantity:</Text>
+                    <Text text>{data.quantity}</Text>
                   </View>
-                );
-              })}
+                  <View style={styles.cardHeader}>
+                    <Text style={styles.cardTitle}>Price per KG:</Text>
+                    <Text>Rs.{data.pricePerKg}</Text>
+                  </View>
+                  <View style={styles.cardHeader}>
+                    <Text style={styles.cardTitle}>Income:</Text>
+                    <Text>Rs.{data.income}</Text>
+                  </View>
+                </View>
+              ))}
             </View>
           </ScrollView>
         </Modal>
@@ -496,18 +506,36 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: "#fff",
-    padding: 20,
+    padding: 24,
     borderRadius: 10,
+    paddingTop: 50,
   },
-  modalTitle: {
-    fontSize: 20,
+  closeButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    zIndex: 1,
+  },
+  closeButtonText: {
+    fontSize: 16,
     fontWeight: "bold",
-    marginBottom: 10,
+    color: "#000",
   },
-  modalPriceCard: {
-    backgroundColor: "#f3f3f3",
-    padding: 10,
+  priceCard: {
+    backgroundColor: "#E5C50B", // Background color of each card
     borderRadius: 10,
-    marginBottom: 10,
+    padding: 15,
+    marginBottom: 25,
+  },
+  cardHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 5,
+  },
+  cardTitle: {
+    fontWeight: "bold",
+    color: "#000",
+    fontSize: 16,
   },
 });
