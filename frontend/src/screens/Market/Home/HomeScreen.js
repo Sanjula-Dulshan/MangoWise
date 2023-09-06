@@ -16,11 +16,19 @@ import mangoMarket from "../../../../assets/M3.jpg";
 import mangoAnalysis from "../../../../assets/M4.jpg";
 import mangoForecast from "../../../../assets/M5.jpg";
 import axios from "axios";
+import Modal from "react-native-modal";
 
 export default function HomeScreen() {
   const [forecast, setForecast] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  let step;
+  const predictedData = [];
 
   const route = useRoute();
+
+  const toggleModal = () => {
+    setIsModalVisible(!isModalVisible);
+  };
 
   // get marketData passed by previous analysis screen
   useEffect(() => {
@@ -31,9 +39,32 @@ export default function HomeScreen() {
 
   const navigation = useNavigation();
 
-  // const handleForecast = () => {
-  //   navigation.navigate("ForecastScreen");
-  // };
+  const oneForecast = async () => {
+    step = 1;
+
+    handleForecast();
+  };
+
+  const nextThreeForecast = async () => {
+    step = 3;
+
+    handleForecast();
+  };
+
+  const nextSixForecast = async () => {
+    step = 6;
+    handleForecast();
+  };
+
+  const nextNineForecast = async () => {
+    step = 9;
+    handleForecast();
+  };
+
+  const nextTwelveForecast = async () => {
+    step = 12;
+    handleForecast();
+  };
 
   const handleForecast = async () => {
     const requestData = {
@@ -44,24 +75,37 @@ export default function HomeScreen() {
       FreshMangoes: parseInt(forecast.freshMangoes),
       DamagedMangoes: parseInt(forecast.damagedMangoes),
 
-      Steps: 1, //
+      Steps: step, //
     };
 
     console.log("Sending data to the model:", requestData);
 
     try {
-      const response = await axios.post(
-        "https://us-central1-mangowise-395709.cloudfunctions.net/market_predict",
-        requestData
-      );
+      await axios
+        .post(
+          "https://us-central1-mangowise-395709.cloudfunctions.net/market_predict",
+          requestData
+        )
+        .then((response) => {
+          console.log("response>> ", response.data);
 
-      navigation.navigate("ForecastScreen", {
-        response: response.data,
-        marketData: forecast,
-      });
-
-      // Handle the response from the model here
-      console.log("Model response:", response.data);
+          if (step == 1) {
+            navigation.navigate("ForecastScreen", {
+              response: response.data,
+              marketData: forecast,
+            });
+          } else {
+            response.data.forecasted_values.forEach((data, index) => {
+              predictedData.push({
+                quantity: parseInt(forecast.freshMangoes),
+                pricePerKg: data,
+                income: parseInt(forecast.freshMangoes) * data,
+              });
+            });
+            setIsModalVisible(true);
+            console.log("predictedData>> ", predictedData);
+          }
+        });
 
       // You can update your state or perform any other actions based on the response
     } catch (error) {
@@ -115,51 +159,75 @@ export default function HomeScreen() {
             }}
           >
             <View style={styles.cardContainer}>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={nextThreeForecast}>
                 <Image
                   source={mangoForecast}
                   style={styles.cardImage}
                   resizeMode="cover"
                 />
+                <Text style={styles.cardCaption}>Next 3 months</Text>
               </TouchableOpacity>
-              <Text style={styles.cardCaption}>Next 3 months</Text>
             </View>
             <View style={styles.cardContainer}>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={nextSixForecast}>
                 <Image
                   source={mangoFruit}
                   style={styles.cardImage}
                   resizeMode="cover"
                 />
+                <Text style={styles.cardCaption}>Next 6 months</Text>
               </TouchableOpacity>
-              <Text style={styles.cardCaption}>Next 6 months</Text>
             </View>
             <View style={styles.cardContainer}>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={nextNineForecast}>
                 <Image
                   source={mangoAnalysis}
                   style={styles.cardImage}
                   resizeMode="cover"
                 />
+                <Text style={styles.cardCaption}>Next 9 months</Text>
               </TouchableOpacity>
-              <Text style={styles.cardCaption}>Next 9 months</Text>
             </View>
             <View style={styles.cardContainer}>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={nextTwelveForecast}>
                 <Image
                   source={mangoMarket}
                   style={styles.cardImage}
                   resizeMode="cover"
                 />
+                <Text style={styles.cardCaption}>Next 12 months</Text>
               </TouchableOpacity>
-              <Text style={styles.cardCaption}>Next 12 months</Text>
             </View>
           </View>
         </ScrollView>
-        <TouchableOpacity
-          style={styles.buttonContainer}
-          onPress={handleForecast}
+
+        <Modal
+          isVisible={isModalVisible}
+          animationIn="slideInUp"
+          animationOut="slideOutDown"
         >
+          <ScrollView>
+            <View style={styles.modalContent}>
+              {/* Close button */}
+              <TouchableOpacity onPress={toggleModal}>
+                <Text>Close</Text>
+              </TouchableOpacity>
+
+              {/* Predicted prices */}
+              {predictedData?.map((data, index) => {
+                return (
+                  <View key={index} style={styles.priceCard}>
+                    <Text>Quantity: {data.quantity}</Text>
+                    <Text>Price per KG: {data.pricePerKg}</Text>
+                    <Text>Income: {data.income}</Text>
+                  </View>
+                );
+              })}
+            </View>
+          </ScrollView>
+        </Modal>
+
+        <TouchableOpacity style={styles.buttonContainer} onPress={oneForecast}>
           <Text style={styles.buttonText}>Show the Forecast</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -425,5 +493,21 @@ const styles = StyleSheet.create({
     color: "#000",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  modalPriceCard: {
+    backgroundColor: "#f3f3f3",
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 10,
   },
 });

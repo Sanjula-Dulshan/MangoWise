@@ -30,7 +30,7 @@ const Analysis = () => {
 
   const route = useRoute();
 
-  const totalIncome = 5000; // Replace with your actual total income value
+  const totalIncome = freshMangoes * forecastedValue; // Replace with your actual total income value
   const totalCost = cost; // Replace with your actual total price value
   const totalProfit = totalIncome - totalCost;
 
@@ -133,20 +133,28 @@ const Analysis = () => {
               <View style={styles.card}>
                 <View style={styles.cardRow}>
                   <Text style={styles.cardTitle}>Total Income</Text>
-                  <Text style={styles.cardValue}>$5000</Text>
+                  <Text style={styles.cardValue}>Rs.{totalIncome}</Text>
                 </View>
               </View>
 
               <View style={styles.card}>
                 <View style={styles.cardRow}>
-                  <Text style={styles.cardTitle}>Total Profit</Text>
+                  <Text
+                    style={[
+                      styles.cardTitle,
+                      { color: totalProfit < 0 ? "red" : "" },
+                    ]}
+                  >
+                    {totalProfit >= 0 ? "Total Profit" : "Loss"}
+                  </Text>
+
                   <Text
                     style={[
                       styles.cardValue,
-                      { color: totalProfit >= 0 ? "#0a0" : "red" },
+                      { color: totalProfit >= 0 ? "#FF0000" : "red" },
                     ]}
                   >
-                    ${totalProfit >= 0 ? totalProfit : -totalProfit}
+                    Rs.{totalProfit >= 0 ? totalProfit : -totalProfit}
                   </Text>
                 </View>
               </View>
@@ -171,7 +179,7 @@ const Analysis = () => {
               {/* Description and Damaged Mango Count */}
               <View style={styles.description}>
                 <Text style={styles.descriptionText1}>
-                  Amount of Damaged Mango: 500
+                  Amount of Damaged Mango: {damagedMangoes}
                 </Text>
                 <Text style={styles.descriptionText2}>
                   You can try these products also for damaged mangoes.
@@ -331,13 +339,13 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   successDescription: {
-    fontSize: 16,
+    fontSize: 18,
   },
   description: {
     marginBottom: 20,
   },
   descriptionText1: {
-    fontSize: 16,
+    fontSize: 18,
     marginBottom: 10,
   },
   descriptionText2: {
