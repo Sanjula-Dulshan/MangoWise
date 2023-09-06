@@ -81,10 +81,7 @@ export default function PreviousDiseases() {
                         source={{ uri: variety?.image }}
                       />
                       <View style={styles.description}>
-                        <Text style={styles.name}>
-                          {" "}
-                          {(variety?.variety).toLowerCase()}
-                        </Text>
+                        <Text style={styles.name}> {variety?.variety}</Text>
                         <Text style={styles.date}>
                           {moment(variety.updatedAt).format("DD/MM/YYYY")}
                         </Text>
@@ -216,7 +213,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   name: {
-    fontSize: 18,
+    fontSize: 16,
     marginTop: 5,
     fontWeight: "bold",
   },
@@ -242,9 +239,11 @@ const styles = StyleSheet.create({
     color: "#144100",
   },
   arrowIcon: {
-    marginLeft: 50,
-    marginTop: 50,
     transform: [{ rotate: "45deg" }],
+
+    position: "absolute",
+    bottom: "-10%",
+    right: "-5%",
   },
   previousPictures: {
     left: "7.69%",
