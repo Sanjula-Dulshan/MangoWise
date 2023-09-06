@@ -26,7 +26,6 @@ export default function HomeScreen() {
   useEffect(() => {
     try {
       axios.get(constants.backend_url + "/disease").then((response) => {
-        console.log("response.data ", response.data);
         setDiseasesList(response.data);
       });
     } catch (error) {
@@ -245,7 +244,7 @@ export default function HomeScreen() {
         {diseasesList.slice(0, 3).map((disease, key) => {
           // Limiting to 3 iterations
           return (
-            <TouchableOpacity>
+            <TouchableOpacity key={key}>
               <View style={styles.image}>
                 <Image
                   source={{ uri: disease?.image }}

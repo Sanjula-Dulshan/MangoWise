@@ -12,7 +12,7 @@ export const saveDetection = async (req, res) => {
 
 export const getDetections = async (req, res) => {
   try {
-    const detections = await Detection.find({}, { __v: 0 }).sort({
+    const detections = await Detection.find({}, { __v: 0, createdAt: 0 }).sort({
       createdAt: -1,
     });
     res.status(200).json(detections);

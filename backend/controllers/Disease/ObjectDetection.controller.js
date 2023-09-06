@@ -2,6 +2,8 @@ import axios from "axios";
 import { createCanvas, loadImage } from "canvas";
 
 export const detectDiseases = async (req, res) => {
+
+  console.log("Detecting diseases");
   // Get the base64 image from the request body
   const { image } = req.body;
 
@@ -174,11 +176,16 @@ export const detectDiseases = async (req, res) => {
 
     // Loop through each class and create a combined data object
     classes.forEach((className) => {
-      const normalizedClassName = className.toLowerCase().replace(" ", "_"); // Convert class name to lowercase and replace spaces with underscores
+      const normalizedClassName = className
+        .toLowerCase()
+        .split(" ")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
       const combinedObject = {
-        class: className,
+        class: normalizedClassName,
         affectedAreaPercentage:
-          affectedAreaPercentage[normalizedClassName] || 0,
+          affectedAreaPercentage[className.toLowerCase().replace(" ", "_")] ||
+          0,
         color: colorMapping[className] || "#000000",
       };
       diseaseData.push(combinedObject);

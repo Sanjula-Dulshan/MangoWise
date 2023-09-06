@@ -1,14 +1,16 @@
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { Camera } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library";
 import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 import Header from "../../../components/Common/Header";
 import Button from "./Button";
 import axios from "axios";
 import constants from "../../../constants/constants";
 import { manipulateAsync } from "expo-image-manipulator";
+import searching from "../../../../assets/loadings/searching.gif";
+import Modal from "react-native-modal";
 
 export default function ScanScreen() {
   const [hasCameraPermission, setHasCameraPermission] = useState(null);
@@ -18,6 +20,9 @@ export default function ScanScreen() {
   const type = Camera.Constants.back;
   const cameraRef = useRef(null);
   const navigation = useNavigation();
+  const route = useRoute();
+  const [recheck, setRecheck] = useState(false);
+  const [prevDisease, setPrevDisease] = useState();
 
   useEffect(() => {
     (async () => {
@@ -25,7 +30,12 @@ export default function ScanScreen() {
       const cameraStatus = await Camera.requestCameraPermissionsAsync();
       setHasCameraPermission(cameraStatus.status === "granted");
     })();
-  }, []);
+
+    if (route.params?.recheck) {
+      setRecheck(true);
+      setPrevDisease(route.params?.prevDisease);
+    }
+  }, [route.params]);
 
   if (hasCameraPermission === false) {
     return <Text>No access to camera</Text>;
@@ -88,11 +98,21 @@ export default function ScanScreen() {
         })
           .then((response) => {
             setIsLoading(false);
-            navigation.navigate("DetectedAllDiseaseScreen", {
-              response: response.data,
-              imageUri: image,
-              base64Data: base64Data,
-            });
+
+            if (recheck) {
+              navigation.navigate("DiseaseCompareScreen", {
+                response: response.data,
+                imageUri: image,
+                base64Data: base64Data,
+                prevDisease: prevDisease,
+              });
+            } else {
+              navigation.navigate("DetectedAllDiseaseScreen", {
+                response: response.data,
+                imageUri: image,
+                base64Data: base64Data,
+              });
+            }
           })
           .catch((error) => {
             console.log(error);
@@ -112,15 +132,20 @@ export default function ScanScreen() {
         </Camera>
       ) : (
         <>
-          {isLoading ? (
-            <ActivityIndicator
-              size="large"
-              style={styles.camera}
-              color="#fdc50b"
-            />
-          ) : (
-            <Image source={{ uri: image }} style={styles.camera} />
-          )}
+          <Modal
+            isVisible={isLoading}
+            animationIn="fadeIn"
+            animationOut="fadeOut"
+          >
+            <View style={styles.modalContent}>
+              <Image source={searching} style={styles.mangoImage} />
+              <Text style={styles.modalText}>Scanning....</Text>
+              <Text style={styles.modalText}>
+                Please wait, this may take some time.
+              </Text>
+            </View>
+          </Modal>
+          <Image source={{ uri: image }} style={styles.camera} />
         </>
       )}
       <View>
@@ -132,16 +157,14 @@ export default function ScanScreen() {
           </View>
         ) : (
           <>
-            {!isLoading && (
-              <View style={styles.buttons}>
-                <Button
-                  title={"Re-take"}
-                  icon="retweet"
-                  onPress={() => setImage(null)}
-                />
-                <Button title={"Check"} icon="check" onPress={checkImage} />
-              </View>
-            )}
+            <View style={styles.buttons}>
+              <Button
+                title={"Re-take"}
+                icon="retweet"
+                onPress={() => setImage(null)}
+              />
+              <Button title={"Check"} icon="check" onPress={checkImage} />
+            </View>
           </>
         )}
       </View>
@@ -164,5 +187,32 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 30,
     paddingTop: 20,
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    alignItems: "center",
+    height: 220,
+  },
+  mangoImage: {
+    width: 120,
+    height: 120,
+    marginBottom: 10,
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 10,
+    fontWeight: "bold",
+  },
+  okButton: {
+    backgroundColor: "#fdc50b",
+    padding: 15,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  okButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
