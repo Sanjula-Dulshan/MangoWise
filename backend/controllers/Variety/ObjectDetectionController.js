@@ -10,16 +10,16 @@ export const detectVariety = async (req, res) => {
   }
   try {
     //Call the Roboflow API
-    const response = await axios({ 
-        method: "POST",
-        url: "https://outline.roboflow.com/mangowise-ecg8e/3",
-        params: {
-            api_key: "rj601qLuIiiLAQ8eMKck"
-        },
-        data: image,
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
+    const response = await axios({
+      method: "POST",
+      url: "https://outline.roboflow.com/mangowise-ecg8e/3",
+      params: {
+        api_key: "rj601qLuIiiLAQ8eMKck",
+      },
+      data: image,
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
     });
 
     const imageData = response.data;
@@ -111,26 +111,6 @@ export const detectVariety = async (req, res) => {
       ctx.strokeStyle = classStyle.borderColor;
       ctx.lineWidth = 3;
       ctx.stroke();
-
-      // Label background rectangle with class-specific background color and width
-      const textWidth =
-        ctx.measureText(className).width + classStyle.labelWidth;
-      const textHeight = classStyle.labelHeight; // Increase the height for a larger label
-      const labelBgX = centerX - textWidth / 2;
-      const labelBgY = centerY - textHeight / 2; // Center the label on the identified object
-      ctx.fillStyle = classStyle.backgroundColor; // Use the specified background color
-      ctx.fillRect(labelBgX, labelBgY, textWidth, textHeight);
-
-      // Draw the class name label at the center of the identified object with class-specific label color and font size
-      ctx.fillStyle = classStyle.labelColor; // Use the specified label color
-      ctx.font = `${classStyle.fontSize}px Arial`; // Use the specified font size for the label
-      ctx.textAlign = "center"; // Center the label text horizontally
-      ctx.textBaseline = "middle"; // Center the label text vertically
-      ctx.fillText(
-        `${className}  ${confidence.toFixed(2) * 100}%`,
-        centerX,
-        centerY
-      ); // Display the class name and confidence at the center of the identified object
     }
 
     // Convert the canvas to a Buffer (PNG image data)
@@ -139,17 +119,16 @@ export const detectVariety = async (req, res) => {
     // Convert the buffer to a base64 string
     const base64Image = buffer.toString("base64");
 
-    //get the classes
-    const classes = imageData["predictions"].map((prediction) => {
-      return prediction["class"];
-    });
+    // Loop through each class and create a combined data object
 
-    // Send the base64 image, classes and the full response from the API in the response
+    // You can send this combinedData in the response:
     res.json({
       image: base64Image,
-      apiResponse: imageData,
-      classes: classes,
+      variety: response.data.predictions[0]?.class,
+      captured: image,
     });
+
+    console.log("response ", response.data.predictions[0]?.class);
   } catch (error) {
     console.log("error ", error);
   }

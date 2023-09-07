@@ -3,7 +3,7 @@ import { Camera } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library";
 import { useEffect, useRef, useState } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Header from "../../../components/Common/Header";
 import Button from "./Button";
 import axios from "axios";
@@ -23,6 +23,7 @@ export default function ScanScreen() {
   const route = useRoute();
   const [recheck, setRecheck] = useState(false);
   const [prevDisease, setPrevDisease] = useState();
+  const [camPicture, setCamPicture] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -38,6 +39,7 @@ export default function ScanScreen() {
   }, [route.params]);
 
   if (hasCameraPermission === false) {
+    console.log("No access to camera");
     return <Text>No access to camera</Text>;
   }
 
@@ -65,7 +67,7 @@ export default function ScanScreen() {
         setGallery(true);
       }
     } catch (error) {
-      console.log("error ", error);
+      console.log("Storage permission error ", error);
     }
   };
 
@@ -100,6 +102,9 @@ export default function ScanScreen() {
             setIsLoading(false);
 
             if (recheck) {
+              console.log("response.data ", response.data);
+              console.log("prevDisease ", prevDisease);
+
               navigation.navigate("DiseaseCompareScreen", {
                 response: response.data,
                 imageUri: image,
@@ -121,6 +126,18 @@ export default function ScanScreen() {
         console.log("error ", error);
       }
     }
+  };
+
+  handleTakePicture = async () => {
+    setIsLoading(true);
+    console.log("take picture");
+
+    setTimeout(() => {
+      setIsLoading(false);
+      navigation.navigate("DetectedCamDisease", {
+        imageUri: image,
+      });
+    }, 5000);
   };
 
   return (
@@ -163,6 +180,12 @@ export default function ScanScreen() {
                 icon="retweet"
                 onPress={() => setImage(null)}
               />
+              <TouchableOpacity
+                style={{ ...styles.sButton, marginTop: 10 }}
+                onPress={handleTakePicture}
+              >
+                <Text style={styles.btntext}></Text>
+              </TouchableOpacity>
               <Button title={"Check"} icon="check" onPress={checkImage} />
             </View>
           </>
@@ -214,5 +237,16 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  sButton: {
+    backgroundColor: "#f2f2f2",
+    width: 90,
+    height: 65,
+    paddingBottom: 0,
+    borderRadius: 25,
+    marginTop: 20,
+    marginLeft: 140,
+    // alignSelf: 'right',
+    marginBottom: 10,
   },
 });
