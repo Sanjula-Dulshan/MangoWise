@@ -25,7 +25,7 @@ import constants from "../../../constants/constants";
 import axios from 'axios';
 import searching from "../../../../assets/loadings/searching.gif";
 import { set } from 'react-hook-form';
-
+import Toast from "react-native-toast-message";
 
 
 
@@ -109,7 +109,8 @@ export default function VarietySelection() {
     "Puttalam",
     "Monaragala",
     "Kilinochchi",
-    "Mullaitivu"
+    "Mullaitivu",
+    "Kaduwela",
   ];
 
   const wetZones = [
@@ -138,6 +139,7 @@ export default function VarietySelection() {
   ]
 
   const intermediateZones = [
+    "Kaduwela",
     "Kurunegala",
     "Matale",
     "Galle",
@@ -163,6 +165,7 @@ export default function VarietySelection() {
 
   const handleFlatListPress = (item) => {
     handleTextChange(item);
+    setCropLocation(item);
     setFilteredSuggestions([]);
   }
 
@@ -189,7 +192,7 @@ export default function VarietySelection() {
     let taste = "good";
     let size = "big";
     let purpose = "personal";
-    let climate = "wet";
+    let climate = "abc";
   
     switch (selectedHarvestIndex) { 
       case 0:
@@ -253,6 +256,22 @@ export default function VarietySelection() {
       purpose: purpose,
       size: size
     }
+
+    if(!climate){
+      console.log('climate not found');
+      Toast.show({
+        type: "error",
+        position: "bottom",
+        text1: "Location is not valid",
+        text2: "Please enter a valid location",
+        visibilityTime: 4000,
+        autoHide: true,
+        topOffset: 30,
+        bottomOffset: 40,
+      });
+      setIsLoading(false);
+      return;
+    }
   
     try {
       const apiUrl = `https://us-central1-mangowise-395709.cloudfunctions.net/v_select_predict`;
@@ -267,6 +286,7 @@ export default function VarietySelection() {
         response: response.data,
       });
     } catch (error) {
+      setIsLoading(false);
       console.error('Error fetching or processing data:', error);
     }
   
@@ -510,6 +530,7 @@ export default function VarietySelection() {
         </TouchableOpacity>
 </View>
     
+    
 
       <TouchableOpacity style={styles.findSuitableVarierty} onPress={checkVariety} >
           <Text style={{ fontSize: 17, fontWeight: 'bold', padding: 5,  textAlign: 'center' }}> Find matching variety </Text>
@@ -518,7 +539,9 @@ export default function VarietySelection() {
 
       
     </View>
+    <Toast ref={(ref) => Toast.setRef(ref)} />
     </ScrollView>
+    
   )
 }
 
