@@ -246,24 +246,36 @@ export default function BuddingHomeScreen() {
 
       </View>
 
-      <Modal isVisible={isModalVisible} style={styles.infoModal} >
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text style={{ fontSize: 14, fontWeight: 'bold', padding: 5, margin: 8, textDecorationLine: 'underline' }}> How to connect with the sensor </Text>
+      <Modal isVisible={isModalVisible} style={styles.infoModal}>
+  <ScrollView showsVerticalScrollIndicator={false}>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+      <Text style={{ fontSize: 18, fontWeight: 'bold', marginVertical: 10 }}>Camera Tips</Text>
 
-            <Text style={{ fontSize: 14, padding: 5, margin: 8, textAlign: 'left', marginRight: 12 }}>Insert the sensor's three pins into the soil sample.  </Text>
-            <Text style={{ fontSize: 14, paddingTop: 5, marginTop: 8, textAlign: 'left', paddingHorizontal: 5 }}> Switch on the sensor device(Need two 9v batteries to power up the device). </Text>
-            <Text style={{ fontSize: 14, padding: 5, marginTop: 18, textAlign: 'left' }}>Turn on mobile’s Bluetooth connection.  </Text>
-            <Text style={{ fontSize: 14, padding: 5, marginTop: 18, textAlign: 'left', marginLeft: 5 }}>Search for available Bluetooth devices.  </Text>
-            <Text style={{ fontSize: 14, padding: 5, marginTop: 18, textAlign: 'left', marginRight: 30 }}> Pair with the device name ‘HC-06’.  </Text>
-            <Text style={{ fontSize: 14, padding: 5, marginTop: 18, textAlign: 'left', marginRight: 70 }}>Insert PIN 1234 to connect.  </Text>
+      <Text style={{ fontSize: 16, textAlign: 'left', marginBottom: 15 }}>
+        To ensure accurate plant data, follow these guidelines when capturing images:
+      </Text>
 
-            <TouchableOpacity style={styles.okButton} onPress={() => setModalVisible(false)} >
-              <Text style={{ fontSize: 14, fontWeight: 'bold', padding: 5, color: 'white', textAlign: 'center' }}> OK </Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </Modal>
+      <Text style={{ fontSize: 16, textAlign: 'left', marginBottom: 10 }}>
+        1. Focus the plant trunk in the center of the frame.
+      </Text>
+
+      <Text style={{ fontSize: 16, textAlign: 'left', marginBottom: 10 }}>
+        2. Use a clear background to increase accuracy.
+      </Text>
+
+      <Text style={{ fontSize: 16, textAlign: 'left', marginBottom: 10 }}>
+        3. Capture only one plant at a time for precise measurements.
+      </Text>
+
+      <TouchableOpacity style={styles.okButton} onPress={() => setModalVisible(false)}>
+        <Text style={{ fontSize: 16, fontWeight: 'bold', color: 'white', textAlign: 'center', }}>
+          OK
+        </Text>
+      </TouchableOpacity>
+    </View>
+  </ScrollView>
+</Modal>
+
 
       <Text style={{ fontSize: 14, fontWeight: 'bold', marginLeft: 20, marginTop: 15 }}>Need Help?</Text>
 
@@ -410,7 +422,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#ffffff',
     width: '80%',
-    maxHeight: '60%',
+    maxHeight: '50%',
     minHeight: '10%',
     marginTop: 170,
     marginLeft: 45,

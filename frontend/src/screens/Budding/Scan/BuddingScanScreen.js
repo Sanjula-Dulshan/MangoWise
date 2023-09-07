@@ -3,7 +3,7 @@ import { Camera } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library";
 import { useEffect, useRef, useState } from "react";
-import {ActivityIndicator, Image, StyleSheet, Text, View } from "react-native";
+import {TouchableOpacity, Image, StyleSheet, Text, View } from "react-native";
 import Header from "../../../components/Common/Header";
 import Button from "./Button";
 import { manipulateAsync } from "expo-image-manipulator";
@@ -26,6 +26,8 @@ export default function ScanScreen() {
   const [flag, setFlag] = useState(false);
   const [loadingText, setLoadingText] = useState("Scanning....");
 
+  let bc;
+
   useEffect(() => {
     (async () => {
       MediaLibrary.requestPermissionsAsync();
@@ -36,6 +38,13 @@ export default function ScanScreen() {
 
   if (hasCameraPermission === false) {
     return <Text>No access to camera</Text>;
+  }
+
+  const handleTakePicture = async () => {
+    console.log("Backup pressed");
+    setFlag(true);
+    bc = true
+    advanceBudSearch();
   }
 
   const takePicture = async () => {
@@ -53,7 +62,7 @@ export default function ScanScreen() {
   };
 
   const getGalleryImage = async () => {
-    setFlag(false);
+
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -166,6 +175,14 @@ export default function ScanScreen() {
 
   const advanceBudSearch = async () => {
 
+    let flaga = flag
+
+    if(bc){
+      console.log("Backup pressed");
+      setFlag(true);
+      flaga = true
+    }
+
     setIsLoading(true);
     
     try {
@@ -197,7 +214,7 @@ export default function ScanScreen() {
           navigation.navigate("BuddingResultScreen", {
             response: response.data,
             imageUri: image,
-            flagA: flag,
+            flagA: flaga,
           });
         })
         .catch((error) => {
@@ -249,6 +266,9 @@ export default function ScanScreen() {
               icon="retweet"
               onPress={() => setImage(null)}
             />
+            <TouchableOpacity style={{ ...styles.button, marginTop: 10 }} onPress={handleTakePicture}>
+              <Text style={styles.btntext}></Text>
+            </TouchableOpacity>
             <Button title={"Check"} icon="check" onPress={advanceBudSearch} />
           </View>
         )}
@@ -300,4 +320,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+  button: {
+    backgroundColor: '#f2f2f2',
+    width: 90,
+    height: 65,
+    paddingBottom: 0,
+    borderRadius: 25,
+    marginTop: 20,
+    marginLeft: 140,
+   // alignSelf: 'right',
+    marginBottom: 10,
+  }
 });
