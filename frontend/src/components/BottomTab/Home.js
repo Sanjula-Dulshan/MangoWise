@@ -50,11 +50,11 @@ export default function Home() {
   };
 
   const goToVarietyIdentification = () => {
-    navigation.navigate("VarietyIdentification");
+    navigation.navigate("Market");
   };
 
   const goToDiseaseIdentification = () => {
-    navigation.navigate("DiagnoseHomeScreen");
+    navigation.navigate("Diagnose");
   };
 
   const goToVarietySelector = () => {
@@ -67,7 +67,7 @@ export default function Home() {
   };
 
   const goToMarketAnalysis = () => {
-    navigation.navigate("VarietyHomeScreen");
+    navigation.navigate("Market");
   };
 
   return (
