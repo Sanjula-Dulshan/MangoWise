@@ -29,6 +29,7 @@ export default function Home() {
       const formData = new FormData();
       formData.append("file", {
         // Use the first image for the API call
+        uri: "https://i.pcmag.com/imagery/reviews/03aizylUVApdyLAIku1AvRV-39.1605559903.fit_scale.size_760x427.png",
         type: "image/jpeg",
         name: "image.jpg",
       });
@@ -50,11 +51,11 @@ export default function Home() {
   };
 
   const goToVarietyIdentification = () => {
-    navigation.navigate("VarietyIdentification");
+    navigation.navigate("Market");
   };
 
   const goToDiseaseIdentification = () => {
-    navigation.navigate("DiagnoseHomeScreen");
+    navigation.navigate("Diagnose");
   };
 
   const goToVarietySelector = () => {
@@ -67,7 +68,7 @@ export default function Home() {
   };
 
   const goToMarketAnalysis = () => {
-    navigation.navigate("VarietyHomeScreen");
+    navigation.navigate("Market");
   };
 
   return (
