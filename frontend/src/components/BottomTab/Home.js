@@ -64,7 +64,7 @@ export default function Home() {
   };
 
   const goToFertilizerRecommender = () => {
-    navigation.navigate("FertilizerRecommender");
+    navigation.navigate("Fertilization");
   };
 
   const goToMarketAnalysis = () => {
@@ -132,7 +132,7 @@ export default function Home() {
               onPress={goToFertilizerRecommender}
             >
               <Icon name="cog" size={30} color="#446714" />
-              <Text style={styles.buttonTextF}>Fertilizer Recommender</Text>
+              <Text style={styles.buttonTextF}> Recommend Fertilizer</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.menuButton}

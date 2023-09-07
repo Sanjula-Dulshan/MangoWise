@@ -5,7 +5,7 @@ const constants = {
   //backend_url: "http://192.168.8.125:8070", //Yasantha
 
   disease_cnn_url:
-    "https://us-central1-mangowise-395709.cloudfunctions.net/disease_predict_filterRGB",
+    "https://us-central1-mangowise-395709.cloudfunctions.net/disease_predict",
 };
 
 export default constants;
