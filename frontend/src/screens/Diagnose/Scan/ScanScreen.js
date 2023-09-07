@@ -102,6 +102,9 @@ export default function ScanScreen() {
             setIsLoading(false);
 
             if (recheck) {
+              console.log("response.data ", response.data);
+              console.log("prevDisease ", prevDisease);
+
               navigation.navigate("DiseaseCompareScreen", {
                 response: response.data,
                 imageUri: image,
