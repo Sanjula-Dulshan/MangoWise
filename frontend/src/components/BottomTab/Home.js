@@ -132,7 +132,7 @@ export default function Home() {
               onPress={goToFertilizerRecommender}
             >
               <Icon name="cog" size={30} color="#446714" />
-              <Text style={styles.buttonTextF}>Fertilization</Text>
+              <Text style={styles.buttonText}>Fertilization</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.menuButton}
