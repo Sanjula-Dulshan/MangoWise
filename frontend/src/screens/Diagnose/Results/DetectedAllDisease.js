@@ -77,6 +77,7 @@ export default function DetectedAllDisease() {
           },
         })
         .then((response) => {
+          console.log("response.data>> ", response.data);
           setIsProcessing(false);
           setDiseasePercentage(response.data);
         })
