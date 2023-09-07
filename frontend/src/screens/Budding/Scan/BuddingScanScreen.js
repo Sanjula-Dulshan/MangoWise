@@ -22,7 +22,7 @@ export default function ScanScreen() {
   const cameraRef = useRef(null);
   const navigation = useNavigation();
   const [imageUri, setImageUri] = useState(null);
-  const [classType, setClassType] = useState("eairly");
+  const [classType, setClassType] = useState("");
   const [flag, setFlag] = useState(false);
   const [loadingText, setLoadingText] = useState("Scanning....");
 
@@ -123,7 +123,7 @@ export default function ScanScreen() {
     }
   };
 
-  const saveImage = async () => {
+  const saveImage = async (className) => {
     if (image) {
       try {
         // Save image to gallery
@@ -141,7 +141,7 @@ export default function ScanScreen() {
         const base64Data = "data:image/png;base64,"+manipulatedResult.base64;
 
         console.log("base64Data: ", base64Data);
-        console.log("\n\nclassType: ", classType);
+        console.log("\n\nclassType: ", className);
   
         setIsLoading(true);
   
@@ -150,7 +150,7 @@ export default function ScanScreen() {
           url: constants.backend_url + "/bud/save",
           data: {
             image: base64Data,
-            class: classType
+            class: className,
           },
           headers: {
             "Content-Type": "application/json",
@@ -175,7 +175,7 @@ export default function ScanScreen() {
         type: "image/jpeg",
         name: "image.jpg",
       });
-      response = await axios
+      const response = await axios
         .post(
           "https://us-central1-mangowise-395709.cloudfunctions.net/bud_predict",
           formData,
@@ -189,9 +189,10 @@ export default function ScanScreen() {
           setIsLoading(false);
           console.log("response>> ", response.data);
           console.log("image>> ", image);
+          console.log("class", response.data.class)
           setClassType(response.data.class);
 
-          saveImage();
+          saveImage(response.data.class);
 
           navigation.navigate("BuddingResultScreen", {
             response: response.data,
