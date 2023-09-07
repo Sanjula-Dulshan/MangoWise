@@ -58,7 +58,7 @@ export default function FertilizerSuggestionScreen() {
           />
           <Text
             style={{
-              fontSize: 24,
+              fontSize: 22,
               fontFamily: "Roboto",
               fontWeight: "bold",
               paddingTop: 2,
@@ -276,11 +276,11 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   fertilizerimg: {
-    width: 70,
-    height: 70,
+    width: 60,
+    height: 60,
     marginTop: 0,
-    marginLeft: 30,
-    marginRight: -40,
+    marginLeft: 20,
+    marginRight: 0,
     borderRadius: 50,
   },
 });

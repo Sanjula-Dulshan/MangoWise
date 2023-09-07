@@ -407,7 +407,7 @@ export default function CheckFertilizerScreen({ route }) {
           />
           <Text
             style={{
-              fontSize: 24,
+              fontSize: 20,
               fontFamily: "Roboto",
               fontWeight: "bold",
               paddingTop: 2,
@@ -416,7 +416,7 @@ export default function CheckFertilizerScreen({ route }) {
               marginLeft: 4,
             }}
           >
-            Monitor the Nutrient Level
+            Monitor Nutrient Level
           </Text>
         </View>
 
@@ -680,7 +680,7 @@ export default function CheckFertilizerScreen({ route }) {
         <View style={{ flexDirection: "row", marginTop: 8 }}>
           <Text style={{ fontSize: 14, marginTop: 25, marginLeft: 20 }}>
             {" "}
-            Nitrogen (N) :{" "}
+            Nitrogen (N)    :{" "}
           </Text>
           <Text style={styles.npk}>{nitrogen}</Text>
         </View>
@@ -906,11 +906,11 @@ const styles = StyleSheet.create({
     padding: 6,
   },
   monitorimage: {
-    width: 85,
-    height: 80,
+    width: 70,
+    height: 70,
     marginTop: 0,
-    marginLeft: 30,
-    marginRight: -50,
+    marginLeft: 0,
+    marginRight: 15,
     borderRadius: 50,
   },
   modalContent: {

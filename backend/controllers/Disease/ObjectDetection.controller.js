@@ -2,6 +2,8 @@ import axios from "axios";
 import { createCanvas, loadImage } from "canvas";
 
 export const detectDiseases = async (req, res) => {
+
+  console.log("Detecting diseases");
   // Get the base64 image from the request body
   const { image } = req.body;
 
@@ -173,9 +175,7 @@ export const detectDiseases = async (req, res) => {
     const classes = Array.from(classesSet);
 
     // Loop through each class and create a combined data object
-    console.log("classes>> ", classes);
     classes.forEach((className) => {
-      console.log("className>> ", className);
       const normalizedClassName = className
         .toLowerCase()
         .split(" ")
