@@ -14,13 +14,14 @@ import Home from "./Home";
 import Variety from "./Variety";
 import BuddingAllScreens from "./BuddingAll";
 import VSelectAllScreens from "./VSelectAll";
+import Login from "../../screens/Login";
 
 const Tab = createBottomTabNavigator();
 
 export default function BottomTabs() {
   return (
     <Tab.Navigator
-      initialRouteName="Home"
+      initialRouteName="Login"
       screenOptions={({ route }) => ({
         tabBarActiveTintColor: "white",
         tabBarInactiveTintColor: "grey",
@@ -67,6 +68,7 @@ export default function BottomTabs() {
       <Tab.Screen name="Budding" component={BuddingAllScreens} />
       <Tab.Screen name="Diagnose" component={DiagnoseAllScreens} />
       <Tab.Screen name="Home" component={Home} />
+      <Tab.Screen name="Login" component={Login} options={{ tabBarButton: () => null }} />
       <Tab.Screen name="Market" component={VarietyAllScreens} />
       <Tab.Screen name="Fertilization" component={FertilizationAll} />
       <Tab.Screen name="VSelectAllScreens" component={VSelectAllScreens} options={{ tabBarButton: () => null }} />
