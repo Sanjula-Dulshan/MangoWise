@@ -82,10 +82,6 @@ export default function payment() {
       appearance: customAppearance,
     });
 
-    console.log("initPaymentSheet.paymentOption", paymentOption);
-
-    console.log("error", error);
-
     if (!error) {
       console.log("error", error);
       setLoading(true);
@@ -94,8 +90,6 @@ export default function payment() {
 
   const openPaymentSheet = async () => {
     const { error, paymentOption } = await presentPaymentSheet();
-
-    console.log("presentPaymentSheet.paymentOption", paymentOption);
 
     if (error) {
       Alert.alert(`Error code: ${error.code}`, error.message);
@@ -128,13 +122,15 @@ export default function payment() {
         {renderBullet("Get fresh market income plan")}
       </View>
 
-      <TouchableOpacity style={styles.subscribeButton}>
+      <TouchableOpacity
+        style={styles.subscribeButton}
+        onPress={() => openPaymentSheet()}
+      >
         <Text
           style={styles.subscribeButtonText}
           variant="primary"
           disabled={!loading}
           title="Checkout"
-          onPress={() => openPaymentSheet()}
         >
           Subscribe
         </Text>
