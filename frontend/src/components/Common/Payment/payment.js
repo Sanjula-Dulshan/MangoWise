@@ -1,4 +1,13 @@
-import { View, Text, StyleSheet, TextInput, Button, Alert } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  Button,
+  Alert,
+  TouchableOpacity,
+  Image,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import constants from "../../../constants/constants";
 import {
@@ -100,39 +109,118 @@ export default function payment() {
   }, []);
 
   return (
-    <Screen>
-      <Button
-        variant="primary"
-        disabled={!loading}
-        title="Checkout"
-        onPress={() => openPaymentSheet()}
-      />
-    </Screen>
+    // <Screen>
+    //   <Button
+    //     variant="primary"
+    //     disabled={!loading}
+    //     title="Checkout"
+    //     onPress={() => openPaymentSheet()}
+    //   />
+    // </Screen>
+    <View style={styles.container}>
+      <Text style={styles.title}>Get Full Access to Mangowise</Text>
+      <Text style={styles.subtitle}>Discover the beauty of plants</Text>
+
+      <View style={styles.bulletPoints}>
+        {renderBullet("Gain access to market analysis")}
+        {renderBullet("Get fresh market analysis")}
+        {renderBullet("Get fertilizer name")}
+        {renderBullet("Get fresh market income plan")}
+      </View>
+
+      <TouchableOpacity style={styles.subscribeButton}>
+        <Text
+          style={styles.subscribeButtonText}
+          variant="primary"
+          disabled={!loading}
+          title="Checkout"
+          onPress={() => openPaymentSheet()}
+        >
+          Subscribe
+        </Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 
+const renderBullet = (text) => (
+  <View style={styles.bullet}>
+    <Image
+      source={require("../../../../assets/bullet.png")}
+      style={styles.bulletIcon}
+    />
+    <Text style={styles.bulletText}>{text}</Text>
+  </View>
+);
+
 const styles = StyleSheet.create({
+  // container: {
+  //   flex: 1,
+  //   justifyContent: "center",
+  //   padding: 20,
+  // },
+
+  // input: {
+  //   backgroundColor: "#efefefef",
+
+  //   borderRadius: 8,
+  //   fontSize: 20,
+  //   height: 50,
+  //   padding: 10,
+  // },
+
+  // card: {
+  //   backgroundColor: "#efefefef",
+  // },
+
+  // cardContainer: {
+  //   height: 50,
+  //   marginVertical: 30,
+  // },
   container: {
     flex: 1,
     justifyContent: "center",
-    padding: 20,
+    alignItems: "center",
+    backgroundColor: "#446715",
+    padding: 50,
   },
-
-  input: {
-    backgroundColor: "#efefefef",
-
-    borderRadius: 8,
-    fontSize: 20,
-    height: 50,
-    padding: 10,
+  title: {
+    fontSize: 35,
+    color: "#FFC107",
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 10,
   },
-
-  card: {
-    backgroundColor: "#efefefef",
+  subtitle: {
+    fontSize: 18,
+    fontStyle: "italic",
+    textAlign: "center",
+    marginBottom: 20,
+    color: "#FFC107",
   },
-
-  cardContainer: {
-    height: 50,
-    marginVertical: 30,
+  bulletPoints: {
+    marginBottom: 20,
+  },
+  bullet: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  bulletText: {
+    color: "#FFFFFF",
+    marginLeft: 10,
+    fontSize: 24,
+  },
+  subscribeButton: {
+    backgroundColor: "#FFC107",
+    padding: 15,
+    borderRadius: 25,
+    width: 200,
+  },
+  subscribeButtonText: {
+    color: "#446715",
+    textAlign: "center",
+    fontSize: 22,
+    fontWeight: "bold",
   },
 });
