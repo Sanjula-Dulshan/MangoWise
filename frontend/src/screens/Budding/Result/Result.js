@@ -58,7 +58,7 @@ export default function BuddingResultScreen() {
 
   const navigation = useNavigation();
   const [permissionGranted, setPermissionGranted] = useState(false);
-  const [isModalVisible, setModalVisible] = useState(false);
+  const [isModalVisible, setModalVisible] = useState(true);
   const [isError, setError] = useState(false);
   const [imgeUri, setImgeUri] = useState(backgroundImage);
   const [Suitability,setSuitability] = useState("");
@@ -80,6 +80,7 @@ export default function BuddingResultScreen() {
     console.log("response", response.class);
     setFlagVal(flagA);
     console.log("flag", flagA);
+
 
     console.log("Param ::::: ", route.params);
 
@@ -118,7 +119,7 @@ export default function BuddingResultScreen() {
 
   const handleRetakePicture = async () => {
     setModalVisible(false);
-    navigation.navigate("BuddingScanScreen");
+    navigation.navigate("BuddingScanScreenNoNav");
   }
 
   const handleFindVariety = async () => {

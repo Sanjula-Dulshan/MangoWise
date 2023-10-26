@@ -119,7 +119,9 @@ const mangoOrigin = "Originated in India"; // Origin of the mango variety
   
 
   const handleChangeFeature = () => {
+    console.log("Change Feature");
     navigation.navigate("VSelectAllScreens");
+    navigation.navigate("VarietySelection");
   };
   
 
