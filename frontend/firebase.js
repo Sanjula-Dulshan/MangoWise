@@ -22,7 +22,6 @@ if (!firebase.apps.length) {
 } else {
   app = firebase.app();
 }
-
 const auth = firebase.auth();
 const firestore = firebase.firestore();
 

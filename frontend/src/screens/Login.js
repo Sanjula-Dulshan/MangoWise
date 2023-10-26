@@ -19,9 +19,9 @@ const Login = () => {
   useEffect(() => {
     const isLogged = auth.onAuthStateChanged((user) => {
       if (user) {
-        alert("Logged in successfully");
+        //alert("Logged in successfully");
         // Navigate to home screen
-        navigate.navigate("Home");
+        navigate.navigate("HomeNav");
       }
     });
     return isLogged;
@@ -30,11 +30,10 @@ const Login = () => {
   const login = () => {
     auth
       .signInWithEmailAndPassword(email, password)
-      .then((userCredentials) => {
+      .then(userCredentials => {
         const loggedUser = userCredentials.user;
       })
-      .catch((e) => alert(e.message));
-    navigate.navigate("HomeNav");
+      .catch(e => alert(e.message))
   };
 
   const navigateToSignup = () => {
