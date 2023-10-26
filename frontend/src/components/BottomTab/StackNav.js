@@ -6,16 +6,25 @@ import BottomTabs from "./BottomTabs";
 import VarietyScanScreen from "../../screens/Variety/Scan/ScanScreen";
 import VSelectAllScreens from "./VSelectAll";
 import BuddingScanScreen from "../../screens/Budding/Scan";
+import LoginScreen from "../../screens/Login";
+import SplashScreen from "../../screens/Splash";
+import SignupScreen from "../../screens/SignUp";
 
 const Stack = createNativeStackNavigator();
 const StackNav = () => {
   return (
-    <Stack.Navigator initialRouteName="HomeNav">
+    <Stack.Navigator initialRouteName="SplashScreen">
+      <Stack.Screen
+        name="SplashScreen"
+        component={SplashScreen}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen
         name="HomeNav"
         component={BottomTabs}
         options={{ headerShown: false }}
       />
+
       <Stack.Screen
         name="DiagnoseScanScreen"
         component={DiagnoseScanScreen}
@@ -36,6 +45,16 @@ const StackNav = () => {
       <Stack.Screen
         name="BuddingScanScreenNoNav"
         component={BuddingScanScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="LoginScreen"
+        component={LoginScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="SignupScreen"
+        component={SignupScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

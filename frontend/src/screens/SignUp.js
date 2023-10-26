@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/core";
 import {
   StyleSheet,
@@ -10,35 +10,25 @@ import {
 } from "react-native";
 import { auth } from "../../firebase";
 
-const Login = () => {
+const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
 
   const navigate = useNavigation();
 
-  useEffect(() => {
-    const isLogged = auth.onAuthStateChanged((user) => {
-      if (user) {
-        alert("Logged in successfully");
-        // Navigate to home screen
-        navigate.navigate("Home");
-      }
-    });
-    return isLogged;
-  }, []);
-
-  const login = () => {
+  const register = () => {
     auth
-      .signInWithEmailAndPassword(email, password)
+      .createUserWithEmailAndPassword(email, password)
       .then((userCredentials) => {
-        const loggedUser = userCredentials.user;
+        const newUser = userCredentials.user;
+        // Additional logic or navigation if needed
       })
       .catch((e) => alert(e.message));
-    navigate.navigate("HomeNav");
   };
 
-  const navigateToSignup = () => {
-    navigate.navigate("SignupScreen");
+  const navigateToLogin = () => {
+    navigate.navigate("LoginScreen");
   };
 
   return (
@@ -50,12 +40,19 @@ const Login = () => {
       <View style={styles.overlay}>
         <View style={styles.header}>
           <Image
-            source={require("../../assets/undraw2.png")}
+            source={require("../../assets/signup2.png")}
             style={styles.logo}
           />
           <Text style={styles.headerText}>Welcome</Text>
         </View>
         <View style={styles.inputContainer}>
+          {/* name input */}
+          <TextInput
+            placeholder="Enter name"
+            value={name}
+            onChangeText={(text) => setName(text)}
+            style={styles.input}
+          />
           <TextInput
             placeholder="Enter email"
             value={email}
@@ -72,14 +69,14 @@ const Login = () => {
         </View>
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={login} style={styles.loginButton}>
-            <Text style={styles.buttonText}>Login</Text>
+          <TouchableOpacity onPress={register} style={styles.loginButton}>
+            <Text style={styles.buttonText}>Register</Text>
           </TouchableOpacity>
         </View>
         <Text style={styles.signupText}>
-          Don't have an account?{" "}
-          <Text style={styles.signupLink} onPress={navigateToSignup}>
-            Sign Up
+          Already have an account?{" "}
+          <Text style={styles.signupLink} onPress={navigateToLogin}>
+            Log In
           </Text>
         </Text>
       </View>
@@ -87,7 +84,7 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
 
 const styles = StyleSheet.create({
   container: {
@@ -112,6 +109,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     width: 300,
     height: 280,
+    marginLeft: 30,
   },
   headerText: {
     color: "white",
