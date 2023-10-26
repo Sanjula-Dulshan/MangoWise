@@ -107,7 +107,7 @@ export default function HomeScreen() {
             response.data.forecasted_values.forEach((data, index) => {
               newPredictedData.push({
                 quantity: parseInt(forecast.freshMangoes),
-                pricePerKg: data,
+                pricePerKg: data?.toFixed(2),
                 income: (parseInt(forecast.freshMangoes) * data).toFixed(2),
               });
             });
