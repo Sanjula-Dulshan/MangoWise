@@ -6,6 +6,7 @@ import BottomTabs from "./BottomTabs";
 import VarietyScanScreen from "../../screens/Variety/Scan/ScanScreen";
 import VSelectAllScreens from "./VSelectAll";
 import BuddingScanScreen from "../../screens/Budding/Scan";
+import paymentScreen from "../../components/Common/Payment";
 
 const Stack = createNativeStackNavigator();
 const StackNav = () => {
@@ -36,6 +37,11 @@ const StackNav = () => {
       <Stack.Screen
         name="BuddingScanScreenNoNav"
         component={BuddingScanScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="paymentScreen"
+        component={paymentScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

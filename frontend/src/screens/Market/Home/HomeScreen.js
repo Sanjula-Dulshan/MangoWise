@@ -97,8 +97,6 @@ export default function HomeScreen() {
           requestData
         )
         .then((response) => {
-          console.log("response>> ", response.data);
-
           if (step == 1) {
             navigation.navigate("ForecastScreen", {
               response: response.data,

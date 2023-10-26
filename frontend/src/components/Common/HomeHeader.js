@@ -18,11 +18,15 @@ export default function Header() {
       </TouchableOpacity>
       <View style={styles.header}>
         <View style={styles.imageContainer}>
-          <Image
-            source={Premium}
-            style={styles.imagePremium}
-            resizeMode="contain"
-          />
+          <TouchableOpacityBase
+            onPress={() => navigation.navigate("paymentScreen")}
+          >
+            <Image
+              source={Premium}
+              style={styles.imagePremium}
+              resizeMode="contain"
+            />
+          </TouchableOpacityBase>
           <Image
             source={Profile}
             style={styles.imageProfile}
