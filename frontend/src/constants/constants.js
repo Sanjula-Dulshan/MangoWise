@@ -2,7 +2,7 @@
 const constants = {
   //backend_url: "http://172.20.10.2:8070", //Dilsha
   //backend_url: "http://192.168.8.115:8070", //Sanjula  172.20.10.6  192.168.8.115
-  backend_url: "http://192.168.8.125:8070", //Yasantha
+  backend_url: "http://192.168.1.100:8070", //Yasantha
 };
 
 export default constants;
