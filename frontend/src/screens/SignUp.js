@@ -8,12 +8,12 @@ import {
   View,
   Image,
 } from "react-native";
-import { auth } from "../../firebase";
+import { auth, firestore } from "../../firebase"; // Make sure to import the Firestore module
 
 const Register = () => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
 
   const navigate = useNavigation();
 
@@ -22,7 +22,24 @@ const Register = () => {
       .createUserWithEmailAndPassword(email, password)
       .then((userCredentials) => {
         const newUser = userCredentials.user;
-        // Additional logic or navigation if needed
+
+        // Add user data to Firestore using the user's UID as the document ID
+        firestore
+          .collection("users")
+          .doc(newUser.uid)
+          .set({
+            name: name,
+            email: email,
+            isPremium: false,
+          })
+          .then(() => {
+            console.log("User data added to Firestore");
+            // Additional logic or navigation if needed
+          })
+          .catch((e) => {
+            console.error("Error adding user data to Firestore: ", e);
+            // Handle the error here
+          });
       })
       .catch((e) => alert(e.message));
   };
