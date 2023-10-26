@@ -132,7 +132,7 @@ export default function Home() {
               onPress={goToFertilizerRecommender}
             >
               <Icon name="cog" size={30} color="#446714" />
-              <Text style={styles.buttonTextF}> Recommend Fertilizer</Text>
+              <Text style={styles.buttonText}>Fertilization</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.menuButton}
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
   },
   menuButton: {
     backgroundColor: "#fdc50b",
-    width: 100,
+    width: 110,
     height: 100,
     justifyContent: "center",
     alignItems: "center",

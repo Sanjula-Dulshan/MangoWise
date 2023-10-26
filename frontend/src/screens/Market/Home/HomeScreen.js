@@ -93,7 +93,7 @@ export default function HomeScreen() {
     try {
       await axios
         .post(
-          "https://us-central1-mangowise-395709.cloudfunctions.net/market_predict",
+          "https://us-central1-mangowise-395709.cloudfunctions.net/market_analysis_predict",
           requestData
         )
         .then((response) => {
