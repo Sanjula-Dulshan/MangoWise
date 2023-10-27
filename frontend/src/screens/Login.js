@@ -38,9 +38,9 @@ const Login = () => {
       .then((userCredentials) => {
         const loggedUser = userCredentials.user;
         // Additional logic or navigation if needed
+        navigate.navigate("HomeNav");
       })
       .catch((e) => alert(e.message));
-    navigate.navigate("HomeNav");
   };
 
   const navigateToSignup = () => {
@@ -89,7 +89,7 @@ const Login = () => {
           </Text>
         </Text>
 
-        {loading && ( // Display the loading indicator when `loading` is `true`
+        {/* {loading && ( // Display the loading indicator when `loading` is `true`
           <View style={styles.loadingContainer}>
             <Image
               source={loadingIcon} // Use your loading image
@@ -101,7 +101,7 @@ const Login = () => {
               }}
             />
           </View>
-        )}
+        )} */}
       </View>
     </View>
   );

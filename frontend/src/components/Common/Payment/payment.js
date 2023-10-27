@@ -86,7 +86,9 @@ export default function payment() {
 
     const { error } = await initPaymentSheet(paymentDetails);
 
+    console.log("error", error);
     if (!error) {
+      console.log("setLoading");
       setLoading(true);
     }
   };
