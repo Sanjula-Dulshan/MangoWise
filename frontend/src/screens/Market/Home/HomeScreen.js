@@ -93,12 +93,10 @@ export default function HomeScreen() {
     try {
       await axios
         .post(
-          "https://us-central1-mangowise-395709.cloudfunctions.net/market_predict",
+          "https://us-central1-mangowise-395709.cloudfunctions.net/market_analysis_predict",
           requestData
         )
         .then((response) => {
-          console.log("response>> ", response.data);
-
           if (step == 1) {
             navigation.navigate("ForecastScreen", {
               response: response.data,
@@ -109,7 +107,7 @@ export default function HomeScreen() {
             response.data.forecasted_values.forEach((data, index) => {
               newPredictedData.push({
                 quantity: parseInt(forecast.freshMangoes),
-                pricePerKg: data,
+                pricePerKg: data?.toFixed(2),
                 income: (parseInt(forecast.freshMangoes) * data).toFixed(2),
               });
             });

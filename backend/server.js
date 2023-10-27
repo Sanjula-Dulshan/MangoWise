@@ -16,6 +16,7 @@ import SaveRecordsRoute from "./routes/FertilizerSuggestion/SaveRecordsRoute.js"
 import SuitableQuantityRoute from "./routes/FertilizerSuggestion/SuitableQuantityRoute.js";
 import VarietyPredictionRoute from "./routes/Variety/Prediction.routes.js";
 import BudRoute from "./routes/Bud/bud.routes.js";
+import PaymentRoute from "./routes/Payment/payment.routes.js";
 const app = express();
 
 //server run in this port 8070
@@ -42,6 +43,7 @@ app.use("/records", SaveRecordsRoute);
 app.use("/disease", DiseaseRoute);
 app.use("/variety", VarietyPredictionRoute);
 app.use("/bud", BudRoute);
+app.use("/payment", PaymentRoute);
 
 app.listen(PORT, () => {
   console.log(

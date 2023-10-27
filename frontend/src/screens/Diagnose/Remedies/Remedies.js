@@ -24,6 +24,7 @@ export default function Remedies() {
 
   useEffect(() => {
     const { disease, diseasesInfo, base64Data } = route.params;
+    console.log("route.params>> ", route.params);
     setDisease(disease);
     setDiseasesInfo(diseasesInfo);
     setBase64Data(base64Data);

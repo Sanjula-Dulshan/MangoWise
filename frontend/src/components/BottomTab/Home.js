@@ -81,15 +81,16 @@ export default function Home() {
     if (userData.isPremium === true) {
       navigation.navigate("Fertilization");
     } else {
-      navigation.navigate("Diagnose");
+      navigation.navigate("paymentScreen");
     }
   };
 
   const goToMarketAnalysis = () => {
+    console.log("user>>>>>>>>>", userData.isPremium);
     if (userData.isPremium === true) {
       navigation.navigate("Market");
     } else {
-      navigation.navigate("Variety");
+      navigation.navigate("paymentScreen");
     }
   };
 
