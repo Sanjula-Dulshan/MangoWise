@@ -52,7 +52,6 @@ export default function payment() {
     const response = await axios.post(
       constants.backend_url + "/payment/create-sheet"
     );
-    console.log(response.data);
 
     const { paymentIntent, ephemeralKey, customer } = await response.data;
 
@@ -64,10 +63,11 @@ export default function payment() {
   };
 
   const initializePaymentSheet = async () => {
+    console.log("initializePaymentSheet");
     const { paymentIntent, ephemeralKey, customer } =
       await fetchPaymentSheetParams();
 
-    const { error, paymentOption } = await initPaymentSheet({
+    const paymentDetails = {
       merchantDisplayName: "MangoWise, Inc.",
       customerId: customer,
       customerEphemeralKeySecret: ephemeralKey,
@@ -80,18 +80,22 @@ export default function payment() {
         email: "sdulshan10@gmail.com",
       },
       appearance: customAppearance,
-    });
+    };
+
+    console.log("paymentDetails", paymentDetails);
+
+    const { error } = await initPaymentSheet(paymentDetails);
 
     if (!error) {
-      console.log("error", error);
       setLoading(true);
     }
   };
 
   const openPaymentSheet = async () => {
-    const { error, paymentOption } = await presentPaymentSheet();
+    const { error } = await presentPaymentSheet();
 
     if (error) {
+      console.log("error", error);
       Alert.alert(`Error code: ${error.code}`, error.message);
     } else {
       Alert.alert("Success", "Your order is confirmed!");
@@ -99,6 +103,9 @@ export default function payment() {
   };
 
   useEffect(() => {
+    // initStripe({
+    //   publishableKey: constants.PUBLISHABLE_KEY, // Replace with your actual publishable key
+    // });
     initializePaymentSheet();
   }, []);
 
@@ -111,31 +118,33 @@ export default function payment() {
     //     onPress={() => openPaymentSheet()}
     //   />
     // </Screen>
-    <View style={styles.container}>
-      <Text style={styles.title}>Get Full Access to Mangowise</Text>
-      <Text style={styles.subtitle}>Discover the beauty of plants</Text>
+    <StripeProvider publishableKey={constants.PUBLISHABLE_KEY}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Get Full Access to Mangowise</Text>
+        <Text style={styles.subtitle}>Discover the beauty of plants</Text>
 
-      <View style={styles.bulletPoints}>
-        {renderBullet("Gain access to market analysis")}
-        {renderBullet("Get fresh market analysis")}
-        {renderBullet("Get fertilizer name")}
-        {renderBullet("Get fresh market income plan")}
-      </View>
+        <View style={styles.bulletPoints}>
+          {renderBullet("Gain access to market analysis")}
+          {renderBullet("Get fresh market analysis")}
+          {renderBullet("Get fertilizer name")}
+          {renderBullet("Get fresh market income plan")}
+        </View>
 
-      <TouchableOpacity
-        style={styles.subscribeButton}
-        onPress={() => openPaymentSheet()}
-      >
-        <Text
-          style={styles.subscribeButtonText}
-          variant="primary"
+        <TouchableOpacity
+          style={styles.subscribeButton}
+          onPress={() => openPaymentSheet()}
           disabled={!loading}
-          title="Checkout"
         >
-          Subscribe
-        </Text>
-      </TouchableOpacity>
-    </View>
+          <Text
+            style={styles.subscribeButtonText}
+            variant="primary"
+            title="Checkout"
+          >
+            Subscribe
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </StripeProvider>
   );
 }
 
