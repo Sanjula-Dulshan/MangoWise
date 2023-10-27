@@ -20,8 +20,8 @@ const Login = () => {
 
   useEffect(() => {
     const isLogged = auth.onAuthStateChanged((user) => {
-      console.log(user.email);
       if (user) {
+        setLoading(true); // Turn off loading when user is logged in
         alert("Logged in successfully");
         // Navigate to home screen
         navigate.navigate("HomeNav");
