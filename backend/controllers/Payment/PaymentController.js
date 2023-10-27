@@ -36,17 +36,20 @@ export const createPaymentSheet = async (req, res) => {
   const stripe = Stripe(SECRET_KEY, { apiVersion: "2023-10-16" });
 
   const customer = await stripe.customers.create();
-  console.log("c", customer);
   const ephemeralKey = await stripe.ephemeralKeys.create(
     { customer: customer.id },
     { apiVersion: "2023-10-16" }
   );
-  const paymentIntent = await stripe.paymentIntents.create({
-    amount: 500000,
-    currency: "lkr",
-    customer: customer.id,
-    payment_method_types: ["card"],
-  });
+  const paymentIntent = await stripe.paymentIntents
+    .create({
+      amount: 499900,
+      currency: "lkr",
+      customer: customer.id,
+      payment_method_types: ["card"],
+    })
+    .catch((e) => {
+      console.log(e.message);
+    });
   res.json({
     paymentIntent: paymentIntent.client_secret,
     ephemeralKey: ephemeralKey.secret,
