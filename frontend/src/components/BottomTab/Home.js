@@ -27,6 +27,7 @@ export default function Home() {
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
+      console.log("User:", user.email);
       if (user) {
         setUserEmail(user.email);
         // Fetch user data here
