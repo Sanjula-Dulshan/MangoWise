@@ -22,8 +22,7 @@ const Login = () => {
     const isLogged = auth.onAuthStateChanged((user) => {
       console.log(user.email);
       if (user) {
-        setLoading(true); // Turn off loading when user is logged in
-
+        alert("Logged in successfully");
         // Navigate to home screen
         navigate.navigate("HomeNav");
       }
@@ -40,10 +39,7 @@ const Login = () => {
         const loggedUser = userCredentials.user;
         // Additional logic or navigation if needed
       })
-      .catch((e) => {
-        setLoading(false); // Turn off loading when login fails
-        alert(e.message);
-      });
+      .catch((e) => alert(e.message));
     navigate.navigate("HomeNav");
   };
 

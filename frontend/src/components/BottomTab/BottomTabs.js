@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Image } from "react-native";
 import BuddingIcon from "../../../assets/Budding.png";
 import DiagnoseIcon from "../../../assets/Diagnose.png";
@@ -14,10 +14,54 @@ import Home from "./Home";
 import Variety from "./Variety";
 import BuddingAllScreens from "./BuddingAll";
 import VSelectAllScreens from "./VSelectAll";
+import { auth, firestore } from "../../../firebase";
 
 const Tab = createBottomTabNavigator();
 
+
+
 export default function BottomTabs() {
+
+  const [userEmail, setUserEmail] = useState(null);
+  const [userData, setUserData] = useState({
+    isPremium: false,
+  });
+  const [loading, setLoading] = useState(!auth.currentUser); // Set loading to true if the user is not logged in
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUserEmail(user.email);
+        // Fetch user data here
+        fetchUserData(user.email);
+      } else {
+        // Handle the case when the user is not logged in
+        setLoading(false);
+      }
+    });
+
+    return () => {
+      unsubscribe(); // Unsubscribe from the observer when the component unmounts
+    };
+  }, []);
+
+  const fetchUserData = async (email) => {
+    try {
+      const usersRef = firestore.collection("users");
+      const userQuery = usersRef.where("email", "==", email);
+
+      const querySnapshot = await userQuery.get();
+      querySnapshot.forEach((doc) => {
+        const userData = doc.data();
+        setUserData(userData);
+      });
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -69,7 +113,7 @@ export default function BottomTabs() {
       <Tab.Screen name="Home" component={Home} />
 
       <Tab.Screen name="Market" component={VarietyAllScreens} />
-      <Tab.Screen name="Fertilization" component={FertilizationAll} />
+      <Tab.Screen name="Fertilization" component={userData.isPremium ? FertilizationAll : Home} />
       <Tab.Screen
         name="VSelectAllScreens"
         component={VSelectAllScreens}

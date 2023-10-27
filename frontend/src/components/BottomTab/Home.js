@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import Swiper from "react-native-swiper";
 import axios from "axios";
@@ -7,42 +7,55 @@ import Header from "../Common/HomeHeader";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useNavigation } from "@react-navigation/native";
 import VSelectAllScreens from "./VSelectAll";
+import { auth, firestore } from "../../../firebase";
 
 const images = [
   "https://res.cloudinary.com/sliit-yasantha/image/upload/v1693979486/villard_kpqitd.jpg",
   "https://res.cloudinary.com/sliit-yasantha/image/upload/v1693979486/gira_pugwgg.jpg",
   "https://res.cloudinary.com/sliit-yasantha/image/upload/v1693979485/OIP_5_3_yo3att.png",
   "https://res.cloudinary.com/sliit-yasantha/image/upload/v1693979486/malwana_uk7rjg.jpg",
-
   // Add more image URLs here
 ];
 
 export default function Home() {
+  const navigation = useNavigation();
+  const [userEmail, setUserEmail] = useState(null);
+  const [userData, setUserData] = useState({
+    isPremium: false,
+  });
+  const [loading, setLoading] = useState(!auth.currentUser); // Set loading to true if the user is not logged in
+
   useEffect(() => {
-    warmUpAPICall();
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUserEmail(user.email);
+        // Fetch user data here
+        fetchUserData(user.email);
+      } else {
+        // Handle the case when the user is not logged in
+        setLoading(false);
+      }
+    });
+
+    return () => {
+      unsubscribe(); // Unsubscribe from the observer when the component unmounts
+    };
   }, []);
 
-  const navigation = useNavigation();
-
-  const warmUpAPICall = async () => {
+  const fetchUserData = async (email) => {
     try {
-      const formData = new FormData();
-      formData.append("file", {
-        // Use the first image for the API call
-        uri: "https://i.pcmag.com/imagery/reviews/03aizylUVApdyLAIku1AvRV-39.1605559903.fit_scale.size_760x427.png",
-        type: "image/jpeg",
-        name: "image.jpg",
-      });
+      const usersRef = firestore.collection("users");
+      const userQuery = usersRef.where("email", "==", email);
 
-      await axios
-        .post(constants.disease_cnn_url, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        })
-        .then(() => console.log("warmed up disease_predict"));
+      const querySnapshot = await userQuery.get();
+      querySnapshot.forEach((doc) => {
+        const userData = doc.data();
+        setUserData(userData);
+      });
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error fetching user data:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -51,7 +64,7 @@ export default function Home() {
   };
 
   const goToVarietyIdentification = () => {
-    navigation.navigate("Market");
+    navigation.navigate("Variety");
   };
 
   const goToDiseaseIdentification = () => {
@@ -64,12 +77,24 @@ export default function Home() {
   };
 
   const goToFertilizerRecommender = () => {
-    navigation.navigate("Fertilization");
+    if (userData.isPremium === true) {
+      navigation.navigate("Fertilization");
+    } else {
+      navigation.navigate("Diagnose");
+    }
   };
 
   const goToMarketAnalysis = () => {
-    navigation.navigate("Market");
+    if (userData.isPremium === true) {
+      navigation.navigate("Market");
+    } else {
+      navigation.navigate("Variety");
+    }
   };
+
+  if (loading) {
+    return <Text>Loading...</Text>;
+  }
 
   return (
     <View style={styles.container}>
@@ -101,7 +126,7 @@ export default function Home() {
               onPress={goToBuddingTimer}
             >
               <Icon name="search" size={30} color="#446714" />
-              <Text style={styles.buttonText}>Buddinig Timmer</Text>
+              <Text style={styles.buttonText}>Budding Timer</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.menuButton}
@@ -199,15 +224,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5, // Elevation for Android
   },
-
   buttonText: {
-    color: "#446714",
-    marginTop: 10,
-    fontSize: 16,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  buttonTextF: {
     color: "#446714",
     marginTop: 10,
     fontSize: 16,
