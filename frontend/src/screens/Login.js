@@ -9,17 +9,20 @@ import {
   Image,
 } from "react-native";
 import { auth } from "../../firebase";
+import loadingIcon from "../../assets/loadings/loading.gif";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigation();
 
   useEffect(() => {
     const isLogged = auth.onAuthStateChanged((user) => {
       if (user) {
-        //alert("Logged in successfully");
+        setLoading(true); // Turn off loading when user is logged in
+        alert("Logged in successfully");
         // Navigate to home screen
         navigate.navigate("HomeNav");
       }
@@ -28,12 +31,16 @@ const Login = () => {
   }, []);
 
   const login = () => {
+    setLoading(true); // Turn on loading when login is initiated
+
     auth
       .signInWithEmailAndPassword(email, password)
-      .then(userCredentials => {
+      .then((userCredentials) => {
         const loggedUser = userCredentials.user;
+        // Additional logic or navigation if needed
       })
-      .catch(e => alert(e.message))
+      .catch((e) => alert(e.message));
+    navigate.navigate("HomeNav");
   };
 
   const navigateToSignup = () => {
@@ -81,6 +88,20 @@ const Login = () => {
             Sign Up
           </Text>
         </Text>
+
+        {loading && ( // Display the loading indicator when `loading` is `true`
+          <View style={styles.loadingContainer}>
+            <Image
+              source={loadingIcon} // Use your loading image
+              style={{
+                width: 200,
+                height: 150,
+                alignSelf: "center",
+                marginTop: 100,
+              }}
+            />
+          </View>
+        )}
       </View>
     </View>
   );
@@ -159,5 +180,9 @@ const styles = StyleSheet.create({
   signupLink: {
     color: "#FDC704",
     fontWeight: "bold",
+  },
+  loadingContainer: {
+    height: "60%",
+    justifyContent: "center",
   },
 });
