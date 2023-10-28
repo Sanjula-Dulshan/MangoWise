@@ -5,9 +5,22 @@ import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import Logo from "../../../assets/Logo.png";
 import Premium from "../../../assets/Premium.png";
 import Profile from "../../../assets/Profile.png";
+import { auth } from "../../../firebase";
 
 export default function Header() {
   const navigation = useNavigation();
+
+  const logout = () => {
+    auth
+      .signOut()
+      .then(() => {
+        navigation.navigate("LoginScreen");
+      })
+      .catch((error) => {
+        // Handle any errors that might occur during sign-out
+        console.error(error);
+      });
+  };
 
   return (
     <View style={styles.topic}>
@@ -27,11 +40,13 @@ export default function Header() {
               resizeMode="contain"
             />
           </TouchableOpacity>
-          <Image
-            source={Profile}
-            style={styles.imageProfile}
-            resizeMode="contain"
-          />
+          <TouchableOpacity onPress={() => logout()}>
+            <Image
+              source={Profile}
+              style={styles.imageProfile}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
         </View>
         <Image source={Logo} style={styles.imageLogo} resizeMode="contain" />
       </View>

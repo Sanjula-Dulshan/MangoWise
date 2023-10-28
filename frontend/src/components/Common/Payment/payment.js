@@ -17,7 +17,8 @@ import {
   useStripe,
 } from "@stripe/stripe-react-native";
 import axios from "axios";
-import { Screen } from "react-native-screens";
+import Toast from "react-native-toast-message";
+import { useNavigation } from "@react-navigation/native";
 
 const customAppearance = {
   shapes: {
@@ -45,6 +46,7 @@ const customAppearance = {
 export default function payment() {
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const [loading, setLoading] = useState(false);
+  const navigation = useNavigation();
 
   const fetchPaymentSheetParams = async () => {
     console.log("fetchPaymentSheetParams");
@@ -86,7 +88,9 @@ export default function payment() {
 
     const { error } = await initPaymentSheet(paymentDetails);
 
+    console.log("error", error);
     if (!error) {
+      console.log("setLoading");
       setLoading(true);
     }
   };
@@ -96,30 +100,42 @@ export default function payment() {
 
     if (error) {
       console.log("error", error);
-      Alert.alert(`Error code: ${error.code}`, error.message);
+      Toast.show({
+        type: "error",
+        position: "bottom",
+        text1: "Activation Failed",
+        visibilityTime: 8000,
+        autoHide: true,
+        bottomOffset: 100,
+      });
     } else {
-      Alert.alert("Success", "Your order is confirmed!");
+      Toast.show({
+        type: "success",
+        position: "bottom",
+        text1: "Activation Success",
+        visibilityTime: 5000,
+        autoHide: true,
+        bottomOffset: 100,
+        onHide: () => navigation.goBack(),
+      });
     }
   };
 
   useEffect(() => {
-    // initStripe({
-    //   publishableKey: constants.PUBLISHABLE_KEY, // Replace with your actual publishable key
-    // });
     initializePaymentSheet();
   }, []);
 
   return (
-    // <Screen>
-    //   <Button
-    //     variant="primary"
-    //     disabled={!loading}
-    //     title="Checkout"
-    //     onPress={() => openPaymentSheet()}
-    //   />
-    // </Screen>
     <StripeProvider publishableKey={constants.PUBLISHABLE_KEY}>
       <View style={styles.container}>
+        <View style={styles.bulletClose}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Image
+              source={require("../../../../assets/close.png")}
+              style={styles.bulletIcon}
+            />
+          </TouchableOpacity>
+        </View>
         <Text style={styles.title}>Get Full Access to Mangowise</Text>
         <Text style={styles.subtitle}>Discover the beauty of plants</Text>
 
@@ -143,6 +159,7 @@ export default function payment() {
             Subscribe
           </Text>
         </TouchableOpacity>
+        <Toast ref={(ref) => Toast.setRef(ref)} />
       </View>
     </StripeProvider>
   );
@@ -159,29 +176,6 @@ const renderBullet = (text) => (
 );
 
 const styles = StyleSheet.create({
-  // container: {
-  //   flex: 1,
-  //   justifyContent: "center",
-  //   padding: 20,
-  // },
-
-  // input: {
-  //   backgroundColor: "#efefefef",
-
-  //   borderRadius: 8,
-  //   fontSize: 20,
-  //   height: 50,
-  //   padding: 10,
-  // },
-
-  // card: {
-  //   backgroundColor: "#efefefef",
-  // },
-
-  // cardContainer: {
-  //   height: 50,
-  //   marginVertical: 30,
-  // },
   container: {
     flex: 1,
     justifyContent: "center",
@@ -215,6 +209,13 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     marginLeft: 10,
     fontSize: 24,
+  },
+  bulletClose: {
+    position: "absolute",
+    top: 15,
+    right: 10,
+    flexDirection: "row",
+    alignItems: "flex-end",
   },
   subscribeButton: {
     backgroundColor: "#FFC107",
