@@ -22,6 +22,7 @@ import Toast from "react-native-toast-message";
 import sensorimage from "../../../assets/NPKSensor.png";
 import Header from "../../components/Common/Header";
 import constants from "../../constants/constants";
+import { auth, firestore } from "../../../firebase";
 
 import {
   PERMISSIONS,
@@ -115,6 +116,8 @@ export default function CheckFertilizerScreen() {
   const [isError, setError] = useState(false);
   const [isAgeError, setAgeError] = useState(false);
   const [record_id, setRecord_id] = useState(1);
+  const [loading, setLoading] = useState(!auth.currentUser); // Set loading to true if the user is not logged in
+  const [userEmail, setUserEmail] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -141,6 +144,21 @@ export default function CheckFertilizerScreen() {
       }
     })();
   }, [record_id]);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUserEmail(user.email);
+      } else {
+        setLoading(false);
+      }
+    });
+
+    return () => {
+      unsubscribe(); // Unsubscribe from the observer when the component unmounts
+    };
+  }, [userEmail]);
+
 
   useFocusEffect(
     React.useCallback(() => {
@@ -367,6 +385,7 @@ export default function CheckFertilizerScreen() {
               record_id: record_id,
               age: data.age,
               growthStage: stage,
+              email: userEmail,
             })
             .then(
               setTimeout(() => {
