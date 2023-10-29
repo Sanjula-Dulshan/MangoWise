@@ -27,7 +27,6 @@ export default function Home() {
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
-      console.log("User:", user.email);
       if (user) {
         setUserEmail(user.email);
         // Fetch user data here
@@ -51,7 +50,6 @@ export default function Home() {
       const querySnapshot = await userQuery.get();
       querySnapshot.forEach((doc) => {
         const userData = doc.data();
-        console.log("userData>>>>>>>>> ", userData);
         setUserData(userData);
       });
     } catch (error) {
@@ -87,7 +85,6 @@ export default function Home() {
   };
 
   const goToMarketAnalysis = () => {
-    console.log("user>>>>>>>>>", userData.isPremium);
     if (userData.isPremium === true) {
       navigation.navigate("Market");
     } else {
@@ -159,6 +156,11 @@ export default function Home() {
               style={styles.menuButton}
               onPress={goToFertilizerRecommender}
             >
+              {userData.isPremium === false ? (
+                <View style={styles.diamond}>
+                  <Icon name="diamond" size={20} color="#000000" />
+                </View>
+              ) : null}
               <Icon name="cog" size={30} color="#446714" />
               <Text style={styles.buttonText}>Fertilization</Text>
             </TouchableOpacity>
@@ -166,6 +168,11 @@ export default function Home() {
               style={styles.menuButton}
               onPress={goToMarketAnalysis}
             >
+              {userData.isPremium === false ? (
+                <View style={styles.diamond}>
+                  <Icon name="diamond" size={20} color="#000000" />
+                </View>
+              ) : null}
               <Icon name="line-chart" size={30} color="#446714" />
               <Text style={styles.buttonText}>Market Analysis</Text>
             </TouchableOpacity>
@@ -269,5 +276,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 20,
     paddingVertical: 10,
+  },
+
+  diamond: {
+    position: "absolute",
+    top: 5,
+    right: 5,
+    flexDirection: "row",
+    alignItems: "flex-end",
   },
 });

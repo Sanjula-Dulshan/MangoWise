@@ -58,7 +58,7 @@ export default function Header() {
           </TouchableOpacity>
           <TouchableOpacity onPress={() => confirmLogout()}>
             <Image
-              source={Profile}
+              source={Logout}
               style={styles.imageProfile}
               resizeMode="contain"
             />
