@@ -41,7 +41,7 @@ export default function Home() {
     return () => {
       unsubscribe(); // Unsubscribe from the observer when the component unmounts
     };
-  }, []);
+  });
 
   const fetchUserData = async (email) => {
     try {
@@ -51,6 +51,7 @@ export default function Home() {
       const querySnapshot = await userQuery.get();
       querySnapshot.forEach((doc) => {
         const userData = doc.data();
+        console.log("userData>>>>>>>>> ", userData);
         setUserData(userData);
       });
     } catch (error) {
