@@ -1,7 +1,7 @@
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Alert, Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import Logo from "../../../assets/Logo.png";
 import Premium from "../../../assets/Premium.png";
 import Profile from "../../../assets/Profile.png";
@@ -9,6 +9,22 @@ import { auth } from "../../../firebase";
 
 export default function Header() {
   const navigation = useNavigation();
+
+  const confirmLogout = () => {
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to logout?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Logout"),
+          style: "cancel",
+        },
+        { text: "Logout", onPress: () => logout() },
+      ],
+      { cancelable: false }
+    );
+  };
 
   const logout = () => {
     auth
@@ -40,7 +56,7 @@ export default function Header() {
               resizeMode="contain"
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => logout()}>
+          <TouchableOpacity onPress={() => confirmLogout()}>
             <Image
               source={Profile}
               style={styles.imageProfile}
