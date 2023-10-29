@@ -19,6 +19,7 @@ import {
 import axios from "axios";
 import Toast from "react-native-toast-message";
 import { useNavigation } from "@react-navigation/native";
+import { auth, firestore } from "../../../../firebase";
 
 const customAppearance = {
   shapes: {
@@ -84,11 +85,8 @@ export default function payment() {
       appearance: customAppearance,
     };
 
-    console.log("paymentDetails", paymentDetails);
-
     const { error } = await initPaymentSheet(paymentDetails);
 
-    console.log("error", error);
     if (!error) {
       console.log("setLoading");
       setLoading(true);
@@ -109,6 +107,15 @@ export default function payment() {
         bottomOffset: 100,
       });
     } else {
+      try {
+        const user = auth.currentUser;
+        const userRef = firestore.collection("users").doc(user.uid);
+        await userRef.update({ isPremium: true });
+        console.log("User is now Premium!");
+      } catch (updateError) {
+        console.error("Error updating user data:", updateError);
+      }
+
       Toast.show({
         type: "success",
         position: "bottom",

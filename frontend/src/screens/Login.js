@@ -9,20 +9,17 @@ import {
   Image,
 } from "react-native";
 import { auth } from "../../firebase";
-import loadingIcon from "../../assets/loadings/loading.gif";
+import Toast from "react-native-toast-message";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigation();
 
   useEffect(() => {
     const isLogged = auth.onAuthStateChanged((user) => {
       if (user) {
-        setLoading(true); // Turn off loading when user is logged in
-        alert("Logged in successfully");
         // Navigate to home screen
         navigate.navigate("HomeNav");
       }
@@ -31,8 +28,6 @@ const Login = () => {
   }, []);
 
   const login = () => {
-    setLoading(true); // Turn on loading when login is initiated
-
     auth
       .signInWithEmailAndPassword(email, password)
       .then((userCredentials) => {
@@ -40,7 +35,17 @@ const Login = () => {
         // Additional logic or navigation if needed
         navigate.navigate("HomeNav");
       })
-      .catch((e) => alert(e.message));
+      .catch(() => {
+        Toast.show({
+          type: "error",
+          position: "bottom",
+          text1: "Login Failed",
+          text2: "Incorrect email or password",
+          visibilityTime: 4000,
+          autoHide: true,
+          bottomOffset: 80,
+        });
+      });
   };
 
   const navigateToSignup = () => {
@@ -88,21 +93,9 @@ const Login = () => {
             Sign Up
           </Text>
         </Text>
-
-        {/* {loading && ( // Display the loading indicator when `loading` is `true`
-          <View style={styles.loadingContainer}>
-            <Image
-              source={loadingIcon} // Use your loading image
-              style={{
-                width: 200,
-                height: 150,
-                alignSelf: "center",
-                marginTop: 100,
-              }}
-            />
-          </View>
-        )} */}
       </View>
+
+      <Toast ref={(ref) => Toast.setRef(ref)} />
     </View>
   );
 };
