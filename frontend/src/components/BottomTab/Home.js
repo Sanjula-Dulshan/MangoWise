@@ -48,10 +48,15 @@ export default function Home() {
       const userQuery = usersRef.where("email", "==", email);
 
       const querySnapshot = await userQuery.get();
-      querySnapshot.forEach((doc) => {
+
+      if (querySnapshot.size === 0) {
+        console.log("No user data found for email:", email);
+        setUserData({ isPremium: false }); // Set default data
+      } else {
+        const doc = querySnapshot.docs[0];
         const userData = doc.data();
         setUserData(userData);
-      });
+      }
     } catch (error) {
       console.error("Error fetching user data:", error);
     } finally {
