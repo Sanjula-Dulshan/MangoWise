@@ -18,6 +18,7 @@ import vector from "../../../assets/Vector.png";
 import monitor from "../../../assets/monitor_nutrients.jpg";
 import report from "../../../assets/report.png";
 import Header from "../../components/Common/Header";
+import { auth } from "../../../firebase";
 
 import {
   PERMISSIONS,
@@ -100,6 +101,7 @@ export default function FertilizationHomeScreen() {
   const [permissionGranted, setPermissionGranted] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const [isError, setError] = useState(false);
+  const [email, setEmail] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -121,6 +123,21 @@ export default function FertilizationHomeScreen() {
     })();
   }, []);
 
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setEmail(user.email);
+      } else {
+        setLoading(false);
+      }
+    });
+
+    return () => {
+      unsubscribe(); // Unsubscribe from the observer when the component unmounts
+    };
+  });
+
   const handlebtn1 = async () => {
     await BluetoothSerial.isEnabled().then((res) => {
       if (res) {
@@ -134,7 +151,9 @@ export default function FertilizationHomeScreen() {
   const handlebtn2 = async () => {
     await BluetoothSerial.isEnabled().then((res) => {
       if (res) {
-        navigation.navigate("PreviousRecordsScreen");
+        navigation.navigate("PreviousRecordsScreen", {
+          emails: email,
+        });
       } else {
         setError(true);
       }
