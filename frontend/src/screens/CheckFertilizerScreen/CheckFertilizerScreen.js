@@ -22,7 +22,7 @@ import Toast from "react-native-toast-message";
 import sensorimage from "../../../assets/NPKSensor.png";
 import Header from "../../components/Common/Header";
 import constants from "../../constants/constants";
-import { auth, firestore } from "../../../firebase";
+import { auth } from "../../../firebase";
 
 import {
   PERMISSIONS,
