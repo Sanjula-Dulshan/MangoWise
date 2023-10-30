@@ -31,7 +31,6 @@ export default function PreviousRecordsScreen({ route }) {
             `${constants.backend_url}/records/getall/${emails}`);
           if (record) {
             const records = record.data;
-            console.log(email);
             setAllRecords(records);
           } else {
             console.log("No Records");
