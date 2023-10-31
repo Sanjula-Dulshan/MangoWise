@@ -13,7 +13,6 @@ import {
 import Header from "../../components/Common/Header";
 import constants from "../../constants/constants";
 
-
 export default function PreviousRecordsScreen({ route }) {
   const { emails } = route.params;
   const navigation = useNavigation();
@@ -25,10 +24,10 @@ export default function PreviousRecordsScreen({ route }) {
   useFocusEffect(
     React.useCallback(() => {
       (async function id() {
-
         try {
           const record = await axios.get(
-            `${constants.backend_url}/records/getall/${emails}`);
+            `${constants.BACKEND_URL}/records/getall/${emails}`
+          );
           if (record) {
             const records = record.data;
             setAllRecords(records);
@@ -41,8 +40,6 @@ export default function PreviousRecordsScreen({ route }) {
       })();
     }, [])
   );
-
-
 
   const handleSearch = () => {
     if (searchQuery === "") {

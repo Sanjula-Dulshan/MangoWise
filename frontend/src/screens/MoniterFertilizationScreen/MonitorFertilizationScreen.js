@@ -156,7 +156,7 @@ export default function CheckFertilizerScreen({ route }) {
       (async function getRecord() {
         try {
           const record = await axios.get(
-            `${constants.backend_url}/records/get/${id}`
+            `${constants.BACKEND_URL}/records/get/${id}`
           );
           if (record) {
             setDate(record.data.savedDate);
@@ -367,7 +367,7 @@ export default function CheckFertilizerScreen({ route }) {
             visibilityTime: 2000,
           });
           const response = await axios.post(
-            constants.backend_url + "/fertilizer/monitor",
+            constants.BACKEND_URL + "/fertilizer/monitor",
             {
               nvalue: nvalue,
               pvalue: pvalue,
@@ -680,7 +680,7 @@ export default function CheckFertilizerScreen({ route }) {
         <View style={{ flexDirection: "row", marginTop: 8 }}>
           <Text style={{ fontSize: 14, marginTop: 25, marginLeft: 20 }}>
             {" "}
-            Nitrogen (N)    :{" "}
+            Nitrogen (N) :{" "}
           </Text>
           <Text style={styles.npk}>{nitrogen}</Text>
         </View>

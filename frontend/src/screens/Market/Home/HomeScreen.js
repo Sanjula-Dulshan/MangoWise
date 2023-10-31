@@ -92,7 +92,7 @@ export default function HomeScreen() {
 
     try {
       await axios
-        .post(constants.market_price_url, requestData)
+        .post(constants.MARKET_PRICE_PREDICT_URL, requestData)
         .then((response) => {
           if (step == 1) {
             navigation.navigate("ForecastScreen", {

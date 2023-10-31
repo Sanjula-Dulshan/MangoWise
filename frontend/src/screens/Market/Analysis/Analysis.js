@@ -57,7 +57,7 @@ const MarketAnalysisPlan = () => {
 
     try {
       console.log("Analyze", marketData);
-      await axios.post(constants.backend_url + "/market", data);
+      await axios.post(constants.BACKEND_URL + "/market", data);
     } catch (error) {
       console.log("error ", error);
     }

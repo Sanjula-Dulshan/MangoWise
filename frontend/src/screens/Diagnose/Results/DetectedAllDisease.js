@@ -71,7 +71,7 @@ export default function DetectedAllDisease() {
       });
 
       await axios
-        .post(constants.disease_cnn_url, formData, {
+        .post(constants.DISEASE_PREDICT_URL, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -108,7 +108,7 @@ export default function DetectedAllDisease() {
         name: "image.jpg",
       });
       await axios
-        .post(constants.disease_cnn_url, formData, {
+        .post(constants.DISEASE_PREDICT_URL, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
