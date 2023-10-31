@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import Swiper from "react-native-swiper";
-import axios from "axios";
-import constants from "../../constants/constants";
 import Header from "../Common/HomeHeader";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";

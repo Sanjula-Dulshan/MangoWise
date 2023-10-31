@@ -51,7 +51,7 @@ export default function Payment() {
 
   const fetchPaymentSheetParams = async () => {
     const response = await axios.post(
-      constants.backend_url + "/payment/create-sheet"
+      constants.BACKEND_URL + "/payment/create-sheet"
     );
 
     const { paymentIntent, ephemeralKey, customer } = await response.data;

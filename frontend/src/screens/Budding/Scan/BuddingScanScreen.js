@@ -3,7 +3,7 @@ import { Camera } from "expo-camera";
 import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library";
 import { useEffect, useRef, useState } from "react";
-import {TouchableOpacity, Image, StyleSheet, Text, View } from "react-native";
+import { TouchableOpacity, Image, StyleSheet, Text, View } from "react-native";
 import Header from "../../../components/Common/Header";
 import Button from "./Button";
 import { manipulateAsync } from "expo-image-manipulator";
@@ -43,9 +43,9 @@ export default function ScanScreen() {
   const handleTakePicture = async () => {
     console.log("Backup pressed");
     setFlag(true);
-    bc = true
+    bc = true;
     advanceBudSearch();
-  }
+  };
 
   const takePicture = async () => {
     if (cameraRef) {
@@ -62,7 +62,6 @@ export default function ScanScreen() {
   };
 
   const getGalleryImage = async () => {
-
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -87,16 +86,16 @@ export default function ScanScreen() {
         if (!gallery) {
           await MediaLibrary.createAssetAsync(image);
         }
-  
+
         // // Resize image
         // const manipulatedResult = await manipulateAsync(
         //   image,
         //   [{ resize: { width: 256, height: 256 } }],
         //   { base64: false } // Do not convert to base64
         // );
-  
+
         // setIsLoading(true);
-  
+
         // // Create a FormData object to send the image as a file
         // const formData = new FormData();
         // formData.append("image", {
@@ -104,9 +103,9 @@ export default function ScanScreen() {
         //   type: "image/jpeg", // Adjust the image type if needed
         //   name: "image.jpg", // Adjust the file name if needed
         // });
-  
+
         const response = await axios.post(
-          constants.backend_url + "/bud/predict",
+          constants.BACKEND_URL + "/bud/predict",
           image,
           {
             headers: {
@@ -114,12 +113,12 @@ export default function ScanScreen() {
             },
           }
         );
-  
+
         console.log(response.data);
         setIsLoading(false);
 
         console.log("flag :: ", flag);
-  
+
         navigation.navigate("BuddingResultScreen", {
           response: response.data,
           imageUri: image,
@@ -139,7 +138,7 @@ export default function ScanScreen() {
         if (!gallery) {
           await MediaLibrary.createAssetAsync(image);
         }
-  
+
         // Resize image
         const manipulatedResult = await manipulateAsync(
           image,
@@ -147,16 +146,16 @@ export default function ScanScreen() {
           { base64: true }
         );
 
-        const base64Data = "data:image/png;base64,"+manipulatedResult.base64;
+        const base64Data = "data:image/png;base64," + manipulatedResult.base64;
 
         console.log("base64Data: ", base64Data);
         console.log("\n\nclassType: ", className);
-  
+
         setIsLoading(true);
-  
+
         await axios({
           method: "POST",
-          url: constants.backend_url + "/bud/save",
+          url: constants.BACKEND_URL + "/bud/save",
           data: {
             image: base64Data,
             class: className,
@@ -164,8 +163,8 @@ export default function ScanScreen() {
           headers: {
             "Content-Type": "application/json",
           },
-        })
-  
+        });
+
         console.log(response.data);
       } catch (error) {
         console.log("error ", error);
@@ -174,17 +173,16 @@ export default function ScanScreen() {
   };
 
   const advanceBudSearch = async () => {
+    let flaga = flag;
 
-    let flaga = flag
-
-    if(bc){
+    if (bc) {
       console.log("Backup pressed");
       setFlag(true);
-      flaga = true
+      flaga = true;
     }
 
     setIsLoading(true);
-    
+
     try {
       const formData = new FormData();
       formData.append("file", {
@@ -192,21 +190,17 @@ export default function ScanScreen() {
         type: "image/jpeg",
         name: "image.jpg",
       });
-      const response = await axios
-        .post(
-          "https://us-central1-mangowise-395709.cloudfunctions.net/bud_predict",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        )
+      await axios
+        .post(constants.BUD_PREDICT_URL, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
         .then((response) => {
           setIsLoading(false);
           console.log("response>> ", response.data);
           console.log("image>> ", image);
-          console.log("class", response.data.class)
+          console.log("class", response.data.class);
           setClassType(response.data.class);
 
           saveImage(response.data.class);
@@ -224,8 +218,6 @@ export default function ScanScreen() {
       console.error("Error:", error);
     }
   };
-
-
 
   return (
     <View style={styles.container}>
@@ -266,7 +258,10 @@ export default function ScanScreen() {
               icon="retweet"
               onPress={() => setImage(null)}
             />
-            <TouchableOpacity style={{ ...styles.button, marginTop: 10 }} onPress={handleTakePicture}>
+            <TouchableOpacity
+              style={{ ...styles.button, marginTop: 10 }}
+              onPress={handleTakePicture}
+            >
               <Text style={styles.btntext}></Text>
             </TouchableOpacity>
             <Button title={"Check"} icon="check" onPress={advanceBudSearch} />
@@ -321,14 +316,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   button: {
-    backgroundColor: '#f2f2f2',
+    backgroundColor: "#f2f2f2",
     width: 90,
     height: 65,
     paddingBottom: 0,
     borderRadius: 25,
     marginTop: 20,
     marginLeft: 140,
-   // alignSelf: 'right',
+    // alignSelf: 'right',
     marginBottom: 10,
-  }
+  },
 });

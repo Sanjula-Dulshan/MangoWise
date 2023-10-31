@@ -1,3 +1,4 @@
+import constants from "../../../frontend/src/constants/constants.js";
 import SuitableQuantity from "../../models/FertilizerSuggestion/SuitableQuantityModel.js";
 import request from "request-promise";
 
@@ -14,7 +15,8 @@ export const saveSuitableQuantity = async (req, res) => {
 
 // Controller function to retrieve records based on age and growthStage
 export const findRecordByConditions = async (req, res) => {
-  const { nvalue, pvalue, kvalue, record_id, age, growthStage, email } = req.body;
+  const { nvalue, pvalue, kvalue, record_id, age, growthStage, email } =
+    req.body;
   const record = await SuitableQuantity.findOne({
     ageLowerLimit: { $lt: age },
     ageUpperLimit: { $gt: age },
@@ -61,9 +63,7 @@ export const findRecordByConditions = async (req, res) => {
       let options = {
         method: "POST",
         //  **** For the Fertilizer Suggestion(Cloud Function)  **** //
-        uri: "https://us-central1-mangowise-395709.cloudfunctions.net/fertilizers",
-        //  **** For the Fertilizer Suggestion(Local Host)  **** //
-        //uri:"http://127.0.0.1:5000/fertilizer",
+        uri: constants.FERTILIZER_PREDICT_URL,
         body: data,
         json: true,
       };
@@ -102,9 +102,7 @@ export const findRecordByConditions = async (req, res) => {
           let options2 = {
             method: "POST",
             // **** For the Fertilizer Quantity Suggestion(Cloud Function)  **** //
-            uri: "https://us-central1-mangowise-395709.cloudfunctions.net/fQuantity",
-            // ****For the Fertilizer Quantity Suggestion(Local Host)**** //
-            //uri:"http://127.0.0.1:5000/quantity",
+            uri: constants.FERTILIZER_QUANTITY_PREDICT_URL,
             body: data2,
             json: true,
           };
@@ -128,7 +126,7 @@ export const findRecordByConditions = async (req, res) => {
 
               let options3 = {
                 method: "POST",
-                uri: "http://127.0.0.1:8070/records/add",
+                uri: constants.BACKEND_URL + "/records/add",
                 body: data3,
                 json: true,
               };
@@ -175,9 +173,7 @@ export const monitorNutrition = async (req, res) => {
       let options = {
         method: "POST",
         //  **** For the Fertilizer Suggestion(Cloud Function)  **** //
-        uri: "https://us-central1-mangowise-395709.cloudfunctions.net/fertilizers",
-        //  **** For the Fertilizer Suggestion(Local Host)  **** //
-        //uri:"http://127.0.0.1:5000/fertilizer",
+        uri: constants.FERTILIZER_PREDICT_URL,
         body: data,
         json: true,
       };
@@ -216,9 +212,7 @@ export const monitorNutrition = async (req, res) => {
           let options2 = {
             method: "POST",
             // **** For the Fertilizer Quantity Suggestion(Cloud Function)  **** //
-            uri: "https://us-central1-mangowise-395709.cloudfunctions.net/fQuantity",
-            // ****For the Fertilizer Quantity Suggestion(Local Host)**** //
-            //uri:"http://127.0.0.1:5000/quantity",
+            uri: constants.FERTILIZER_QUANTITY_PREDICT_URL,
             body: data2,
             json: true,
           };

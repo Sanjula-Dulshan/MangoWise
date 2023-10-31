@@ -25,7 +25,7 @@ export default function PreviousBuds() {
   const route = useRoute();
 
   useEffect(() => {
-    axios.get(constants.backend_url + "/bud/get").then((response) => {
+    axios.get(constants.BACKEND_URL + "/bud/get").then((response) => {
       setDiseasesList(response.data);
       setLoading(false);
     });
@@ -149,11 +149,9 @@ export default function PreviousBuds() {
                   </Text>
                   <Text style={{ marginTop: 10, marginBottom: 10 }}>
                     Result Detected:{" "}
-                    <Text style={{ color: "red" }}>
-                      {selectedRecord.class}
-                    </Text>
+                    <Text style={{ color: "red" }}>{selectedRecord.class}</Text>
                   </Text>
-                  
+
                   <TouchableOpacity
                     style={styles.modelButton}
                     onPress={() => {
