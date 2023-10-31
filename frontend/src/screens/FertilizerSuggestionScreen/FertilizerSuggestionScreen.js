@@ -1,6 +1,6 @@
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import {
   Image,
@@ -13,15 +13,31 @@ import {
 import FertilizerImg from "../../../assets/Fertilizer.jpg";
 import Header from "../../components/Common/Header";
 import constants from "../../constants/constants";
+import { auth } from "../../../firebase";
 
 export default function FertilizerSuggestionScreen() {
   const navigation = useNavigation();
   const [fertilizer, setFertilizer] = useState("");
   const [quantity, setQuantity] = useState(0);
+  const [email, setEmail] = useState(null);
 
   const {
     formState: { errors },
   } = useForm();
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setEmail(user.email);
+      } else {
+        setLoading(false);
+      }
+    });
+
+    return () => {
+      unsubscribe(); // Unsubscribe from the observer when the component unmounts
+    };
+  });
 
   //Get data from backend
   useFocusEffect(
@@ -180,7 +196,9 @@ export default function FertilizerSuggestionScreen() {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate("PreviousRecordsScreen")}
+          onPress={() => navigation.navigate("PreviousRecordsScreen", {
+            emails: email,
+          })}
         >
           <Text style={styles.btntext}>See Previous Records</Text>
         </TouchableOpacity>
