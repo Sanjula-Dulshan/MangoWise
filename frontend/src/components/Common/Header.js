@@ -5,7 +5,7 @@ import { Alert, Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import Logo from "../../../assets/Logo.png";
 import Premium from "../../../assets/Premium.png";
 import Profile from "../../../assets/Profile.png";
-import Logout from "../../../assets/logout.png";
+import Logout from "../../../assets/logout4.png";
 import { auth } from "../../../firebase";
 
 export default function Header() {
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
   },
   imageProfile: {
     width: 38,
-    height: 32,
+    height: 25,
     margin: 5,
     marginTop: -10,
   },
