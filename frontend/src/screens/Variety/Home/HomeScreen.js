@@ -29,7 +29,6 @@ export default function HomeScreen() {
   useEffect(() => {
     try {
       axios.get(constants.backend_url + "/variety").then((response) => {
-        console.log("variety ", response.data);
         setVarietyList(response.data);
       });
     } catch (error) {

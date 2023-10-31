@@ -5,9 +5,10 @@ import axios from "axios";
 import constants from "../../constants/constants";
 import Header from "../Common/HomeHeader";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import VSelectAllScreens from "./VSelectAll";
 import { auth, firestore } from "../../../firebase";
+import loadingIcon from "../../../assets/loadings/loading.gif";
 
 
 const images = [
@@ -24,46 +25,25 @@ export default function Home() {
   const [userData, setUserData] = useState({
     isPremium: false,
   });
-  const [loading, setLoading] = useState(!auth.currentUser); // Set loading to true if the user is not logged in
+  const [loading, setLoading] = useState(true); // Set loading to true if the user is not logged in
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUserEmail(user.email);
-        // Fetch user data here
-        fetchUserData(user.email);
-      } else {
-        // Handle the case when the user is not logged in
-        setLoading(false);
-      }
-    });
-
-    return () => {
-      unsubscribe(); // Unsubscribe from the observer when the component unmounts
-    };
-  });
-
-  const fetchUserData = async (email) => {
-    try {
-      const usersRef = firestore.collection("users");
-      const userQuery = usersRef.where("email", "==", email);
-
-      const querySnapshot = await userQuery.get();
-
-      if (querySnapshot.size === 0) {
-        console.log("No user data found for email:", email);
-        setUserData({ isPremium: false }); // Set default data
-      } else {
-        const doc = querySnapshot.docs[0];
-        const userData = doc.data();
-        setUserData(userData);
-      }
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useFocusEffect(
+    React.useCallback(() => {
+      setLoading(true);
+      const user = auth.currentUser;
+      const userRef = firestore.collection("users").doc(user.uid);
+      userRef.get().then((doc) => {
+        if (doc.exists) {
+          const userData = doc.data();
+          setUserData(userData);
+          setLoading(false);
+          console.log("User document data:", userData.isPremium);
+        } else {
+          console.log("User document not found");
+        }
+      });
+    }, [])
+  );
 
   const goToBuddingTimer = () => {
     navigation.navigate("Budding");
@@ -86,7 +66,7 @@ export default function Home() {
     if (userData.isPremium === true) {
       navigation.navigate("Fertilization");
     } else {
-      navigation.navigate("paymentScreen");
+      navigation.navigate("PaymentScreen");
     }
   };
 
@@ -94,97 +74,109 @@ export default function Home() {
     if (userData.isPremium === true) {
       navigation.navigate("Market");
     } else {
-      navigation.navigate("paymentScreen");
+      navigation.navigate("PaymentScreen");
     }
   };
 
-  if (loading) {
-    return <Text>Loading...</Text>;
-  }
-
   return (
     <View style={styles.container}>
-      <Header />
-      <View style={styles.yellowSection}>
-        <Swiper
-          style={styles.wrapper}
-          showsButtons={true}
-          buttonWrapperStyle={styles.buttonWrapper}
-          borderRadius={10} // Rounded corners
-          containerStyle={styles.swiperContainer}
-          dotStyle={styles.dotStyle}
-          activeDotStyle={styles.activeDotStyle}
-        >
-          {images.map((image, index) => (
-            <View key={index} style={styles.slide}>
-              <Image source={{ uri: image }} style={styles.image} />
-            </View>
-          ))}
-        </Swiper>
-      </View>
-      <View style={styles.whiteSection}>
-        <Text style={styles.featureTitle}>Feature Menu</Text>
-        <View style={styles.buttonContainer}>
-          {/* First Row */}
-          <View style={styles.buttonRow}>
-            <TouchableOpacity
-              style={styles.menuButton}
-              onPress={goToBuddingTimer}
-            >
-              <Icon name="search" size={30} color="#446714" />
-              <Text style={styles.buttonText}>Budding Timer</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.menuButton}
-              onPress={goToVarietyIdentification}
-            >
-              <Icon name="camera" size={30} color="#446714" />
-              <Text style={styles.buttonText}>Variety Identification</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.menuButton}
-              onPress={goToDiseaseIdentification}
-            >
-              <Icon name="bug" size={30} color="#446714" />
-              <Text style={styles.buttonText}>Disease Identification</Text>
-            </TouchableOpacity>
-          </View>
-          {/* Second Row */}
-          <View style={styles.buttonRow}>
-            <TouchableOpacity
-              style={styles.menuButton}
-              onPress={goToVarietySelector}
-            >
-              <Icon name="pagelines" size={30} color="#446714" />
-              <Text style={styles.buttonText}>Variety Selector</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.menuButton}
-              onPress={goToFertilizerRecommender}
-            >
-              {userData.isPremium === false ? (
-                <View style={styles.diamond}>
-                  <Icon name="diamond" size={20} color="#000000" />
-                </View>
-              ) : null}
-              <Icon name="cog" size={30} color="#446714" />
-              <Text style={styles.buttonText}>Fertilization</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.menuButton}
-              onPress={goToMarketAnalysis}
-            >
-              {userData.isPremium === false ? (
-                <View style={styles.diamond}>
-                  <Icon name="diamond" size={20} color="#000000" />
-                </View>
-              ) : null}
-              <Icon name="line-chart" size={30} color="#446714" />
-              <Text style={styles.buttonText}>Market Analysis</Text>
-            </TouchableOpacity>
-          </View>
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <Image
+            source={loadingIcon}
+            style={{
+              width: 200,
+              height: 150,
+              alignSelf: "center",
+              marginTop: 100,
+            }}
+          />
         </View>
-      </View>
+      ) : (
+        <>
+          <Header />
+          <View style={styles.yellowSection}>
+            <Swiper
+              style={styles.wrapper}
+              showsButtons={true}
+              buttonWrapperStyle={styles.buttonWrapper}
+              borderRadius={10} // Rounded corners
+              containerStyle={styles.swiperContainer}
+              dotStyle={styles.dotStyle}
+              activeDotStyle={styles.activeDotStyle}
+            >
+              {images.map((image, index) => (
+                <View key={index} style={styles.slide}>
+                  <Image source={{ uri: image }} style={styles.image} />
+                </View>
+              ))}
+            </Swiper>
+          </View>
+          <View style={styles.whiteSection}>
+            <Text style={styles.featureTitle}>Feature Menu</Text>
+            <View style={styles.buttonContainer}>
+              {/* First Row */}
+              <View style={styles.buttonRow}>
+                <TouchableOpacity
+                  style={styles.menuButton}
+                  onPress={goToBuddingTimer}
+                >
+                  <Icon name="search" size={30} color="#446714" />
+                  <Text style={styles.buttonText}>Budding Timer</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.menuButton}
+                  onPress={goToVarietyIdentification}
+                >
+                  <Icon name="camera" size={30} color="#446714" />
+                  <Text style={styles.buttonText}>Variety Identification</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.menuButton}
+                  onPress={goToDiseaseIdentification}
+                >
+                  <Icon name="bug" size={30} color="#446714" />
+                  <Text style={styles.buttonText}>Disease Identification</Text>
+                </TouchableOpacity>
+              </View>
+              {/* Second Row */}
+              <View style={styles.buttonRow}>
+                <TouchableOpacity
+                  style={styles.menuButton}
+                  onPress={goToVarietySelector}
+                >
+                  <Icon name="pagelines" size={30} color="#446714" />
+                  <Text style={styles.buttonText}>Variety Selector</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.menuButton}
+                  onPress={goToFertilizerRecommender}
+                >
+                  {userData.isPremium === false ? (
+                    <View style={styles.diamond}>
+                      <Icon name="diamond" size={20} color="#000000" />
+                    </View>
+                  ) : null}
+                  <Icon name="cog" size={30} color="#446714" />
+                  <Text style={styles.buttonText}>Fertilization</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.menuButton}
+                  onPress={goToMarketAnalysis}
+                >
+                  {userData.isPremium === false ? (
+                    <View style={styles.diamond}>
+                      <Icon name="diamond" size={20} color="#000000" />
+                    </View>
+                  ) : null}
+                  <Icon name="line-chart" size={30} color="#446714" />
+                  <Text style={styles.buttonText}>Market Analysis</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </>
+      )}
     </View>
   );
 }
@@ -290,5 +282,9 @@ const styles = StyleSheet.create({
     right: 5,
     flexDirection: "row",
     alignItems: "flex-end",
+  },
+  loadingContainer: {
+    height: "85%",
+    justifyContent: "center",
   },
 });

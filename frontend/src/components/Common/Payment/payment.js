@@ -44,14 +44,12 @@ const customAppearance = {
   },
 };
 
-export default function payment() {
+export default function Payment() {
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
 
   const fetchPaymentSheetParams = async () => {
-    console.log("fetchPaymentSheetParams");
-
     const response = await axios.post(
       constants.backend_url + "/payment/create-sheet"
     );
@@ -66,7 +64,6 @@ export default function payment() {
   };
 
   const initializePaymentSheet = async () => {
-    console.log("initializePaymentSheet");
     const { paymentIntent, ephemeralKey, customer } =
       await fetchPaymentSheetParams();
 
@@ -88,7 +85,6 @@ export default function payment() {
     const { error } = await initPaymentSheet(paymentDetails);
 
     if (!error) {
-      console.log("setLoading");
       setLoading(true);
     }
   };
@@ -111,7 +107,6 @@ export default function payment() {
         const user = auth.currentUser;
         const userRef = firestore.collection("users").doc(user.uid);
         await userRef.update({ isPremium: true });
-        console.log("User is now Premium!");
       } catch (updateError) {
         console.error("Error updating user data:", updateError);
       }

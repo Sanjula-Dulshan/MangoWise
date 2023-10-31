@@ -6,7 +6,7 @@ import BottomTabs from "./BottomTabs";
 import VarietyScanScreen from "../../screens/Variety/Scan/ScanScreen";
 import VSelectAllScreens from "./VSelectAll";
 import BuddingScanScreen from "../../screens/Budding/Scan";
-import paymentScreen from "../../components/Common/Payment";
+import PaymentScreen from "../../components/Common/Payment";
 import LoginScreen from "../../screens/Login";
 import SplashScreen from "../../screens/Splash";
 import SignupScreen from "../../screens/SignUp";
@@ -49,8 +49,8 @@ const StackNav = () => {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="paymentScreen"
-        component={paymentScreen}
+        name="PaymentScreen"
+        component={PaymentScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen
