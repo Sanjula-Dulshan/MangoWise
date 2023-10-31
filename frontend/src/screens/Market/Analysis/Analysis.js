@@ -198,7 +198,7 @@ const MarketAnalysisPlan = () => {
             }}
             renderItem={renderLocationItem}
           />
-          <Text style={styles.inputLabel}>Fresh Mangoes(Kgs)</Text>
+          <Text style={styles.inputLabel}>Quantity of Fresh Mangoes</Text>
           <TextInput
             style={styles.input}
             placeholder="Enter Quantity"
@@ -208,7 +208,7 @@ const MarketAnalysisPlan = () => {
               setFreshMangoes(text.replace(/[^0-9]/g, ""))
             }
           />
-          <Text style={styles.inputLabel}>Damaged Mangoes(Kgs)</Text>
+          <Text style={styles.inputLabel}>Quantity of Damaged Mangoes </Text>
           <TextInput
             style={styles.input}
             placeholder="Enter Quantity"

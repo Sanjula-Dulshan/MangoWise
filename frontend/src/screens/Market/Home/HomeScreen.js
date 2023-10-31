@@ -17,6 +17,7 @@ import mangoAnalysis from "../../../../assets/M4.jpg";
 import mangoForecast from "../../../../assets/M5.jpg";
 import axios from "axios";
 import Modal from "react-native-modal";
+import constants from "../../../constants/constants";
 
 import searching from "../../../../assets/loadings/searching.gif";
 
@@ -92,10 +93,7 @@ export default function HomeScreen() {
 
     try {
       await axios
-        .post(
-          "https://us-central1-mangowise-395709.cloudfunctions.net/market_analysis_predict",
-          requestData
-        )
+        .post(constants.market_price_url, requestData)
         .then((response) => {
           if (step == 1) {
             navigation.navigate("ForecastScreen", {
