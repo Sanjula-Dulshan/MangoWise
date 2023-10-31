@@ -10,7 +10,6 @@ import VSelectAllScreens from "./VSelectAll";
 import { auth, firestore } from "../../../firebase";
 import loadingIcon from "../../../assets/loadings/loading.gif";
 
-
 const images = [
   "https://res.cloudinary.com/sliit-yasantha/image/upload/v1693979486/villard_kpqitd.jpg",
   "https://res.cloudinary.com/sliit-yasantha/image/upload/v1693979486/gira_pugwgg.jpg",
@@ -37,7 +36,6 @@ export default function Home() {
           const userData = doc.data();
           setUserData(userData);
           setLoading(false);
-          console.log("User document data:", userData.isPremium);
         } else {
           console.log("User document not found");
         }
