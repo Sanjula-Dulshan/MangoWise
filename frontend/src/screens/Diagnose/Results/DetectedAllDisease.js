@@ -53,7 +53,6 @@ export default function DetectedAllDisease() {
   };
 
   const getRemedies = async () => {
-    console.log("diseasePercentage.class>> ", diseasePercentage.class);
     navigation.navigate("RemediesScreen", {
       disease: diseasePercentage.class,
       diseasesInfo: diseaseData,

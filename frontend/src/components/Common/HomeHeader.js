@@ -18,7 +18,6 @@ export default function Header() {
       [
         {
           text: "Cancel",
-          onPress: () => console.log("Cancel Logout"),
           style: "cancel",
         },
         { text: "Logout", onPress: () => logout() },
@@ -49,7 +48,7 @@ export default function Header() {
       <View style={styles.header}>
         <View style={styles.imageContainer}>
           <TouchableOpacity
-            onPress={() => navigation.navigate("paymentScreen")}
+            onPress={() => navigation.navigate("PaymentScreen")}
           >
             <Image
               source={Premium}

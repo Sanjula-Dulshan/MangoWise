@@ -35,7 +35,6 @@ export default function HomeScreen() {
 
   // get marketData passed by previous analysis screen
   useEffect(() => {
-    console.log("route.params>> ", route.params.marketData);
     const { marketData } = route.params;
     setForecast(marketData);
   }, [route.params]);
@@ -113,7 +112,6 @@ export default function HomeScreen() {
             });
             setPredictedData(newPredictedData);
             setIsModalVisible(true);
-            console.log("predictedData>> ", predictedData);
           }
           setIsLoading(false);
         });

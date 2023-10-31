@@ -48,7 +48,6 @@ const Analysis = () => {
       .then(() => {})
       .catch((err) => {
         console.log(err);
-        console.log("ip", constants);
       });
     navigation.navigate("VarietyHomeScreen");
   };

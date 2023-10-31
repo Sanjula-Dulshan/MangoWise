@@ -32,7 +32,6 @@ export default function DiseaseCompare() {
   }, [route.params]);
 
   const comparePercentage = (data) => {
-    console.log("data: ", data);
     const prevMainDisease = data.prevDisease.mainDisease;
     const prevDiseaseInfo = data.prevDisease.diseasesInfo.find(
       (disease) => disease.class === prevMainDisease

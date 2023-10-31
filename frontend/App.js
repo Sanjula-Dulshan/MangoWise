@@ -1,7 +1,7 @@
 import { NativeBaseProvider } from "native-base";
 import { LogBox, StyleSheet } from "react-native";
 import Navigation from "./src/navigation";
-LogBox.ignoreLogs(["Warning: ..."]); // Ignore log notification by message
+LogBox.ignoreLogs(["Function components cannot be given refs", "Warning: ..."]);
 LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 export default function App() {
