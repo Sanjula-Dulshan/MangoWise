@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import Swiper from "react-native-swiper";
-import axios from "axios";
-import constants from "../../constants/constants";
 import Header from "../Common/HomeHeader";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import VSelectAllScreens from "./VSelectAll";
 import { auth, firestore } from "../../../firebase";
 import loadingIcon from "../../../assets/loadings/loading.gif";
-
 
 const images = [
   "https://res.cloudinary.com/sliit-yasantha/image/upload/v1693979486/villard_kpqitd.jpg",
@@ -37,7 +34,6 @@ export default function Home() {
           const userData = doc.data();
           setUserData(userData);
           setLoading(false);
-          console.log("User document data:", userData.isPremium);
         } else {
           console.log("User document not found");
         }

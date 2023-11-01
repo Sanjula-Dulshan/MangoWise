@@ -44,7 +44,7 @@ const Analysis = () => {
 
   const handleClose = async () => {
     await axios
-      .post(constants.backend_url + "/variety/save", data)
+      .post(constants.BACKEND_URL + "/variety/save", data)
       .then(() => {})
       .catch((err) => {
         console.log(err);

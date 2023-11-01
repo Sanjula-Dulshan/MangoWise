@@ -36,7 +36,7 @@ export default function Remedies() {
       image: base64Data,
     };
 
-    await axios.post(constants.backend_url + "/disease", data).then(() => {
+    await axios.post(constants.BACKEND_URL + "/disease", data).then(() => {
       navigation.navigate("DiagnoseHomeScreen");
     });
   };

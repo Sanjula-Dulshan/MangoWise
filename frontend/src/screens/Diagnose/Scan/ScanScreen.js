@@ -90,7 +90,7 @@ export default function ScanScreen() {
         setIsLoading(true);
         await axios({
           method: "POST",
-          url: constants.backend_url + "/disease/predict",
+          url: constants.BACKEND_URL + "/disease/predict",
           data: {
             image: base64Data,
           },

@@ -1,11 +1,22 @@
-//TODO: Change the backend_url to your IP address
 const constants = {
-  backend_url: "https://mangowise-backend.onrender.com",
-  disease_cnn_url:
+  BACKEND_URL: "https://mangowise-backend.onrender.com",
+  DISEASE_PREDICT_URL:
     "https://us-central1-mangowise-395709.cloudfunctions.net/disease_predict",
 
-  market_price_url:
+  MARKET_PRICE_PREDICT_URL:
     "https://us-central1-mangowise-395709.cloudfunctions.net/market_analysis_predict",
+
+  V_SELECT_PREDICT_URL:
+    "https://us-central1-mangowise-395709.cloudfunctions.net/v_select_predict",
+
+  BUD_PREDICT_URL:
+    "https://us-central1-mangowise-395709.cloudfunctions.net/bud_predict",
+
+  FERTILIZER_PREDICT_URL:
+    "https://us-central1-mangowise-395709.cloudfunctions.net/fertilizers",
+
+  FERTILIZER_QUANTITY_PREDICT_URL:
+    "https://us-central1-mangowise-395709.cloudfunctions.net/fQuantity",
 
   PUBLISHABLE_KEY:
     "pk_test_51O3x9tGEIOifpCgCb7gZFsyZcxDLpC7QMSSbR2xACG8A86KxZ6gLGikbU6DE7wwSI7TXJM9t8p32iNRRwnSwcqDs00bVgJdvQT",

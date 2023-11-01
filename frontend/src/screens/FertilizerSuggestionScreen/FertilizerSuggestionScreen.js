@@ -45,7 +45,7 @@ export default function FertilizerSuggestionScreen() {
       (async function id() {
         try {
           const record = await axios.get(
-            constants.backend_url + "/records/get"
+            constants.BACKEND_URL + "/records/get"
           );
           if (record) {
             setFertilizer(record.data.fertilizer);
@@ -196,9 +196,11 @@ export default function FertilizerSuggestionScreen() {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate("PreviousRecordsScreen", {
-            emails: email,
-          })}
+          onPress={() =>
+            navigation.navigate("PreviousRecordsScreen", {
+              emails: email,
+            })
+          }
         >
           <Text style={styles.btntext}>See Previous Records</Text>
         </TouchableOpacity>

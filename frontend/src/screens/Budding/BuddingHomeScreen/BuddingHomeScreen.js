@@ -174,7 +174,7 @@ export default function BuddingHomeScreen() {
 
   useEffect(() => {
     try {
-      axios.get(constants.backend_url + "/bud/get").then((response) => {
+      axios.get(constants.BACKEND_URL + "/bud/get").then((response) => {
         setBudList(response.data);
       });
     } catch (error) {

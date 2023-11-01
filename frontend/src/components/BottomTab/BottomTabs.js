@@ -18,10 +18,7 @@ import { auth, firestore } from "../../../firebase";
 
 const Tab = createBottomTabNavigator();
 
-
-
 export default function BottomTabs() {
-
   const [userEmail, setUserEmail] = useState(null);
   const [userData, setUserData] = useState({
     isPremium: false,
@@ -112,8 +109,14 @@ export default function BottomTabs() {
       <Tab.Screen name="Diagnose" component={DiagnoseAllScreens} />
       <Tab.Screen name="Home" component={Home} />
 
-      <Tab.Screen name="Market" component={VarietyAllScreens} />
-      <Tab.Screen name="Fertilization" component={userData.isPremium ? FertilizationAll : Home} />
+      <Tab.Screen
+        name="Market"
+        component={userData.isPremium ? VarietyAllScreens : Home}
+      />
+      <Tab.Screen
+        name="Fertilization"
+        component={userData.isPremium ? FertilizationAll : Home}
+      />
       <Tab.Screen
         name="VSelectAllScreens"
         component={VSelectAllScreens}

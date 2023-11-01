@@ -159,13 +159,12 @@ export default function CheckFertilizerScreen() {
     };
   }, [userEmail]);
 
-
   useFocusEffect(
     React.useCallback(() => {
       (async function id() {
         try {
           const record = await axios.get(
-            constants.backend_url + "/records/get"
+            constants.BACKEND_URL + "/records/get"
           );
           if (record) {
             const newRecord = record.data.record_id + 1;
@@ -378,7 +377,7 @@ export default function CheckFertilizerScreen() {
             visibilityTime: 2000,
           });
           await axios
-            .post(constants.backend_url + "/fertilizer/get", {
+            .post(constants.BACKEND_URL + "/fertilizer/get", {
               nvalue: nvalue,
               pvalue: pvalue,
               kvalue: kvalue,
@@ -670,7 +669,7 @@ export default function CheckFertilizerScreen() {
             }}
           >
             {" "}
-            Nitrogen (N)     : {" "}
+            Nitrogen (N) :{" "}
           </Text>
           <Text style={styles.npk}>{nitrogen}</Text>
         </View>
@@ -685,7 +684,7 @@ export default function CheckFertilizerScreen() {
             }}
           >
             {" "}
-            Phosporus (P)  :{" "}
+            Phosporus (P) :{" "}
           </Text>
           <Text style={styles.npk}>{phosporus}</Text>
         </View>
@@ -700,7 +699,7 @@ export default function CheckFertilizerScreen() {
             }}
           >
             {" "}
-            Potassium (K)  :{" "}
+            Potassium (K) :{" "}
           </Text>
           <Text style={styles.npk}>{potassium}</Text>
         </View>
