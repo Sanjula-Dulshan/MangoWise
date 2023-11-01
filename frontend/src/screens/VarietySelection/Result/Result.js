@@ -27,6 +27,7 @@ import velleiImage from '../../../../assets/vellei.jpeg';
 import malwanaImage from '../../../../assets/malwana.jpg';
 import damparaImage from '../../../../assets/dampara.jpg';
 import giraImage from '../../../../assets/giraaba.png';
+import { Table, Row } from 'react-native-table-component';
 
 
 
@@ -74,6 +75,13 @@ export default function BuddingResultScreen() {
   const [icon, setIcon] = useState(green_tick);
   const [mangoVarietyName, setMangoVarietyName] = useState("TOM EJC");
   const [mangoDescription, setMangoDescription] = useState("The Alphonso mango, also known as the 'King of Mangoes,' is renowned for its rich, sweet, and distinct flavor. It has a smooth, buttery texture and a pleasant aroma.");
+  const [iClimate,setIClimate] = useState("");
+  const [iCropType,setICropType] = useState("");
+  const [iExpectedYield,setIExpectedYield] = useState("");
+  const [iTaste,setITaste] = useState("");
+  const [iFruitSize,setIFruitSize] = useState("");
+  const [iDiseaseResistance,setIDiseaseResistance] = useState("");
+  const [payload, setPayload] = useState({});
 
   
 
@@ -87,6 +95,12 @@ const mangoOrigin = "Originated in India"; // Origin of the mango variety
     setModalVisible(false);
     // Add navigation logic to return to the home screen here
     navigation.navigate("Home");
+  
+    // Reset the navigation stack after navigating to "Home"
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'VSelectAllScreens' }], 
+    });
   };
 
   const getVarietyImage = (varietyName) => {
@@ -108,14 +122,61 @@ const mangoOrigin = "Originated in India"; // Origin of the mango variety
     }
   };
 
+  
+    const tableData = [
+      ['Feature', 'Best for'],
+      ['Climate zone', iClimate],
+      ['Crop Type', iCropType],
+      ['Expected yield', iExpectedYield],
+      ['Taste', iTaste],
+      ['Size of fruit', iFruitSize],
+      ['Disease resistance', iDiseaseResistance],
+    ];
+  
+
 
 
   useEffect(() => {
-    const { response} = route.params;
+    const { response, payload} = route.params;
     console.log("Response Got :: ", response.variety);
+    console.log("Payload Got :: ", payload);
     setImgeUri(getVarietyImage(response.variety));
+    setPayload(payload);
     setVarietyData(response.variety);
   }, [route.params]);
+
+  useEffect(() => {
+    console.log("Payload 2 :: ", payload);
+  
+    if(iClimate.toLowerCase().includes(payload.climate) && !iClimate.includes("✅")){
+      console.log("Climate Matched");
+      setIClimate(iClimate + " ✅");
+    } 
+
+    if(iCropType.toLowerCase().includes(payload.purpose) && !iCropType.includes("✅")){
+      console.log("Crop Type Matched");
+      setICropType(iCropType + " ✅");
+    } 
+
+    if(iExpectedYield.toLowerCase().includes(payload.harvest) && !iExpectedYield.includes("✅")){
+      console.log("Expected Yield Matched");
+      setIExpectedYield(iExpectedYield + " ✅");
+    } 
+
+    if(iTaste.toLowerCase().includes(payload.taste) && !iTaste.includes("✅")){
+      console.log("Taste Matched");
+      setITaste(iTaste + " ✅");
+    } 
+
+    if(iFruitSize.toLowerCase().includes(payload.size) && !iFruitSize.includes("✅")){
+      console.log("Fruit Size Matched");
+      setIFruitSize(iFruitSize + " ✅");
+    } 
+    if(iDiseaseResistance.toLowerCase().includes(payload.resisitance) && !iDiseaseResistance.includes("✅")){
+      console.log("Disease Resistance Matched");
+      setIDiseaseResistance(iDiseaseResistance + " ✅");
+    } 
+  }, [ iClimate]);
   
 
   const handleChangeFeature = () => {
@@ -129,29 +190,97 @@ const mangoOrigin = "Originated in India"; // Origin of the mango variety
 
     if(varietyName == "Horanahiru"){
       setMangoVarietyName("Horanahiru");
+
+      setIClimate("Wet Zone");
+      setICropType("Export / Commercial");
+      setIExpectedYield("High");
+      setITaste("Good");
+      setIFruitSize("Medium");
+      setIDiseaseResistance("Yes");
+
       setMangoDescription("Horanahiru is a Sri Lankan mango cultivar. It is a hybrid variety of Karthakolomban and Villard. It is a large mango, with a greenish-yellow skin colour when ripe. It is a juicy mango with a sweet taste. It is a popular mango variety in Sri Lanka.");
     }else if(varietyName == "TOM EJC"){
       setMangoVarietyName("TOM EJC");
+
+      setIClimate("Dry Zone");
+      setICropType("Export / Commercial");
+      setIExpectedYield("High");
+      setITaste("Good");
+      setIFruitSize("Big");
+      setIDiseaseResistance("No");
+
       setMangoDescription("The Alphonso mango, also known as the 'King of Mangoes,' is renowned for its rich, sweet, and distinct flavor. It has a smooth, buttery texture and a pleasant aroma.");
     } else if(varietyName == "Karthacolomban"){
       setMangoVarietyName("Karthacolomban");
+
+      setIClimate("Intermediate Zone");
+      setICropType("Commercial");
+      setIExpectedYield("High");
+      setITaste("Good");
+      setIFruitSize("Medium");
+      setIDiseaseResistance("No");
+
       setMangoDescription("Karthacolomban is a Sri Lankan mango cultivar. It is a hybrid variety of Karthakolomban and Villard. It is a large mango, with a greenish-yellow skin colour when ripe. It is a juicy mango with a sweet taste. It is a popular mango variety in Sri Lanka.");
     } else if(varietyName == "Villard"){
       setMangoVarietyName("Villard");
+
+      setIClimate("Dry Zone");
+      setICropType("Commercial");
+      setIExpectedYield("Low");
+      setITaste("Good");
+      setIFruitSize("Small");
+      setIDiseaseResistance("No");
+
       setMangoDescription("Villard is a Sri Lankan mango cultivar. It is a hybrid variety of Karthakolomban and Villard. It is a large mango, with a greenish-yellow skin colour when ripe. It is a juicy mango with a sweet taste. It is a popular mango variety in Sri Lanka.");
-    } else if(varietyName == "Velleicollomban"){
-      setMangoVarietyName("Velleicollomban");
+    } else if(varietyName == "Velleicolomban"){
+      setMangoVarietyName("Velleicolomban");
+
+      setIClimate("Wet Zone");
+      setICropType("Personal");
+      setIExpectedYield("Medium");
+      setITaste("Good");
+      setIFruitSize("Medium");
+      setIDiseaseResistance("No");
+
       setMangoDescription("Velleicollomban is a Sri Lankan mango cultivar. It is a hybrid variety of Karthakolomban and Villard. It is a large mango, with a greenish-yellow skin colour when ripe. It is a juicy mango with a sweet taste. It is a popular mango variety in Sri Lanka.");
     } else if(varietyName == "Malwana"){
       setMangoVarietyName("Malwana");
+
+      setIClimate("Dry Zone");
+      setICropType("Personal");
+      setIExpectedYield("Medium");
+      setITaste("Good");
+      setIFruitSize("Medium");
+      setIDiseaseResistance("No");
+
       setMangoDescription("Malwana is a Sri Lankan mango cultivar. It is a hybrid variety of Karthakolomban and Villard. It is a large mango, with a greenish-yellow skin colour when ripe. It is a juicy mango with a sweet taste. It is a popular mango variety in Sri Lanka.");
     } else if(varietyName == "Dampara"){
       setMangoVarietyName("Dampara");
+
+      setIClimate("Wet Zone");
+      setICropType("Personal");
+      setIExpectedYield("Medium");
+      setITaste("Good");
+      setIFruitSize("Small");
+      setIDiseaseResistance("No");
+
       setMangoDescription("Dampara is a Sri Lankan mango cultivar. It is a hybrid variety of Karthakolomban and Villard. It is a large mango, with a greenish-yellow skin colour when ripe. It is a juicy mango with a sweet taste. It is a popular mango variety in Sri Lanka.");
     } else if(varietyName == "Giraaba"){
       setMangoVarietyName("Giraaba");
+
+      setIClimate("Wet Zone");
+      setICropType("Personal");
+      setIExpectedYield("Medium");
+      setITaste("Average");
+      setIFruitSize("Small");
+      setIDiseaseResistance("No");
+
       setMangoDescription("Giraaba is a Sri Lankan mango cultivar. It is a hybrid variety of Karthakolomban and Villard. It is a large mango, with a greenish-yellow skin colour when ripe. It is a juicy mango with a sweet taste. It is a popular mango variety in Sri Lanka.");
     }
+
+    
+
+
   };
 
   return (
@@ -177,18 +306,34 @@ const mangoOrigin = "Originated in India"; // Origin of the mango variety
               Matching Variety
             </Text>
 
-            <Image
+            {/* <Image
               source={imgeUri}
               style={styles.mangoImage}
-            />
+            /> */}
 
             <Text style={styles.mangoVarietyName}>
               {mangoVarietyName}
             </Text>
 
-            <Text style={styles.description}>
-              {mangoDescription}
-            </Text>
+            <View style={styles3.container}>
+              <Table borderStyle={{ borderWidth: 1, borderColor: '#C1C0B9' }}>
+                {tableData.map((rowData, index) => (
+                  <Row
+                    key={index}
+                    data={rowData}
+                    style={[
+                      styles3.row,
+                      index === 0 && { backgroundColor: '#fdc50b' }, // Set background color to black for the first row
+                      index % 2 && { backgroundColor: '#F7F6E7' },
+                    ]}
+                    textStyle={styles3.text}
+                  />
+                ))}
+              </Table>
+            </View>
+
+
+        
 
             <TouchableOpacity style={styles.findSuitableVarierty} onPress={handleChangeFeature} >
                 <Text style={{ fontSize: 17, fontWeight: 'bold', padding: 5,  textAlign: 'center' }}> Change features </Text>
@@ -206,6 +351,12 @@ const mangoOrigin = "Originated in India"; // Origin of the mango variety
     </View>
   )
 }
+
+const styles3 = StyleSheet.create({
+  container: { flex: 1, padding: 16, paddingTop: 10, backgroundColor: '#FFF', width: '100%' },
+  row: { height: 40, backgroundColor: '#E7E6E1' },
+  text: { textAlign: 'center', fontWeight: 'bold', color: 'black' },
+});
 
 const styles = StyleSheet.create({
 
@@ -315,15 +466,21 @@ const styles = StyleSheet.create({
   },
   mangoVarietyName: {
     fontSize: 30,
-    fontWeight: 'bold',
-    color: 'orange',
-    marginTop: 10,
+    fontWeight: '800', // Increasing fontWeight for a bolder text
+    color: '#fdc50b',
+    marginTop: 2,
     textAlign: 'center',
+    textShadowColor: 'black', // Set text shadow color to black for stroke effect
+    textShadowRadius: 2,
+    textShadowOffset: { 
+      width: 2,
+      height: 2,
+    }, // Set shadow offset for stroke effect
   },
   titleName: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: 'green',
+    color: 'black',
     marginTop: 10,
     textAlign: 'center',
   },

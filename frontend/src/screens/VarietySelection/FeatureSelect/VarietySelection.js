@@ -115,6 +115,7 @@ export default function VarietySelection() {
 
   const wetZones = [
     "Colombo",
+    "Matara",
     "Kandy",
     "Gampaha",
     "Negombo",
@@ -143,7 +144,6 @@ export default function VarietySelection() {
     "Kurunegala",
     "Matale",
     "Galle",
-    "Matara",
     "Hambantota",
     "Polonnaruwa",
     "Anuradhapura",
@@ -193,6 +193,7 @@ export default function VarietySelection() {
     let size = "big";
     let purpose = "personal";
     let climate = "abc";
+    let resisitance
   
     switch (selectedHarvestIndex) { 
       case 0:
@@ -246,6 +247,13 @@ export default function VarietySelection() {
       default:
         purpose = "personal";
     }
+
+    //check if resisitance is selected
+    if (isFeatureSelected('Resistance')) {
+      resisitance = "yes";
+    } else {
+      resisitance = "no";
+    }
   
     climate = getZoneByLocation(cropLocation);
   
@@ -254,7 +262,8 @@ export default function VarietySelection() {
       climate: climate,
       taste: taste,
       purpose: purpose,
-      size: size
+      size: size,
+      resisitance: resisitance
     }
 
     if(!climate){
@@ -284,6 +293,7 @@ export default function VarietySelection() {
       setIsLoading(false);
       navigation.navigate("VarietyResultScreen", {
         response: response.data,
+        payload: payload,
       });
     } catch (error) {
       setIsLoading(false);

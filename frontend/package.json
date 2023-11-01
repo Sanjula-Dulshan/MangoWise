@@ -60,6 +60,7 @@
     "react-native-segmented-control": "^1.1.0",
     "react-native-svg": "13.4.0",
     "react-native-swiper": "^1.6.0",
+    "react-native-table-component": "^1.2.2",
     "react-native-toast-message": "^2.1.6",
     "react-native-vector-icons": "^10.0.0",
     "react-native-web": "~0.18.10"
