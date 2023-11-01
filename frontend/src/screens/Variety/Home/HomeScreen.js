@@ -28,8 +28,7 @@ export default function HomeScreen() {
 
   useEffect(() => {
     try {
-      axios.get(constants.backend_url + "/variety").then((response) => {
-        console.log("variety ", response.data);
+      axios.get(constants.BACKEND_URL + "/variety").then((response) => {
         setVarietyList(response.data);
       });
     } catch (error) {
@@ -234,7 +233,6 @@ export default function HomeScreen() {
           justifyContent: "space-between",
         }}
       >
-        {console.log("varietyList ", varietyList)}
         {varietyList.slice(0, 3).map((variety, key) => {
           return (
             <TouchableOpacity key={key}>

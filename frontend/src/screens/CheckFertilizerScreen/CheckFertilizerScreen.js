@@ -22,6 +22,7 @@ import Toast from "react-native-toast-message";
 import sensorimage from "../../../assets/NPKSensor.png";
 import Header from "../../components/Common/Header";
 import constants from "../../constants/constants";
+import { auth } from "../../../firebase";
 
 import {
   PERMISSIONS,
@@ -115,6 +116,8 @@ export default function CheckFertilizerScreen() {
   const [isError, setError] = useState(false);
   const [isAgeError, setAgeError] = useState(false);
   const [record_id, setRecord_id] = useState(1);
+  const [loading, setLoading] = useState(!auth.currentUser); // Set loading to true if the user is not logged in
+  const [userEmail, setUserEmail] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -142,12 +145,26 @@ export default function CheckFertilizerScreen() {
     })();
   }, [record_id]);
 
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUserEmail(user.email);
+      } else {
+        setLoading(false);
+      }
+    });
+
+    return () => {
+      unsubscribe(); // Unsubscribe from the observer when the component unmounts
+    };
+  }, [userEmail]);
+
   useFocusEffect(
     React.useCallback(() => {
       (async function id() {
         try {
           const record = await axios.get(
-            constants.backend_url + "/records/get"
+            constants.BACKEND_URL + "/records/get"
           );
           if (record) {
             const newRecord = record.data.record_id + 1;
@@ -360,13 +377,14 @@ export default function CheckFertilizerScreen() {
             visibilityTime: 2000,
           });
           await axios
-            .post(constants.backend_url + "/fertilizer/get", {
+            .post(constants.BACKEND_URL + "/fertilizer/get", {
               nvalue: nvalue,
               pvalue: pvalue,
               kvalue: kvalue,
               record_id: record_id,
               age: data.age,
               growthStage: stage,
+              email: userEmail,
             })
             .then(
               setTimeout(() => {
@@ -651,7 +669,7 @@ export default function CheckFertilizerScreen() {
             }}
           >
             {" "}
-            Nitrogen (N)     : {" "}
+            Nitrogen (N) :{" "}
           </Text>
           <Text style={styles.npk}>{nitrogen}</Text>
         </View>
@@ -666,7 +684,7 @@ export default function CheckFertilizerScreen() {
             }}
           >
             {" "}
-            Phosporus (P)  :{" "}
+            Phosporus (P) :{" "}
           </Text>
           <Text style={styles.npk}>{phosporus}</Text>
         </View>
@@ -681,7 +699,7 @@ export default function CheckFertilizerScreen() {
             }}
           >
             {" "}
-            Potassium (K)  :{" "}
+            Potassium (K) :{" "}
           </Text>
           <Text style={styles.npk}>{potassium}</Text>
         </View>

@@ -1,57 +1,52 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import Swiper from "react-native-swiper";
-import axios from "axios";
-import constants from "../../constants/constants";
 import Header from "../Common/HomeHeader";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import VSelectAllScreens from "./VSelectAll";
+import { auth, firestore } from "../../../firebase";
+import loadingIcon from "../../../assets/loadings/loading.gif";
 
 const images = [
   "https://res.cloudinary.com/sliit-yasantha/image/upload/v1693979486/villard_kpqitd.jpg",
   "https://res.cloudinary.com/sliit-yasantha/image/upload/v1693979486/gira_pugwgg.jpg",
   "https://res.cloudinary.com/sliit-yasantha/image/upload/v1693979485/OIP_5_3_yo3att.png",
   "https://res.cloudinary.com/sliit-yasantha/image/upload/v1693979486/malwana_uk7rjg.jpg",
-
   // Add more image URLs here
 ];
 
 export default function Home() {
-  useEffect(() => {
-    warmUpAPICall();
-  }, []);
-
   const navigation = useNavigation();
+  const [userEmail, setUserEmail] = useState(null);
+  const [userData, setUserData] = useState({
+    isPremium: false,
+  });
+  const [loading, setLoading] = useState(true); // Set loading to true if the user is not logged in
 
-  const warmUpAPICall = async () => {
-    try {
-      const formData = new FormData();
-      formData.append("file", {
-        // Use the first image for the API call
-        uri: "https://i.pcmag.com/imagery/reviews/03aizylUVApdyLAIku1AvRV-39.1605559903.fit_scale.size_760x427.png",
-        type: "image/jpeg",
-        name: "image.jpg",
+  useFocusEffect(
+    React.useCallback(() => {
+      setLoading(true);
+      const user = auth.currentUser;
+      const userRef = firestore.collection("users").doc(user.uid);
+      userRef.get().then((doc) => {
+        if (doc.exists) {
+          const userData = doc.data();
+          setUserData(userData);
+          setLoading(false);
+        } else {
+          console.log("User document not found");
+        }
       });
-
-      await axios
-        .post(constants.disease_cnn_url, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        })
-        .then(() => console.log("warmed up disease_predict"));
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
+    }, [])
+  );
 
   const goToBuddingTimer = () => {
     navigation.navigate("Budding");
   };
 
   const goToVarietyIdentification = () => {
-    navigation.navigate("Market");
+    navigation.navigate("Variety");
   };
 
   const goToDiseaseIdentification = () => {
@@ -64,86 +59,120 @@ export default function Home() {
   };
 
   const goToFertilizerRecommender = () => {
-    navigation.navigate("FertilizerRecommender");
+    if (userData.isPremium === true) {
+      navigation.navigate("Fertilization");
+    } else {
+      navigation.navigate("PaymentScreen");
+    }
   };
 
   const goToMarketAnalysis = () => {
-    navigation.navigate("Market");
+    if (userData.isPremium === true) {
+      navigation.navigate("Market");
+    } else {
+      navigation.navigate("PaymentScreen");
+    }
   };
 
   return (
     <View style={styles.container}>
-      <Header />
-      <View style={styles.yellowSection}>
-        <Swiper
-          style={styles.wrapper}
-          showsButtons={true}
-          buttonWrapperStyle={styles.buttonWrapper}
-          borderRadius={10} // Rounded corners
-          containerStyle={styles.swiperContainer}
-          dotStyle={styles.dotStyle}
-          activeDotStyle={styles.activeDotStyle}
-        >
-          {images.map((image, index) => (
-            <View key={index} style={styles.slide}>
-              <Image source={{ uri: image }} style={styles.image} />
-            </View>
-          ))}
-        </Swiper>
-      </View>
-      <View style={styles.whiteSection}>
-        <Text style={styles.featureTitle}>Feature Menu</Text>
-        <View style={styles.buttonContainer}>
-          {/* First Row */}
-          <View style={styles.buttonRow}>
-            <TouchableOpacity
-              style={styles.menuButton}
-              onPress={goToBuddingTimer}
-            >
-              <Icon name="search" size={30} color="#446714" />
-              <Text style={styles.buttonText}>Buddinig Timmer</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.menuButton}
-              onPress={goToVarietyIdentification}
-            >
-              <Icon name="camera" size={30} color="#446714" />
-              <Text style={styles.buttonText}>Variety Identification</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.menuButton}
-              onPress={goToDiseaseIdentification}
-            >
-              <Icon name="bug" size={30} color="#446714" />
-              <Text style={styles.buttonText}>Disease Identification</Text>
-            </TouchableOpacity>
-          </View>
-          {/* Second Row */}
-          <View style={styles.buttonRow}>
-            <TouchableOpacity
-              style={styles.menuButton}
-              onPress={goToVarietySelector}
-            >
-              <Icon name="pagelines" size={30} color="#446714" />
-              <Text style={styles.buttonText}>Variety Selector</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.menuButton}
-              onPress={goToFertilizerRecommender}
-            >
-              <Icon name="cog" size={30} color="#446714" />
-              <Text style={styles.buttonTextF}>Fertilizer Recommender</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.menuButton}
-              onPress={goToMarketAnalysis}
-            >
-              <Icon name="line-chart" size={30} color="#446714" />
-              <Text style={styles.buttonText}>Market Analysis</Text>
-            </TouchableOpacity>
-          </View>
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <Image
+            source={loadingIcon}
+            style={{
+              width: 200,
+              height: 150,
+              alignSelf: "center",
+              marginTop: 100,
+            }}
+          />
         </View>
-      </View>
+      ) : (
+        <>
+          <Header />
+          <View style={styles.yellowSection}>
+            <Swiper
+              style={styles.wrapper}
+              showsButtons={true}
+              buttonWrapperStyle={styles.buttonWrapper}
+              borderRadius={10} // Rounded corners
+              containerStyle={styles.swiperContainer}
+              dotStyle={styles.dotStyle}
+              activeDotStyle={styles.activeDotStyle}
+            >
+              {images.map((image, index) => (
+                <View key={index} style={styles.slide}>
+                  <Image source={{ uri: image }} style={styles.image} />
+                </View>
+              ))}
+            </Swiper>
+          </View>
+          <View style={styles.whiteSection}>
+            <Text style={styles.featureTitle}>Feature Menu</Text>
+            <View style={styles.buttonContainer}>
+              {/* First Row */}
+              <View style={styles.buttonRow}>
+                <TouchableOpacity
+                  style={styles.menuButton}
+                  onPress={goToBuddingTimer}
+                >
+                  <Icon name="search" size={30} color="#446714" />
+                  <Text style={styles.buttonText}>Budding Timer</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.menuButton}
+                  onPress={goToVarietyIdentification}
+                >
+                  <Icon name="camera" size={30} color="#446714" />
+                  <Text style={styles.buttonText}>Variety Identification</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.menuButton}
+                  onPress={goToDiseaseIdentification}
+                >
+                  <Icon name="bug" size={30} color="#446714" />
+                  <Text style={styles.buttonText}>Disease Identification</Text>
+                </TouchableOpacity>
+              </View>
+              {/* Second Row */}
+              <View style={styles.buttonRow}>
+                <TouchableOpacity
+                  style={styles.menuButton}
+                  onPress={goToVarietySelector}
+                >
+                  <Icon name="pagelines" size={30} color="#446714" />
+                  <Text style={styles.buttonText}>Variety Selector</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.menuButton}
+                  onPress={goToFertilizerRecommender}
+                >
+                  {userData.isPremium === false ? (
+                    <View style={styles.diamond}>
+                      <Icon name="diamond" size={20} color="#000000" />
+                    </View>
+                  ) : null}
+                  <Icon name="cog" size={30} color="#446714" />
+                  <Text style={styles.buttonText}>Fertilization</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.menuButton}
+                  onPress={goToMarketAnalysis}
+                >
+                  {userData.isPremium === false ? (
+                    <View style={styles.diamond}>
+                      <Icon name="diamond" size={20} color="#000000" />
+                    </View>
+                  ) : null}
+                  <Icon name="line-chart" size={30} color="#446714" />
+                  <Text style={styles.buttonText}>Market Analysis</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </>
+      )}
     </View>
   );
 }
@@ -184,7 +213,7 @@ const styles = StyleSheet.create({
   },
   menuButton: {
     backgroundColor: "#fdc50b",
-    width: 100,
+    width: 110,
     height: 100,
     justifyContent: "center",
     alignItems: "center",
@@ -199,15 +228,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5, // Elevation for Android
   },
-
   buttonText: {
-    color: "#446714",
-    marginTop: 10,
-    fontSize: 16,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  buttonTextF: {
     color: "#446714",
     marginTop: 10,
     fontSize: 16,
@@ -249,5 +270,17 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 20,
     paddingVertical: 10,
+  },
+
+  diamond: {
+    position: "absolute",
+    top: 5,
+    right: 5,
+    flexDirection: "row",
+    alignItems: "flex-end",
+  },
+  loadingContainer: {
+    height: "85%",
+    justifyContent: "center",
   },
 });

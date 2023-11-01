@@ -44,11 +44,10 @@ const Analysis = () => {
 
   const handleClose = async () => {
     await axios
-      .post(constants.backend_url + "/variety/save", data)
+      .post(constants.BACKEND_URL + "/variety/save", data)
       .then(() => {})
       .catch((err) => {
         console.log(err);
-        console.log("ip", constants);
       });
     navigation.navigate("VarietyHomeScreen");
   };
@@ -133,7 +132,9 @@ const Analysis = () => {
               </View>
               <View style={styles.row}>
                 <Text style={styles.monthText}>{month}</Text>
-                <Text style={styles.priceText}>Rs.{forecastedValue}</Text>
+                <Text style={styles.priceText}>
+                  Rs.{forecastedValue.toFixed(2)}
+                </Text>
               </View>
             </View>
           </View>
@@ -163,7 +164,7 @@ const Analysis = () => {
                   <Text
                     style={[
                       styles.cardTitle,
-                      { color: totalProfit < 0 ? "red" : "" },
+                      { color: totalProfit < 0 ? "red" : "green" },
                     ]}
                   >
                     {totalProfit >= 0 ? "Total Profit" : "Loss"}
@@ -172,7 +173,7 @@ const Analysis = () => {
                   <Text
                     style={[
                       styles.cardValue,
-                      { color: totalProfit >= 0 ? "#FF0000" : "red" },
+                      { color: totalProfit > 0 ? "green" : "red" },
                     ]}
                   >
                     Rs.{totalProfit >= 0 ? totalProfit : -totalProfit}

@@ -26,7 +26,7 @@ export default function PreviousDiseases() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get(constants.backend_url + "/variety").then((response) => {
+    axios.get(constants.BACKEND_URL + "/variety").then((response) => {
       setVarietyList(response.data);
       setLoading(false);
     });

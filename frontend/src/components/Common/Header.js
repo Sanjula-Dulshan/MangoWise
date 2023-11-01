@@ -1,13 +1,41 @@
 import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Alert, Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import Logo from "../../../assets/Logo.png";
 import Premium from "../../../assets/Premium.png";
 import Profile from "../../../assets/Profile.png";
+import Logout from "../../../assets/logout4.png";
+import { auth } from "../../../firebase";
 
 export default function Header() {
   const navigation = useNavigation();
+
+  const confirmLogout = () => {
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to logout?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        { text: "Logout", onPress: () => logout() },
+      ],
+      { cancelable: false }
+    );
+  };
+  const logout = () => {
+    auth
+      .signOut()
+      .then(() => {
+        navigation.navigate("LoginScreen");
+      })
+      .catch((error) => {
+        // Handle any errors that might occur during sign-out
+        console.error(error);
+      });
+  };
 
   return (
     <View style={styles.topic}>
@@ -18,16 +46,22 @@ export default function Header() {
       </TouchableOpacity>
       <View style={styles.header}>
         <View style={styles.imageContainer}>
-          <Image
-            source={Premium}
-            style={styles.imagePremium}
-            resizeMode="contain"
-          />
-          <Image
-            source={Profile}
-            style={styles.imageProfile}
-            resizeMode="contain"
-          />
+          <TouchableOpacity
+            onPress={() => navigation.navigate("PaymentScreen")}
+          >
+            <Image
+              source={Premium}
+              style={styles.imagePremium}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => confirmLogout()}>
+            <Image
+              source={Logout}
+              style={styles.imageProfile}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
         </View>
         <Image source={Logo} style={styles.imageLogo} resizeMode="contain" />
       </View>
@@ -48,7 +82,7 @@ const styles = StyleSheet.create({
   },
   imageProfile: {
     width: 38,
-    height: 32,
+    height: 25,
     margin: 5,
     marginTop: -10,
   },

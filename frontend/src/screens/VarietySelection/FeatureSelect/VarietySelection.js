@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -11,34 +11,32 @@ import {
   SectionList,
   PermissionsAndroid,
   FlatList,
-  Image
-} from 'react-native';
+  Image,
+} from "react-native";
 import Header from "../../../components/Common/Header";
 import { useNavigation } from "@react-navigation/native";
-import { Feather, MaterialIcons  } from '@expo/vector-icons';
-import green_tick from '../../../../assets/green_tick.png';
-import Modal from 'react-native-modal';
-import backgroundImage from '../../../../assets/tmp-plant.png';
-import SegmentedControl from '@react-native-segmented-control/segmented-control';
-import Geolocation from '@react-native-community/geolocation';
+import { Feather, MaterialIcons } from "@expo/vector-icons";
+import green_tick from "../../../../assets/green_tick.png";
+import Modal from "react-native-modal";
+import backgroundImage from "../../../../assets/tmp-plant.png";
+import SegmentedControl from "@react-native-segmented-control/segmented-control";
+import Geolocation from "@react-native-community/geolocation";
 import constants from "../../../constants/constants";
-import axios from 'axios';
+import axios from "axios";
 import searching from "../../../../assets/loadings/searching.gif";
-import { set } from 'react-hook-form';
+import { set } from "react-hook-form";
 import Toast from "react-native-toast-message";
-
-
 
 const styles2 = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FDFAFA',
+    backgroundColor: "#FDFAFA",
     height: 100,
   },
   sectionHeader: {
-    fontWeight: '800',
+    fontWeight: "800",
     fontSize: 18,
-    color: '#f4f4f4',
+    color: "#f4f4f4",
     marginTop: 20,
     marginBottom: 5,
   },
@@ -50,34 +48,30 @@ const styles2 = StyleSheet.create({
     height: 200,
   },
   itemText: {
-    color: 'rgba(255, 255, 255, 0.5)',
+    color: "rgba(255, 255, 255, 0.5)",
     marginTop: 5,
   },
 });
 
-
-
-
 export default function VarietySelection() {
-
   const navigation = useNavigation();
   const [permissionGranted, setPermissionGranted] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const [isError, setError] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [selectedCropIndex, setSelectedCropIndex] = useState(0); 
+  const [selectedCropIndex, setSelectedCropIndex] = useState(0);
   const [selectedHarvestIndex, setselectedHarvestIndex] = useState(0);
   const [selectedTasteIndex, setselectedTasteIndex] = useState(0);
   const [selectedSizeIndex, setselectedSizeIndex] = useState(0);
-  const [cropLocation, setCropLocation] = useState('');
+  const [cropLocation, setCropLocation] = useState("");
   const [selectedFeatures, setSelectedFeatures] = useState([]);
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
-  const [zone, setZone] = useState('');
+  const [zone, setZone] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [modalTxt, setModalTxt] = useState('Scanning...');
+  const [modalTxt, setModalTxt] = useState("Scanning...");
 
   useEffect(() => {
-    setModalVisible(true)
+    setModalVisible(true);
   }, []);
 
   const suggestions = [
@@ -123,8 +117,8 @@ export default function VarietySelection() {
     "Kalutara",
     "Avissawella",
     "Nuwara Eliya",
-    "Hatton"
-  ]
+    "Hatton",
+  ];
 
   const dryZones = [
     "Jaffna",
@@ -136,8 +130,8 @@ export default function VarietySelection() {
     "Puttalam",
     "Monaragala",
     "Kilinochchi",
-    "Mullaitivu"
-  ]
+    "Mullaitivu",
+  ];
 
   const intermediateZones = [
     "Kaduwela",
@@ -149,9 +143,9 @@ export default function VarietySelection() {
     "Anuradhapura",
     "Dambulla",
     "Badulla",
-    "Bandarawela"
-  ]
-  
+    "Bandarawela",
+  ];
+
   const handleTextChange = (text) => {
     setCropLocation(text);
 
@@ -167,12 +161,12 @@ export default function VarietySelection() {
     handleTextChange(item);
     setCropLocation(item);
     setFilteredSuggestions([]);
-  }
+  };
 
   const handleOnBlur = () => {
-    setFilteredSuggestions([]);  
-  }
-  
+    setFilteredSuggestions([]);
+  };
+
   const getZoneByLocation = (location) => {
     if (wetZones.includes(location)) {
       return "wet";
@@ -181,11 +175,10 @@ export default function VarietySelection() {
     } else if (intermediateZones.includes(location)) {
       return "intermediate";
     }
-  }
+  };
 
-  const checkVariety = async () => { 
-
-    setModalTxt('Finding suitable variety....');
+  const checkVariety = async () => {
+    setModalTxt("Finding suitable variety....");
     setIsLoading(true);
 
     let harvest = "medium";
@@ -208,7 +201,7 @@ export default function VarietySelection() {
       default:
         harvest = "medium";
     }
-  
+
     switch (selectedTasteIndex) {
       case 0:
         taste = "good";
@@ -219,7 +212,7 @@ export default function VarietySelection() {
       default:
         taste = "good";
     }
-  
+
     switch (selectedSizeIndex) {
       case 0:
         size = "big";
@@ -233,7 +226,7 @@ export default function VarietySelection() {
       default:
         size = "big";
     }
-  
+
     switch (selectedCropIndex) {
       case 0:
         purpose = "personal";
@@ -256,7 +249,7 @@ export default function VarietySelection() {
     }
   
     climate = getZoneByLocation(cropLocation);
-  
+
     const payload = {
       harvest: harvest,
       climate: climate,
@@ -266,8 +259,8 @@ export default function VarietySelection() {
       resisitance: resisitance
     }
 
-    if(!climate){
-      console.log('climate not found');
+    if (!climate) {
+      console.log("climate not found");
       Toast.show({
         type: "error",
         position: "bottom",
@@ -281,15 +274,13 @@ export default function VarietySelection() {
       setIsLoading(false);
       return;
     }
-  
+
     try {
-      const apiUrl = `https://us-central1-mangowise-395709.cloudfunctions.net/v_select_predict`;
-      // Use Axios to make the API POST request
-      console.log('Calling API : ', apiUrl);
-  
-      // Pass the payload as the second argument to axios.post
-      const response = await axios.post(apiUrl, payload); // Use async/await to handle the promise
-      console.log('Response : ', response.data);
+      const response = await axios.post(
+        constants.V_SELECT_PREDICT_URL,
+        payload
+      ); // Use async/await to handle the promise
+      console.log("Response : ", response.data);
       setIsLoading(false);
       navigation.navigate("VarietyResultScreen", {
         response: response.data,
@@ -297,36 +288,32 @@ export default function VarietySelection() {
       });
     } catch (error) {
       setIsLoading(false);
-      console.error('Error fetching or processing data:', error);
+      console.error("Error fetching or processing data:", error);
     }
-  
-    console.log('payload : ', payload);
-  }
-  
+
+    console.log("payload : ", payload);
+  };
 
   const handleRetakePicture = async () => {
     navigation.navigate("BuddingScanScreen");
-  }
+  };
 
   const isFeatureSelected = (feature) => selectedFeatures.includes(feature);
 
-
   const getGPSPermission = async () => {
+    console.log("getting GPSPermission");
 
-    console.log('getting GPSPermission');
-
-    if (Platform.OS === 'android') {
+    if (Platform.OS === "android") {
       try {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
           {
-            title: 'GPS Permission',
-            message: 'This app requires access to your GPS location.',
-            buttonNeutral: 'Ask Me Later',
-            buttonNegative: 'Cancel',
-            buttonPositive: 'OK',
-          },
-
+            title: "GPS Permission",
+            message: "This app requires access to your GPS location.",
+            buttonNeutral: "Ask Me Later",
+            buttonNegative: "Cancel",
+            buttonPositive: "OK",
+          }
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
           setPermissionGranted(true);
@@ -337,36 +324,35 @@ export default function VarietySelection() {
         console.warn(err);
       }
     }
-  }
+  };
 
   const getGPRSLocation = async () => {
-    console.log('getGPRSLocation');
-  
+    console.log("getGPRSLocation");
+
     if (!permissionGranted) {
-      console.log('getGPRSLocation permission not Granted');
+      console.log("getGPRSLocation permission not Granted");
       getGPSPermission();
     }
-  
+
     if (permissionGranted) {
-      console.log('getGPRSLocation permission Granted');
-      setModalTxt('Fetching Location....');
+      console.log("getGPRSLocation permission Granted");
+      setModalTxt("Fetching Location....");
       setIsLoading(true);
       Geolocation.getCurrentPosition(
         async (position) => {
           try {
             const { latitude, longitude } = position.coords;
-            const apiUrl = `${constants.backend_url}/suggest?lat=${latitude}&long=${longitude}`;
-  
+            const apiUrl = `${constants.BACKEND_URL}/suggest?lat=${latitude}&long=${longitude}`;
+
             // Use Axios to make the API GET request
-            console.log('Calling API : ', apiUrl);
+            console.log("Calling API : ", apiUrl);
             await axios.get(apiUrl).then((response) => {
-              console.log('Response : ', response.data);
+              console.log("Response : ", response.data);
               setCropLocation(response.data);
               setIsLoading(false);
             });
-  
           } catch (error) {
-            console.error('Error fetching or processing data:', error);
+            console.error("Error fetching or processing data:", error);
           }
         },
         (error) => {
@@ -376,194 +362,372 @@ export default function VarietySelection() {
       );
     }
   };
-    
 
   const toggleFeatureSelection = (feature) => {
     if (isFeatureSelected(feature)) {
-      setSelectedFeatures(selectedFeatures.filter(item => item !== feature));
+      setSelectedFeatures(selectedFeatures.filter((item) => item !== feature));
     } else {
       setSelectedFeatures([...selectedFeatures, feature]);
     }
-  }
+  };
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <Modal isVisible={isLoading} animationIn="fadeIn" animationOut="fadeOut">
+        <View style={styles.modalContent}>
+          <Image source={searching} style={styles.mangoImage} />
+          <Text style={styles.modalText2}>{modalTxt}</Text>
+          <Text style={styles.modalText2}>
+            Please wait, this may take some time.
+          </Text>
+        </View>
+      </Modal>
 
-          <Modal
-            isVisible={isLoading}
-            animationIn="fadeIn"
-            animationOut="fadeOut"
-          >
-            <View style={styles.modalContent}>
-              <Image source={searching} style={styles.mangoImage} />
-              <Text style={styles.modalText2}>{modalTxt}</Text>
-              <Text style={styles.modalText2}>
-                Please wait, this may take some time.
-              </Text>
-            </View>
-          </Modal>
-
-    <View style={{ backgroundColor: '#fdfafa', height: '100%' }}>
+      <View style={{ backgroundColor: "#fdfafa", height: "100%" }}>
         <Header />
 
-      <Text style={{ fontSize: 20, fontFamily: 'Roboto', paddingTop: 2, textAlign: 'left', paddingRight: 13, marginLeft: 20, fontStyle: 'italic' }}>Time your bud </Text>
-      <Text style={{ fontSize: 20, fontFamily: 'Roboto', paddingTop: 2, textAlign: 'left', paddingRight: 13, marginLeft: 20, fontStyle: 'italic' }}>perfectly</Text>
-
-      <Text style={{ fontSize: 14, fontFamily: 'Inter', color: '#666666', paddingLeft: 20, marginTop: 10 }}>Please provide the characteristics you desire in your mango plant, and we will analyze your requirements to recommend the most suitable variety.</Text>
-  
-      <Text style={{ fontSize: 16, fontFamily: 'Roboto', fontWeight: 'bold', color: '#000000', paddingLeft: 20, marginTop: 10, marginBottom: 10 }}>Purpose of crop :</Text>
-
-      <SegmentedControl
-        values={['Personal', 'Commercial', 'Export']}
-        selectedIndex={selectedCropIndex}
-        onChange={(event) => {
-          setSelectedCropIndex(event.nativeEvent.selectedSegmentIndex);
-        }}
-        fontStyle={{ fontSize: 16, color: '#000000', fontWeight: 'bold' }}
-            tintColor='#FFFFFF'
-            backgroundColor='#eeeeee'
-            fontColor='#000000'
-      />
-
-<Text style={{ fontSize: 16, fontFamily: 'Roboto', fontWeight: 'bold', color: '#000000', paddingLeft: 20, marginTop: 10, marginBottom: 10 }}>Crop location :</Text>
-
-<View style={{ flex: 1}}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', paddingLeft: 20 }}>
-        <TextInput
+        <Text
           style={{
-            width: '80%',
-            height: 50,
-            fontSize: 16,
-            borderWidth: 1,
-            borderColor: '#F8F8F8',
-            borderRadius: 8,
-            padding: 10,
-            backgroundColor: '#eeeeee',
-            color: '#000000',
+            fontSize: 20,
+            fontFamily: "Roboto",
+            paddingTop: 2,
+            textAlign: "left",
+            paddingRight: 13,
+            marginLeft: 20,
+            fontStyle: "italic",
           }}
-          placeholder="Enter crop location"
-          value={cropLocation}
-          onChangeText={handleTextChange}
-          onBlur={() => setFilteredSuggestions([])}
+        >
+          Time your bud{" "}
+        </Text>
+        <Text
+          style={{
+            fontSize: 20,
+            fontFamily: "Roboto",
+            paddingTop: 2,
+            textAlign: "left",
+            paddingRight: 13,
+            marginLeft: 20,
+            fontStyle: "italic",
+          }}
+        >
+          perfectly
+        </Text>
+
+        <Text
+          style={{
+            fontSize: 14,
+            fontFamily: "Inter",
+            color: "#666666",
+            paddingLeft: 20,
+            marginTop: 10,
+          }}
+        >
+          Please provide the characteristics you desire in your mango plant, and
+          we will analyze your requirements to recommend the most suitable
+          variety.
+        </Text>
+
+        <Text
+          style={{
+            fontSize: 16,
+            fontFamily: "Roboto",
+            fontWeight: "bold",
+            color: "#000000",
+            paddingLeft: 20,
+            marginTop: 10,
+            marginBottom: 10,
+          }}
+        >
+          Purpose of crop :
+        </Text>
+
+        <SegmentedControl
+          values={["Personal", "Commercial", "Export"]}
+          selectedIndex={selectedCropIndex}
+          onChange={(event) => {
+            setSelectedCropIndex(event.nativeEvent.selectedSegmentIndex);
+          }}
+          fontStyle={{ fontSize: 16, color: "#000000", fontWeight: "bold" }}
+          tintColor="#FFFFFF"
+          backgroundColor="#eeeeee"
+          fontColor="#000000"
         />
-        <TouchableOpacity onPress={getGPRSLocation} style={{ marginLeft: 10 }}>
-          <MaterialIcons name="place" size={30} color="#FDC704" style={{ marginLeft: 10 }} />
+
+        <Text
+          style={{
+            fontSize: 16,
+            fontFamily: "Roboto",
+            fontWeight: "bold",
+            color: "#000000",
+            paddingLeft: 20,
+            marginTop: 10,
+            marginBottom: 10,
+          }}
+        >
+          Crop location :
+        </Text>
+
+        <View style={{ flex: 1 }}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              paddingLeft: 20,
+            }}
+          >
+            <TextInput
+              style={{
+                width: "80%",
+                height: 50,
+                fontSize: 16,
+                borderWidth: 1,
+                borderColor: "#F8F8F8",
+                borderRadius: 8,
+                padding: 10,
+                backgroundColor: "#eeeeee",
+                color: "#000000",
+              }}
+              placeholder="Enter crop location"
+              value={cropLocation}
+              onChangeText={handleTextChange}
+              onBlur={() => setFilteredSuggestions([])}
+            />
+            <TouchableOpacity
+              onPress={getGPRSLocation}
+              style={{ marginLeft: 10 }}
+            >
+              <MaterialIcons
+                name="place"
+                size={30}
+                color="#FDC704"
+                style={{ marginLeft: 10 }}
+              />
+            </TouchableOpacity>
+          </View>
+
+          {/* Display suggestions */}
+          <FlatList
+            data={filteredSuggestions}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={{
+                  borderBottomWidth: 1,
+                  borderColor: "#ccc",
+                  paddingVertical: 10,
+                  paddingHorizontal: 15,
+                  backgroundColor: "#fff",
+                }}
+                onPress={() => handleFlatListPress(item)}
+              >
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: "#333",
+                    marginLeft: 20,
+                    fontWeight: "bold",
+                  }}
+                >
+                  {item}
+                </Text>
+              </TouchableOpacity>
+            )}
+            keyExtractor={(item) => item}
+            style={{ maxHeight: 150 }} // Set a maximum height for the suggestion list
+          />
+        </View>
+        <Text
+          style={{
+            fontSize: 16,
+            fontFamily: "Roboto",
+            fontWeight: "bold",
+            color: "#000000",
+            paddingLeft: 20,
+            marginTop: 10,
+            marginBottom: 10,
+          }}
+        >
+          Required features :
+        </Text>
+
+        {/* Checklist */}
+        <View style={{ marginLeft: 20 }}>
+          <TouchableOpacity
+            onPress={() => toggleFeatureSelection("Harvest")}
+            style={{ flexDirection: "row", alignItems: "center" }}
+          >
+            <MaterialIcons
+              style={{ marginLeft: 10 }}
+              name={
+                isFeatureSelected("Harvest")
+                  ? "check-box"
+                  : "check-box-outline-blank"
+              }
+              size={24}
+              color={isFeatureSelected("Feature 1") ? "#E97918" : "#6C757D"}
+            />
+            <Text
+              style={{
+                fontSize: 16,
+                color: isFeatureSelected("Harvest") ? "#E97918" : "#6C757D",
+                marginLeft: 10,
+                padding: 10,
+              }}
+            >
+              Harvest
+            </Text>
+          </TouchableOpacity>
+
+          {isFeatureSelected("Harvest") && (
+            <SegmentedControl
+              values={["High", "Medium", "Low"]}
+              selectedIndex={selectedHarvestIndex}
+              onChange={(event) => {
+                setselectedHarvestIndex(event.nativeEvent.selectedSegmentIndex);
+              }}
+              fontStyle={{ fontSize: 16, color: "#000000", fontWeight: "bold" }}
+              tintColor="#FFFFFF"
+              backgroundColor="#eeeeee"
+              fontColor="#000000"
+            />
+          )}
+
+          <TouchableOpacity
+            onPress={() => toggleFeatureSelection("Taste")}
+            style={{ flexDirection: "row", alignItems: "center" }}
+          >
+            <MaterialIcons
+              style={{ marginLeft: 10 }}
+              name={
+                isFeatureSelected("Taste")
+                  ? "check-box"
+                  : "check-box-outline-blank"
+              }
+              size={24}
+              color={isFeatureSelected("Feature 2") ? "#E97918" : "#6C757D"}
+            />
+            <Text
+              style={{
+                fontSize: 16,
+                color: isFeatureSelected("Taste") ? "#E97918" : "#6C757D",
+                marginLeft: 10,
+                padding: 10,
+              }}
+            >
+              Unique taste
+            </Text>
+          </TouchableOpacity>
+
+          {isFeatureSelected("Taste") && (
+            <SegmentedControl
+              values={["Good", "Average"]}
+              selectedIndex={selectedTasteIndex}
+              onChange={(event) => {
+                setselectedTasteIndex(event.nativeEvent.selectedSegmentIndex);
+              }}
+              fontStyle={{ fontSize: 16, color: "#000000", fontWeight: "bold" }}
+              tintColor="#FFFFFF"
+              backgroundColor="#eeeeee"
+              fontColor="#000000"
+            />
+          )}
+
+          <TouchableOpacity
+            onPress={() => toggleFeatureSelection("Size")}
+            style={{ flexDirection: "row", alignItems: "center" }}
+          >
+            <MaterialIcons
+              style={{ marginLeft: 10 }}
+              name={
+                isFeatureSelected("Size")
+                  ? "check-box"
+                  : "check-box-outline-blank"
+              }
+              size={24}
+              color={isFeatureSelected("Feature 1") ? "#E97918" : "#6C757D"}
+            />
+            <Text
+              style={{
+                fontSize: 16,
+                color: isFeatureSelected("Size") ? "#E97918" : "#6C757D",
+                marginLeft: 10,
+                padding: 10,
+              }}
+            >
+              Size of fruit
+            </Text>
+          </TouchableOpacity>
+
+          {isFeatureSelected("Size") && (
+            <SegmentedControl
+              values={["Big", "Medium", "Small"]}
+              selectedIndex={selectedSizeIndex}
+              onChange={(event) => {
+                setselectedSizeIndex(event.nativeEvent.selectedSegmentIndex);
+              }}
+              fontStyle={{ fontSize: 16, color: "#000000", fontWeight: "bold" }}
+              tintColor="#FFFFFF"
+              backgroundColor="#eeeeee"
+              fontColor="#000000"
+            />
+          )}
+
+          <TouchableOpacity
+            onPress={() => toggleFeatureSelection("Resistance")}
+            style={{ flexDirection: "row", alignItems: "center" }}
+          >
+            <MaterialIcons
+              style={{ marginLeft: 10 }}
+              name={
+                isFeatureSelected("Resistance")
+                  ? "check-box"
+                  : "check-box-outline-blank"
+              }
+              size={24}
+              color={isFeatureSelected("Feature 2") ? "#E97918" : "#6C757D"}
+            />
+            <Text
+              style={{
+                fontSize: 16,
+                color: isFeatureSelected("Resistance") ? "#E97918" : "#6C757D",
+                marginLeft: 10,
+                padding: 10,
+              }}
+            >
+              Disease resistance
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity
+          style={styles.findSuitableVarierty}
+          onPress={checkVariety}
+        >
+          <Text
+            style={{
+              fontSize: 17,
+              fontWeight: "bold",
+              padding: 5,
+              textAlign: "center",
+            }}
+          >
+            {" "}
+            Find matching variety{" "}
+          </Text>
         </TouchableOpacity>
       </View>
-
-      {/* Display suggestions */}
-        <FlatList
-        data={filteredSuggestions}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={{
-              borderBottomWidth: 1,
-              borderColor: '#ccc',
-              paddingVertical: 10,
-              paddingHorizontal: 15,
-              backgroundColor: '#fff',
-            }}
-            onPress={() => handleFlatListPress(item)}
-          >
-              <Text style={{ fontSize: 16, color: '#333', marginLeft:20, fontWeight: 'bold' }}>{item}</Text>
-            </TouchableOpacity>
-          )}
-          keyExtractor={(item) => item}
-          style={{ maxHeight: 150 }} // Set a maximum height for the suggestion list
-        />
-
-    </View>
-<Text style={{ fontSize: 16, fontFamily: 'Roboto', fontWeight: 'bold', color: '#000000', paddingLeft: 20, marginTop: 10, marginBottom: 10 }}>Required features :</Text>
-
-{/* Checklist */}
-<View style={{ marginLeft: 20 }}>
-        <TouchableOpacity onPress={() => toggleFeatureSelection('Harvest')} style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <MaterialIcons style={{marginLeft:10}} name={isFeatureSelected('Harvest') ? 'check-box' : 'check-box-outline-blank'} size={24} color={isFeatureSelected('Feature 1') ? '#E97918' : '#6C757D'} />
-          <Text style={{ fontSize: 16, color: isFeatureSelected('Harvest') ? '#E97918' : '#6C757D', marginLeft: 10, padding:10 }}>Harvest</Text>
-        </TouchableOpacity>
-
-        {isFeatureSelected('Harvest') && (
-          <SegmentedControl
-            values={['High', 'Medium', 'Low']}
-            selectedIndex={selectedHarvestIndex}
-            onChange={(event) => {
-              setselectedHarvestIndex(event.nativeEvent.selectedSegmentIndex);
-            }}
-            fontStyle={{ fontSize: 16, color: '#000000', fontWeight: 'bold' }}
-            tintColor='#FFFFFF'
-            backgroundColor='#eeeeee'
-            fontColor='#000000'
-          />
-        )}
-
-        <TouchableOpacity onPress={() => toggleFeatureSelection('Taste')} style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <MaterialIcons style={{marginLeft:10}}  name={isFeatureSelected('Taste') ? 'check-box' : 'check-box-outline-blank'} size={24} color={isFeatureSelected('Feature 2') ? '#E97918' : '#6C757D'} />
-          <Text style={{ fontSize: 16, color: isFeatureSelected('Taste') ? '#E97918' : '#6C757D', marginLeft: 10, padding:10 }}>Unique taste</Text>
-        </TouchableOpacity>
-
-        {isFeatureSelected('Taste') && (
-          <SegmentedControl
-            values={['Good', 'Average']}
-            selectedIndex={selectedTasteIndex}
-            onChange={(event) => {
-              setselectedTasteIndex(event.nativeEvent.selectedSegmentIndex);
-            }}
-            fontStyle={{ fontSize: 16, color: '#000000', fontWeight: 'bold' }}
-            tintColor='#FFFFFF'
-            backgroundColor='#eeeeee'
-            fontColor='#000000'
-          />
-        )}
-
-        <TouchableOpacity onPress={() => toggleFeatureSelection('Size')} style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <MaterialIcons style={{marginLeft:10}} name={isFeatureSelected('Size') ? 'check-box' : 'check-box-outline-blank'} size={24} color={isFeatureSelected('Feature 1') ? '#E97918' : '#6C757D'} />
-          <Text style={{ fontSize: 16, color: isFeatureSelected('Size') ? '#E97918' : '#6C757D', marginLeft: 10, padding:10 }}>Size of fruit</Text>
-        </TouchableOpacity>
-
-        {isFeatureSelected('Size') && (
-          <SegmentedControl
-            values={['Big', 'Medium', 'Small']}
-            selectedIndex={selectedSizeIndex}
-            onChange={(event) => {
-              setselectedSizeIndex(event.nativeEvent.selectedSegmentIndex);
-            }}
-            fontStyle={{ fontSize: 16, color: '#000000', fontWeight: 'bold' }}
-            tintColor='#FFFFFF'
-            backgroundColor='#eeeeee'
-            fontColor='#000000'
-          />
-        )}
-
-        <TouchableOpacity onPress={() => toggleFeatureSelection('Resistance')} style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <MaterialIcons style={{marginLeft:10}}  name={isFeatureSelected('Resistance') ? 'check-box' : 'check-box-outline-blank'} size={24} color={isFeatureSelected('Feature 2') ? '#E97918' : '#6C757D'} />
-          <Text style={{ fontSize: 16, color: isFeatureSelected('Resistance') ? '#E97918' : '#6C757D', marginLeft: 10, padding:10 }}>Disease resistance</Text>
-        </TouchableOpacity>
-</View>
-    
-    
-
-      <TouchableOpacity style={styles.findSuitableVarierty} onPress={checkVariety} >
-          <Text style={{ fontSize: 17, fontWeight: 'bold', padding: 5,  textAlign: 'center' }}> Find matching variety </Text>
-      </TouchableOpacity>
-
-
-      
-    </View>
-    <Toast ref={(ref) => Toast.setRef(ref)} />
+      <Toast ref={(ref) => Toast.setRef(ref)} />
     </ScrollView>
-    
-  )
+  );
 }
 
 const styles = StyleSheet.create({
-
   imageContainer: {
     marginBottom: 5,
     marginTop: 30,
-    width: '95%',
+    width: "95%",
     marginLeft: 10,
     padding: 10,
-    backgroundColor: '#f3fdee',
+    backgroundColor: "#f3fdee",
     borderRadius: 20,
     shadowOffset: {
       width: 0.5,
@@ -571,113 +735,113 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.4,
     shadowRadius: 1.21,
-    elevation: 2
+    elevation: 2,
   },
   topic: {
-    flexDirection: 'row',
+    flexDirection: "row",
     paddingTop: 20,
-    backgroundColor: '#fdfafa',
+    backgroundColor: "#fdfafa",
   },
   error: {
-    color: 'red',
+    color: "red",
     marginTop: 5,
-    fontSize: 8
+    fontSize: 8,
   },
   backButton: {
     width: 30,
     height: 35,
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
     marginTop: -10,
     marginLeft: 15,
-    marginRight: 60
+    marginRight: 60,
   },
   button: {
-    backgroundColor: '#fdc50b',
+    backgroundColor: "#fdc50b",
     width: 220,
     height: 65,
     paddingBottom: 0,
     borderRadius: 25,
     marginTop: 20,
-    alignSelf: 'center',
+    alignSelf: "center",
     marginBottom: 10,
   },
   btntext: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#144100',
+    fontWeight: "bold",
+    color: "#144100",
     paddingTop: 10,
-    marginTop: 10
+    marginTop: 10,
   },
   infoModal: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
-    justifyContent: 'center',
-    backgroundColor: '#ffffff',
-    width: '100%',
-    maxHeight: '90%',
-    minHeight: '60%',
+    justifyContent: "center",
+    backgroundColor: "#ffffff",
+    width: "100%",
+    maxHeight: "90%",
+    minHeight: "60%",
     marginBottom: 20,
     marginLeft: 0,
     borderRadius: 20,
-    borderColor: '#899186',
+    borderColor: "#899186",
     shadowOffset: {
       width: 0.8,
       height: 1,
     },
     shadowOpacity: 0.4,
     shadowRadius: 1.21,
-    elevation: 2
+    elevation: 2,
   },
   okButton: {
-    backgroundColor: '#fdc50b',
+    backgroundColor: "#fdc50b",
     padding: 10,
     width: 80,
     height: 50,
-    textAlign: 'center',
-    color: '#144100',
+    textAlign: "center",
+    color: "#144100",
     borderRadius: 25,
     marginTop: 50,
-    alignSelf: 'center',
+    alignSelf: "center",
     marginBottom: 20,
   },
   findVarierty: {
-    backgroundColor: 'green',
+    backgroundColor: "green",
     padding: 10,
     width: 280,
     height: 50,
-    textAlign: 'center',
-    color: '#FFFFFF',
+    textAlign: "center",
+    color: "#FFFFFF",
     borderRadius: 15,
     marginTop: 10,
-    alignSelf: 'center',
+    alignSelf: "center",
     marginBottom: 10,
   },
   findSuitableVarierty: {
-    backgroundColor: '#FDC704',
+    backgroundColor: "#FDC704",
     padding: 10,
     width: 280,
     height: 50,
-    textAlign: 'center',
-    color: '#000000',
+    textAlign: "center",
+    color: "#000000",
     borderRadius: 15,
     marginTop: 20,
-    alignSelf: 'center',
+    alignSelf: "center",
     marginBottom: 10,
   },
   retakePhoto: {
-    backgroundColor: '#BBC6BC',
+    backgroundColor: "#BBC6BC",
     padding: 10,
     width: 180,
     height: 50,
-    textAlign: 'center',
-    color: 'black',
+    textAlign: "center",
+    color: "black",
     borderRadius: 15,
     marginTop: 0,
-    alignSelf: 'center',
+    alignSelf: "center",
     marginBottom: 20,
   },
   sensorimage: {
@@ -713,34 +877,32 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   modalContent: {
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     padding: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 20,
-    borderColor: '#899186',
+    borderColor: "#899186",
     shadowOffset: {
       width: 0.8,
       height: 1,
     },
     shadowOpacity: 0.4,
     shadowRadius: 1.21,
-    elevation: 2
+    elevation: 2,
   },
   modalText: {
     fontSize: 14,
-    fontStyle: 'italic',
+    fontStyle: "italic",
     padding: 5,
-    color: '#000000',
-    textAlign: 'center',
-    marginTop:25,
-    marginBottom:-20
+    color: "#000000",
+    textAlign: "center",
+    marginTop: 25,
+    marginBottom: -20,
   },
   modalText2: {
     fontSize: 16,
     marginBottom: 10,
     fontWeight: "bold",
   },
-
-
 });

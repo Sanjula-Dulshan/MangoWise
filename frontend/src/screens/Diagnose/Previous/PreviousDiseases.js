@@ -25,8 +25,7 @@ export default function PreviousDiseases() {
   const route = useRoute();
 
   useEffect(() => {
-    console.log("constants.backend_url>> ", constants.backend_url);
-    axios.get(constants.backend_url + "/disease").then((response) => {
+    axios.get(constants.BACKEND_URL + "/disease").then((response) => {
       setDiseasesList(response.data);
       setLoading(false);
     });

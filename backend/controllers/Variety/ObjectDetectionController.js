@@ -23,13 +23,11 @@ export const detectVariety = async (req, res) => {
     });
 
     const imageData = response.data;
-    console.log(imageData);
 
     // Load the image using the canvas library
     const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
     const bufferImage = Buffer.from(base64Data, "base64");
     const canvasImage = await loadImage(bufferImage);
-    console.log("canvasImage", canvasImage);
     const canvas = createCanvas(canvasImage.width, canvasImage.height);
     const ctx = canvas.getContext("2d");
 

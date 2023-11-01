@@ -17,6 +17,7 @@ import mangoAnalysis from "../../../../assets/M4.jpg";
 import mangoForecast from "../../../../assets/M5.jpg";
 import axios from "axios";
 import Modal from "react-native-modal";
+import constants from "../../../constants/constants";
 
 import searching from "../../../../assets/loadings/searching.gif";
 
@@ -35,7 +36,6 @@ export default function HomeScreen() {
 
   // get marketData passed by previous analysis screen
   useEffect(() => {
-    console.log("route.params>> ", route.params.marketData);
     const { marketData } = route.params;
     setForecast(marketData);
   }, [route.params]);
@@ -92,13 +92,8 @@ export default function HomeScreen() {
 
     try {
       await axios
-        .post(
-          "https://us-central1-mangowise-395709.cloudfunctions.net/market_predict",
-          requestData
-        )
+        .post(constants.MARKET_PRICE_PREDICT_URL, requestData)
         .then((response) => {
-          console.log("response>> ", response.data);
-
           if (step == 1) {
             navigation.navigate("ForecastScreen", {
               response: response.data,
@@ -109,13 +104,12 @@ export default function HomeScreen() {
             response.data.forecasted_values.forEach((data, index) => {
               newPredictedData.push({
                 quantity: parseInt(forecast.freshMangoes),
-                pricePerKg: data,
+                pricePerKg: data?.toFixed(2),
                 income: (parseInt(forecast.freshMangoes) * data).toFixed(2),
               });
             });
             setPredictedData(newPredictedData);
             setIsModalVisible(true);
-            console.log("predictedData>> ", predictedData);
           }
           setIsLoading(false);
         });

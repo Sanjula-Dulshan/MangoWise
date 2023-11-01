@@ -7,6 +7,7 @@ import PreviousDiseasesScreen from "../screens/Diagnose/Previous/PreviousDisease
 import DetectedAllDiseaseScreen from "../screens/Diagnose/Results/DetectedAllDisease";
 import RemediesScreen from "../screens/Diagnose/Remedies/Remedies";
 import DiseaseCompareScreen from "../screens/Diagnose/DiseaseCompare/DiseaseCompare";
+import DetectedCamDisease from "../screens/Diagnose/DetectedCam/DetectedCamDisease";
 
 const Stack = createNativeStackNavigator();
 
@@ -36,6 +37,11 @@ export default function DiagnoseAllScreens() {
       <Stack.Screen
         name="DiseaseCompareScreen"
         component={DiseaseCompareScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="DetectedCamDisease"
+        component={DetectedCamDisease}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

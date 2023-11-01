@@ -7,6 +7,7 @@ import CheckFertilizerScreen from "../screens/CheckFertilizerScreen/CheckFertili
 import FertilizerSuggestionScreen from "../screens/FertilizerSuggestionScreen/FertilizerSuggestionScreen";
 import MonitorFertilizationScreen from "../screens/MoniterFertilizationScreen/MonitorFertilizationScreen";
 import PreviousRecordsScreen from "../screens/MoniterFertilizationScreen/PreviousRecordsScreen";
+import Login from "../screens/Login";
 
 const Stack = createNativeStackNavigator();
 

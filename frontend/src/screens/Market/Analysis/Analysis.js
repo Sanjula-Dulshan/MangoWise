@@ -12,6 +12,7 @@ import {
 import Header from "../../../components/Common/Header";
 import Modal from "react-native-modal";
 import { Dropdown } from "react-native-element-dropdown";
+import axios from "axios";
 
 const MarketAnalysisPlan = () => {
   const [cost, setCost] = useState("");
@@ -56,7 +57,7 @@ const MarketAnalysisPlan = () => {
 
     try {
       console.log("Analyze", marketData);
-      await axios.post(constants.backend_url + "/market", data);
+      await axios.post(constants.BACKEND_URL + "/market", data);
     } catch (error) {
       console.log("error ", error);
     }
@@ -197,7 +198,7 @@ const MarketAnalysisPlan = () => {
             }}
             renderItem={renderLocationItem}
           />
-          <Text style={styles.inputLabel}>Fresh Mangoes(Kgs)</Text>
+          <Text style={styles.inputLabel}>Quantity of Fresh Mangoes</Text>
           <TextInput
             style={styles.input}
             placeholder="Enter Quantity"
@@ -207,7 +208,7 @@ const MarketAnalysisPlan = () => {
               setFreshMangoes(text.replace(/[^0-9]/g, ""))
             }
           />
-          <Text style={styles.inputLabel}>Damaged Mangoes(Kgs)</Text>
+          <Text style={styles.inputLabel}>Quantity of Damaged Mangoes </Text>
           <TextInput
             style={styles.input}
             placeholder="Enter Quantity"
