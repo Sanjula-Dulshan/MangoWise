@@ -44,7 +44,7 @@ const customAppearance = {
   },
 };
 
-export default function Payment() {
+export default function payment() {
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
