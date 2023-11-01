@@ -66,13 +66,15 @@ export default function BuddingResultScreen() {
   const [color, setColor] = useState("");
   const [icon, setIcon] = useState(green_tick);
   const [flagVal, setFlagVal] = useState(false);
+  //const [capture, setCapture] = useState("0");
+  let captureA = "0";
 
   useEffect(() => {
     setModalVisible(true)
   }, []);
 
   useEffect(() => {
-    const { response, imageUri, base64Data, flagA } = route.params;
+    const { response, imageUri, base64Data, flagA, capture } = route.params;
     console.log("image uri :: ", imageUri);
     setImgeUri(imageUri);
     console.log("image uri 1:: ", imageUri);
@@ -80,6 +82,8 @@ export default function BuddingResultScreen() {
     console.log("response", response.class);
     setFlagVal(flagA);
     console.log("flag", flagA);
+    console.log("capture", capture);
+    captureA  = capture;
 
 
     console.log("Param ::::: ", route.params);
@@ -89,29 +93,37 @@ export default function BuddingResultScreen() {
   const handleModalClose = () => {
     setModalVisible(false);
     // Add navigation logic to return to the home screen here
-    navigation.navigate("Home");
+    navigation.navigate("BuddingHomeScreen");
+  
+    
   };
   
   useEffect(() => {
-    if (Suitability == "suitable") {
+    if (Suitability == "suitable" || captureA == "1") {
       setClassName("Suitable");
       setColor("green");
       setIcon(green_tick);
-    }  else if (Suitability == "late") {
+    }  else if (Suitability == "late" || captureA == "3") {
       setClassName("Too Much Matured");
       setColor("red");
       setIcon(red_warning);
     } else  {
-      setClassName("Early");
+      setClassName("Not Mature Enough");
       setColor("orange");
       setIcon(red_warning);
     }
 
-    if (flagVal==true){
-      setClassName("Not Found!");
-      setColor("red");
+    if (captureA == "2"){
+      setClassName("Not Mature Enough");
+      setColor("orange");
       setIcon(red_warning);
     }
+
+    // if (flagVal==true){
+    //   setClassName("Not Found!");
+    //   setColor("red");
+    //   setIcon(red_warning);
+    // }
       
   }, [Suitability]);
 

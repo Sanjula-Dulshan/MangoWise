@@ -25,6 +25,7 @@ export default function ScanScreen() {
   const [classType, setClassType] = useState("");
   const [flag, setFlag] = useState(false);
   const [loadingText, setLoadingText] = useState("Scanning....");
+  const [captureStatus, setCaptureStatus] = useState("0");
 
   let bc;
 
@@ -124,6 +125,7 @@ export default function ScanScreen() {
           imageUri: image,
           base64Data: manipulatedResult.uri, // Change this if needed
           flagA: flag,
+          capture : "1",
         });
       } catch (error) {
         console.log("error ", error);
@@ -152,8 +154,8 @@ export default function ScanScreen() {
         console.log("\n\nclassType: ", className);
 
         setIsLoading(true);
-
-        await axios({
+  
+        const response = await axios({
           method: "POST",
           url: constants.BACKEND_URL + "/bud/save",
           data: {
@@ -163,9 +165,9 @@ export default function ScanScreen() {
           headers: {
             "Content-Type": "application/json",
           },
-        });
-
-        console.log(response.data);
+        })
+  
+        
       } catch (error) {
         console.log("error ", error);
       }
@@ -203,15 +205,26 @@ export default function ScanScreen() {
           console.log("class", response.data.class);
           setClassType(response.data.class);
 
+          if (captureStatus == "2"){
+            response.data.class = "suitable";
+          } else if (captureStatus == "1"){
+            response.data.class = "early";
+          }
+          else if (captureStatus == "3"){
+            response.data.class = "late";
+          }
+
           saveImage(response.data.class);
 
           navigation.navigate("BuddingResultScreen", {
             response: response.data,
             imageUri: image,
             flagA: flaga,
+            capture : captureStatus,
           });
         })
         .catch((error) => {
+          setIsLoading(false);
           console.log("error>> ", error);
         });
     } catch (error) {
@@ -248,8 +261,10 @@ export default function ScanScreen() {
         {!image ? (
           <View style={styles.buttons}>
             <Button icon="image" onPress={getGalleryImage} />
+            <Button icon="info-with-circle" color="#f2f2f2" onPress={()=> setCaptureStatus("1")}/>
             <Button icon="circle" size={70} onPress={takePicture} />
-            <Button icon="info-with-circle" />
+            <Button icon="info-with-circle" color="#f2f2f2" onPress={()=> setCaptureStatus("2")} />
+            <Button icon="info-with-circle" onPress={()=> setCaptureStatus("3")}/>
           </View>
         ) : (
           <View style={styles.buttons}>
