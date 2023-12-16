@@ -10,6 +10,8 @@
 <br>
 Official Website: https://mangowise-ai.com/
 
+Research Paper: [Click here](https://irjiet.com/Volume-7/Issue-10-October-2023/MangoWise-Intelligent-Farming-Assistance-for-Budding-Planting-and-Disease-Prevention/1848)
+
 Demo: https://youtu.be/4yU1BwfNm40?si=p70crRGTKVq4Jzzq
 
 ## Main Research Problem
